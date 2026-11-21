@@ -1449,7 +1449,8 @@ window.SEED = (function () {
       <div class="big" style="color:${passed ? "var(--green)" : "var(--red)"}">${a.score}%</div>
       <h2>${isFinal ? (a.passed ? "PASSED ✅" : "FAILED ❌") : (passed ? "Yaxshi natija 👍" : "Modulni qayta ko'rib chiqing")}</h2>
       ${isFinal && a.passed && r.cert ? `<p>Sertifikat avtomatik berildi: <a href="#cert-${r.cert.id}"><b>${e(r.cert.id)}</b></a></p>` : ""}
-      ${isFinal && !a.passed ? `<p class="muted">O'tish bali: ${a.cfg.pass}%. Tizim avtomatik <b>Remedial Training</b> tayinladi. Qayta topshirish: ${U.fmtDate(U.addDays(U.now(), a.cfg.retakeDays))}.</p>` : ""}
+      ${a.preview ? `<p class="muted"><span class="badge b-amber">Preview</span> Bu sinov urinishi: natija statistikaga kirmaydi, sertifikat berilmaydi va Remedial Training tayinlanmaydi.</p>` : ""}
+      ${isFinal && !a.passed && !a.preview ? `<p class="muted">O'tish bali: ${a.cfg.pass}%. Tizim avtomatik <b>Remedial Training</b> tayinladi. Qayta topshirish: ${U.fmtDate(a.retakeAfter || U.addDays(U.now(), a.cfg.retakeDays))}.</p>` : ""}
       <div class="row" style="justify-content:center;margin-top:10px"><a class="btn" href="#course-${c.id}">Kursga qaytish</a>${r.cert ? `<a class="btn primary" href="#cert-${r.cert.id}">Sertifikatni ko'rish</a>` : ""}</div></div>
       <h3 style="margin-top:20px">Javoblar tahlili</h3>${V.review(a)}`;
   };
