@@ -203,6 +203,7 @@ window.SEED = (function () {
 
   const DOMAINS = {
     medical: "Tibbiy / kasbiy bilim",
+    ethics: "Medical Ethics",
     practical: "Amaliy ko'nikmalar",
     communication: "Kommunikatsiya",
     safety: "Bemor xavfsizligi",
@@ -215,7 +216,7 @@ window.SEED = (function () {
   const COURSES = [
     /* ===================== UMUMIY (MAJBURIY) KURSLAR ===================== */
     {
-      id: "ETHICS", title: "Medical Ethics", subtitle: "Tibbiy etika va deontologiya", domain: "communication",
+      id: "ETHICS", title: "Medical Ethics", subtitle: "Tibbiy etika va deontologiya", domain: "ethics",
       core: true, icon: "⚖️", color: "#2563eb", validMonths: 24,
       exam: { count: 10, time: 15, pass: 80, attempts: 3, neg: 0, retakeDays: 2 },
       modules: [
@@ -464,170 +465,7 @@ window.SEED = (function () {
   /* ===================== SAVOLLAR BANKI =====================
      t: single | multiple | tf | match | case | short
      a: to'g'ri javob (index, indexlar massivi, true/false, juftliklar, kalit so'zlar) */
-  const Q = [
-    // ---- ETHICS
-    ["ETHICS","ETH1","single","Tamoyillar","Bemorning o'z davolanishi haqida mustaqil qaror qabul qilish huquqi qaysi etik tamoyilga mos keladi?",["Beneficence","Avtonomiya","Adolat","Non-maleficence"],1,"Avtonomiya — bemorning o'zi haqida qaror qabul qilish huquqi."],
-    ["ETHICS","ETH1","single","Tamoyillar","'Primum non nocere' qaysi tamoyilni ifodalaydi?",["Zarar yetkazmaslik","Adolat","Avtonomiya","Konfidensiallik"],0,"Non-maleficence — birinchi navbatda zarar yetkazmaslik."],
-    ["ETHICS","ETH1","tf","Professional xulq","Hamkasbning xatosini bemor oldida muhokama qilish professional xulqqa mos keladi.",null,false,"Hamkasb xatosi bemor oldida emas, rasmiy kanal (rahbariyat, incident report) orqali ko'rib chiqiladi."],
-    ["ETHICS","ETH1","multiple","Tamoyillar","Quyidagilardan qaysilari Beauchamp & Childress'ning 4 tamoyiliga kiradi? (bir nechta)",["Avtonomiya","Adolat","Rentabellik","Beneficence"],[0,1,3],"4 tamoyil: avtonomiya, beneficence, non-maleficence, adolat."],
-    ["ETHICS","ETH2","single","Xabardor rozilik","Xabardor rozilik olishda quyidagilardan qaysi biri SHART EMAS?",["Muolaja xavflarini tushuntirish","Muqobil usullarni aytish","Bemorning to'lov qobiliyatini tekshirish","Rozilikni qaytarib olish huquqini aytish"],2,"To'lov qobiliyati xabardor rozilik elementi emas."],
-    ["ETHICS","ETH2","case","Xabardor rozilik","Hushsiz holda keltirilgan bemorda shoshilinch operatsiya zarur, qarindoshlar yo'q. To'g'ri yo'l?",["Qarindoshlar topilguncha kutish","Hayotni saqlash uchun zarur yordamni ko'rsatish va hujjatlashtirish","Bemorni boshqa klinikaga yuborish","Faqat og'riqsizlantirish"],1,"Shoshilinch holatda, vakil bo'lmasa, hayotni saqlovchi yordam roziliksiz ko'rsatiladi va hujjatlanadi."],
-    ["ETHICS","ETH2","tf","Bemor huquqlari","Bemor istalgan vaqtda avval bergan roziligini qaytarib olishi mumkin.",null,true,"Rozilik ixtiyoriy va qaytariladigan."],
-    ["ETHICS","ETH3","single","Maxfiylik","Telefon qilgan 'qarindosh' bemorning tahlil natijasini so'rayapti. To'g'ri javob?",["Natijani aytish","Bemorning ruxsati va shaxsni tasdiqlamay turib ma'lumot bermaslik","Faqat yaxshi natija bo'lsa aytish","Shifokorning telefon raqamini berish"],1,"Natija faqat bemorga yoki u rasman ruxsat bergan shaxsga, shaxs tasdiqlangandan keyin beriladi."],
-    ["ETHICS","ETH3","tf","Maxfiylik","Bemorning klinikaga murojaat qilgani faktining o'zi ham tibbiy sir hisoblanadi.",null,true,"Murojaat fakti ham tibbiy sir."],
-    ["ETHICS","ETH3","single","Maxfiylik","Qiziq klinik holat rasmini ijtimoiy tarmoqqa joylash qachon mumkin?",["Yuz ko'rinmasa har doim","Bemorning yozma roziligi bo'lsa va identifikatsiya qilib bo'lmasa","Hamkasblar guruhida har doim","Hech qachon"],1,"Bemorning yozma roziligi va anonimlashtirish talab qilinadi."],
-    ["ETHICS","ETH1","short","Professional xulq","Tibbiyot xodimining burch va xulq qoidalari majmui qanday ataladi? (bir so'z)",null,["deontologiya"],"Deontologiya."],
-    ["ETHICS","ETH2","match","Bemor huquqlari","Tushunchani mosini tanlang",[["Avtonomiya","Bemor qarori"],["Adolat","Teng taqsimot"],["Beneficence","Foyda keltirish"]],null,"Har bir tamoyil o'z mazmuniga mos."],
-
-    // ---- COMM
-    ["COMM","COM1","single","Salomlashish","Bemor bilan suhbatni boshlashning eng yaxshi usuli?",["Darhol shikoyatni so'rash","Salomlashib, o'zini tanishtirib, bemorni ismi bilan murojaat qilish","Kartani o'qib o'tirish","Navbat raqamini aytish"],1,"Salom + o'zini tanishtirish + ism bilan murojaat — ishonchli boshlanish."],
-    ["COMM","COM1","single","Savol berish","Suhbat boshida qaysi turdagi savol afzal?",["Yopiq savol","Ochiq savol","Yo'naltiruvchi savol","Ikki ma'noli savol"],1,"Ochiq savollar bemorga o'z hikoyasini aytish imkonini beradi."],
-    ["COMM","COM1","tf","Tinglash","Summarizatsiya ('Demak, sizda… to'g'rimi?') faol tinglash usullaridan biri.",null,true,"Summarizatsiya tushunganingizni tasdiqlaydi."],
-    ["COMM","COM1","multiple","Tinglash","Faol tinglash belgilari (bir nechta):",["Ko'z bilan aloqa","Bemor gapini bo'lish","Bosh irg'ab tasdiqlash","Telefonga qarab turish"],[0,2],"Ko'z bilan aloqa va tasdiqlovchi signallar — faol tinglash."],
-    ["COMM","COM2","single","Konflikt","HEARD modelidagi 'E' harfi nimani anglatadi?",["Explain","Empathize","Escalate","Evaluate"],1,"Empathize — empatiya bildirish."],
-    ["COMM","COM2","case","Agressiv bemor","Bemor baqirib, shifokorni haqorat qilyapti. Birinchi qadam?",["Ovozni ko'tarib javob berish","Xotirjam, past ovozda gapirish, xavfsiz masofa saqlash","Xonani tark etib eshikni yopish","E'tibor bermaslik"],1,"De-eskalatsiya: xotirjam ovoz, masofa, chiqish yo'li ochiq."],
-    ["COMM","COM2","tf","Agressiv bemor","Agressiv bemor bilan yopiq xonada yolg'iz qolish tavsiya etiladi.",null,false,"Yolg'iz qolmaslik va chiqish yo'lini ochiq qoldirish kerak."],
-    ["COMM","COM3","single","Yomon xabar","SPIKES protokolining birinchi bosqichi?",["Knowledge","Setting","Strategy","Emotions"],1,"Setting — to'g'ri muhit tayyorlash."],
-    ["COMM","COM3","single","Yomon xabar","SPIKES'dagi 'P' (Perception) bosqichida shifokor nima qiladi?",["Tashxisni aytadi","Bemor vaziyat haqida nimani bilishini aniqlaydi","Davolash rejasini beradi","Hisob-kitob qiladi"],1,"Avval bemorning tushunchasini aniqlash."],
-    ["COMM","COM3","case","Qarindoshlar","Reanimatsiyadagi bemorning qarindoshlari har soatda ma'lumot so'rab kelishmoqda. Eng to'g'ri yondashuv?",["Har safar boshqa xodim javob beradi","Belgilangan vaqtda mas'ul shifokor tomonidan muntazam ma'lumot berish","Ma'lumot bermaslik","Telefon orqali hammaga aytish"],1,"Bir mas'ul shaxs va muntazam jadval ishonchni oshiradi."],
-    ["COMM","COM1","short","Savol berish","'Og'riq kechasi kuchayadimi?' — bu qanday savol turi? (ochiq/yopiq)",null,["yopiq"],"Bu yopiq savol (ha/yo'q)."],
-
-    // ---- SAFETY
-    ["SAFETY","SAF1","single","Identifikatsiya","Bemorni identifikatsiya qilish uchun qaysi juftlik to'g'ri?",["Palata va karavot raqami","Ism-familiya va tug'ilgan sana","Tashxis va palata raqami","Faqat ism"],1,"Ikki identifikator: F.I.Sh. + tug'ilgan sana (yoki karta raqami)."],
-    ["SAFETY","SAF1","tf","Identifikatsiya","Bemordan 'Siz Aliyevmisiz?' deb so'rash yetarli identifikatsiya hisoblanadi.",null,false,"Bemor o'zi ism va tug'ilgan sanasini aytishi kerak — yopiq savol xatoga olib keladi."],
-    ["SAFETY","SAF1","multiple","Dori xavfsizligi","High-alert dorilarga qaysilari kiradi? (bir nechta)",["Insulin","Geparin","Kaliy xlorid konsentrati","Paratsetamol tabletkasi"],[0,1,2],"Insulin, geparin, KCl konsentrati — yuqori xavfli dorilar."],
-    ["SAFETY","SAF1","single","Dori xavfsizligi","'5 to'g'ri' qoidasiga qaysi biri kirmaydi?",["To'g'ri doza","To'g'ri yo'l","To'g'ri narx","To'g'ri vaqt"],2,"Narx dori xavfsizligi qoidasi emas."],
-    ["SAFETY","SAF2","single","Yiqilish","Yiqilish xavfi yuqori bemor uchun qaysi chora NOTO'G'RI?",["Karavotni past holatga keltirish","Chaqiruv tugmasini yaqin qo'yish","Tunda chiroqni butunlay o'chirish","Tormozni qulflash"],2,"Tunda yengil yorug'lik qoldiriladi."],
-    ["SAFETY","SAF2","case","Shoshilinch javob","Koridorda bemor yiqilib, javob bermayapti va normal nafas olmayapti. Ketma-ketlik?",["Avval qarindoshlarga qo'ng'iroq","Yordam chaqirish (Code Blue), defibrillyator, darhol CPR 30:2","Suv sepib kutish","Bemorni karavotga ko'chirib keyin baholash"],1,"Javob yo'q + normal nafas yo'q → yordam chaqirish va darhol CPR."],
-    ["SAFETY","SAF3","single","Incident reporting","'Near miss' nima?",["Bemorga zarar yetkazgan xato","Bemorga yetib bormay to'xtatilgan xato","Sud ishi","Bemor shikoyati"],1,"Near miss — bemorga yetib bormagan xato, u ham albatta yoziladi."],
-    ["SAFETY","SAF3","tf","Xatolar madaniyati","'Just culture' — xato haqida xabar bergan xodimni jazolashga asoslangan.",null,false,"Just culture xabar berishni rag'batlantiradi, maqsad — tizimni tuzatish."],
-    ["SAFETY","SAF3","single","Xatolar madaniyati","Tibbiy xatolarni tushuntiruvchi 'Swiss cheese' modeli nimani ko'rsatadi?",["Xatoga faqat bitta xodim aybdor","Bir necha himoya qatlamidagi teshiklar bir chiziqqa kelganda xato yuz beradi","Xatolar oldini olib bo'lmaydi","Faqat texnika aybdor"],1,"Xato — bir nechta tizim nuqsonlari ustma-ust tushishi."],
-    ["SAFETY","SAF1","case","Dori xavfsizligi","Hamshira shifokorning tushunarsiz yozilgan buyurtmasini o'qiy olmadi. To'g'ri harakat?",["Taxmin qilib dori berish","Boshqa hamshiradan so'rash","Shifokor bilan bog'lanib buyurtmani aniqlashtirish","Dorini bermaslik va hech kimga aytmaslik"],2,"Noaniq buyurtma faqat buyurgan shifokor bilan aniqlashtiriladi."],
-    ["SAFETY","SAF2","multiple","Yiqilish","Yiqilish xavf omillari (bir nechta):",["65 yoshdan katta","Sedativ dori qabuli","Oldingi yiqilish","Yosh sportchi"],[0,1,2],"Yosh, sedativlar, oldingi yiqilish — asosiy omillar."],
-    ["SAFETY","SAF1","short","Dori xavfsizligi","High-alert dori ikki xodim tomonidan qanday tekshiriladi? (bir so'z: ... tekshiruv)",null,["mustaqil","ikki"],"Ikki xodim tomonidan mustaqil tekshiruv (independent double check)."],
-
-    // ---- IPC
-    ["IPC","IPC1","single","Qo'l gigiyenasi","WHO bo'yicha qo'l gigiyenasining nechta lahzasi bor?",["3","4","5","7"],2,"5 lahza."],
-    ["IPC","IPC1","single","Qo'l gigiyenasi","Spirtli antiseptik bilan qo'l ishlov berishning tavsiya etilgan davomiyligi?",["5 soniya","20–30 soniya","2 daqiqa","5 daqiqa"],1,"20–30 soniya."],
-    ["IPC","IPC1","tf","Qo'l gigiyenasi","Qo'lqop kiyish qo'l gigiyenasini almashtiradi.",null,false,"Qo'lqopdan oldin ham, keyin ham qo'l gigiyenasi kerak."],
-    ["IPC","IPC1","single","Qo'l gigiyenasi","Qaysi holatda spirtli antiseptik o'rniga albatta sovun va suv ishlatiladi?",["Har bir bemordan keyin","Qo'l ko'rinarli ifloslanganda yoki C. difficile holatida","Faqat ertalab","Hech qachon"],1,"Ko'rinarli ifloslanish va spora hosil qiluvchi mikroblarda sovun-suv."],
-    ["IPC","IPC1","single","PPE","PPE yechishda birinchi bo'lib nima yechiladi?",["Niqob","Xalat","Qo'lqop","Ko'zoynak"],2,"Eng ifloslangan — qo'lqop birinchi yechiladi."],
-    ["IPC","IPC2","single","Sterilizatsiya","Spaulding tasnifiga ko'ra jarrohlik asboblari qaysi toifaga kiradi?",["Nokritik","Yarim kritik","Kritik","Toifasiz"],2,"Steril to'qimaga kiruvchi buyumlar — kritik → sterilizatsiya."],
-    ["IPC","IPC2","single","Sterilizatsiya","Tonometr manjeti uchun qaysi ishlov yetarli?",["Sterilizatsiya","Yuqori darajali dezinfeksiya","Past darajali dezinfeksiya","Ishlov shart emas"],2,"Butun teriga tegadi — nokritik."],
-    ["IPC","IPC2","case","Needle-stick","Hamshira ishlatilgan igna bilan qo'lini jarohatladi. Birinchi harakat?",["Jarohatni siqib qonni chiqarish","Oqar suv va sovun bilan yuvish, darhol mas'ulga xabar berish","Spirt bilan artib ishni davom ettirish","Hech kimga aytmaslik"],1,"Yuvish (siqmasdan), xabar berish, tahlil va kerak bo'lsa PEP."],
-    ["IPC","IPC2","tf","Chiqindilar","Ishlatilgan ignaga qalpoqchani qayta kiyg'izish xavfsiz amaliyot.",null,false,"Qayta kiyg'izish needle-stick jarohatining asosiy sababi."],
-    ["IPC","IPC2","single","Needle-stick","HIV post-ekspozitsion profilaktikasi qachon boshlanishi kerak?",["1 hafta ichida","Imkon qadar tez, ideal 2 soat ichida, 72 soatdan kechiktirmay","Faqat test musbat bo'lsa","1 oydan keyin"],1,"PEP qanchalik erta boshlansa, shunchalik samarali; 72 soatdan keyin tavsiya etilmaydi."],
-    ["IPC","IPC1","match","PPE","PPE kiyish tartibini moslang",[["1-qadam","Xalat"],["2-qadam","Niqob"],["3-qadam","Ko'zoynak"],["4-qadam","Qo'lqop"]],null,"Kiyish: xalat → niqob → ko'zoynak → qo'lqop."],
-    ["IPC","IPC2","multiple","Chiqindilar","O'tkir buyumlar konteyneri qoidalari (bir nechta):",["Teshilmaydigan bo'lishi","3/4 to'lganda yopish","Ignani ichiga bosib kiritish uchun qo'l bilan itarish","Ishlatilgan joyga yaqin turishi"],[0,1,3],"Qo'l bilan itarish taqiqlanadi."],
-
-    // ---- PH
-    ["PH","PH1","single","Profilaktika","Emlash qaysi profilaktika turiga kiradi?",["Birlamchi","Ikkilamchi","Uchlamchi","Kvaternar"],0,"Kasallikning oldini olish — birlamchi profilaktika."],
-    ["PH","PH1","single","Skrining","Mammografiya skriningi qaysi profilaktika darajasi?",["Birlamchi","Ikkilamchi","Uchlamchi","Profilaktika emas"],1,"Erta aniqlash — ikkilamchi profilaktika."],
-    ["PH","PH1","single","Skrining","Testning sog'lom odamlarni to'g'ri 'manfiy' deb topish qobiliyati?",["Sezuvchanlik","Spetsifiklik","Prevalens","Insidens"],1,"Spetsifiklik."],
-    ["PH","PH2","single","Epidemiologiya","Ma'lum davrdagi YANGI holatlar soni qanday ataladi?",["Prevalens","Insidens","Letallik","Morbidlik"],1,"Insidens — yangi holatlar."],
-    ["PH","PH2","tf","Epidemiologiya","Prevalens ma'lum vaqtdagi barcha mavjud (eski va yangi) holatlarni o'z ichiga oladi.",null,true,"Prevalens — barcha mavjud holatlar."],
-    ["PH","PH2","single","Emlash","Vaksinalar sovuq zanjirining standart harorati?",["−20 °C","0 °C","+2…+8 °C","+15…+25 °C"],2,"Ko'pchilik vaksinalar +2…+8 °C da saqlanadi."],
-    ["PH","PH2","single","Epidemiologiya","Epidemik zanjir bo'g'inlari?",["Manba → yuqish yo'li → moyil organizm","Shifokor → bemor → dori","Tashxis → davolash → reabilitatsiya","Simptom → sindrom → kasallik"],0,"Infeksiya manbai, yuqish mexanizmi va moyil organizm."],
-    ["PH","PH3","multiple","Risk faktorlar","Yuqumli bo'lmagan kasalliklarning o'zgartirsa bo'ladigan risk faktorlari (bir nechta):",["Chekish","Yosh","Jismoniy faolsizlik","Ortiqcha tuz iste'moli"],[0,2,3],"Yosh — o'zgartirib bo'lmaydigan omil."],
-    ["PH","PH3","single","Sog'lom turmush","WHO bo'yicha kattalar uchun haftalik minimal o'rtacha jismoniy faollik?",["30 daqiqa","75 daqiqa","150 daqiqa","500 daqiqa"],2,"Kamida 150 daqiqa o'rtacha intensivlikdagi faollik."],
-    ["PH","PH3","single","Sog'lom turmush","WHO tavsiyasi bo'yicha kunlik tuz iste'moli?",["<5 g","<10 g","<15 g","Cheklanmaydi"],0,"Kuniga 5 g dan kam."],
-    ["PH","PH2","case","Yuqumli kasalliklar","Bolalar bog'chasida qizamiq holati aniqlandi. Birinchi navbatdagi chora?",["Hech narsa qilmaslik","Kasal bolani izolyatsiya qilish, kontaktlarni aniqlash va emlash holatini tekshirish","Barcha bolalarga antibiotik berish","Bog'chani 1 yilga yopish"],1,"Izolyatsiya, kontaktlarni kuzatish va emlanmaganlarni emlash."],
-    ["PH","PH2","short","Emlash","Aholining yetarli qismi emlanganda emlanmaganlarning ham himoyalanishi qanday ataladi? (... immunitet)",null,["kollektiv","populyatsion","jamoaviy"],"Kollektiv (populyatsion) immunitet."],
-
-    // ---- SALES
-    ["SALES","SAL1","single","Etik sotuv","Medical service sales'ning asosiy tamoyili?",["Iloji boricha ko'p xizmat sotish","Tavsiya faqat tibbiy ko'rsatma asosida","Eng qimmat paketni taklif qilish","Chegirma bilan bosim o'tkazish"],1,"Tavsiya bemor ehtiyoji va tibbiy ko'rsatmaga asoslanadi."],
-    ["SALES","SAL1","single","Ehtiyoj","Sotuv suhbatining birinchi bosqichi?",["Narxni aytish","Ehtiyojni aniqlash","Chegirma taklif qilish","To'lovni qabul qilish"],1,"Avval ehtiyoj aniqlanadi."],
-    ["SALES","SAL1","single","KPI","'Appointment conversion' nimani o'lchaydi?",["Murojaatlardan qabulga yozilganlar ulushi","Shifokorlar soni","Bemor yoshi","Kassadagi pul"],0,"Murojaat → yozuv konversiyasi."],
-    ["SALES","SAL1","tf","Cross-selling","Ko'rsatmasiz qo'shimcha tekshiruv taklif qilish — samarali va etik cross-selling.",null,false,"Ko'rsatmasiz tekshiruv etikaga zid va ishonchni yo'qotadi."],
-    ["SALES","SAL1","multiple","KPI","Patient retention'ni oshiradigan harakatlar (bir nechta):",["Nazorat qabulini darhol belgilash","Follow-up qo'ng'iroq","Bemorni uzoq kuttirish","Natijani tushunarli tushuntirish"],[0,1,3],"Kuttirish retention'ni pasaytiradi."],
-    ["SALES","SAL2","single","Telefon sotuvi","Telefon qo'ng'irog'iga nechta gudokgacha javob berish standart?",["3","6","10","Farqi yo'q"],0,"3 gudokgacha."],
-    ["SALES","SAL2","case","Narx e'tirozi","Bemor: 'Qimmat ekan, boshqa joyda arzon'. Eng yaxshi javob?",["'Unda o'sha yerga boring'","Narxga nimalar kirishini va shifokor tajribasini tushuntirib, qiymatni ko'rsatish","Darhol 50% chegirma berish","Javob bermaslik"],1,"Qiymatni tushuntirish — narxni himoya qilishdan samaraliroq."],
-    ["SALES","SAL2","single","Appointment booking","Qabulga yozishda qaysi usul samaraliroq?",["'Qachon kelasiz?'","'Ertaga 10:00 yoki 15:30 — qaysi biri qulay?'","'Kerak bo'lsa qo'ng'iroq qiling'","'Navbat ko'p'"],1,"Ikki variantli tanlov qarorni osonlashtiradi."],
-    ["SALES","SAL2","single","No-show","No-show'ni kamaytirishning eng samarali usuli?",["Jarima","Qabuldan bir kun oldin eslatma (SMS/Telegram)","Bemorni qayta yozmaslik","Hech narsa"],1,"Eslatmalar no-show'ni sezilarli kamaytiradi."],
-    ["SALES","SAL3","single","Treatment adherence","'Teach-back' usuli nima?",["Bemorga kitob berish","Bemordan tavsiyani o'z so'zi bilan qaytarib aytishni so'rash","Bemorni o'qitish kursiga yozish","Retseptni ikki marta yozish"],1,"Teach-back tushunilganini tekshiradi."],
-    ["SALES","SAL3","case","Bemorni yo'qotmaslik","Gipertenziyali bemor dorini 2 hafta ichib, 'yaxshi bo'ldim' deb to'xtatmoqchi. Shifokor nima qiladi?",["Rozi bo'ladi","Kasallikning surunkali ekanini, to'xtatish xavfini tushuntirib, nazorat qabulini belgilaydi","Boshqa shifokorga yuboradi","Qimmatroq dori yozadi"],1,"Compliance — tushuntirish va nazorat."],
-    ["SALES","SAL4","single","Service culture","Bemor sanitarkadan yo'l so'radi. Eng yaxshi xizmat?",["Qo'l bilan ko'rsatish","Mumkin bo'lsa kuzatib borish yoki aniq tushuntirish","'Bilmayman' deyish","Registraturaga yuborish"],1,"Kuzatib borish — yuqori xizmat madaniyati."],
-    ["SALES","SAL4","tf","Service culture","Hamshira bemorga o'zi qo'shimcha tekshiruv tavsiya qilishi mumkin.",null,false,"Tibbiy tavsiya — shifokor vakolati; hamshira shifokorga yo'naltiradi."],
-
-    // ---- RECEPTION_START
-    ["RECEPTION_START","REC1","single","Etiquette","Registraturaga bemor keldi, siz telefonda gaplashyapsiz. To'g'ri harakat?",["E'tibor bermaslik","Ko'z bilan aloqa qilib, imo bilan 'bir daqiqa' deb ko'rsatish","Telefonni tashlab qo'yish","Bemorni boshqa oynaga yuborish"],1,"10 soniya ichida e'tibor bildirish."],
-    ["RECEPTION_START","REC1","multiple","Ro'yxatga olish","Ro'yxatga olishda majburiy ma'lumotlar (bir nechta):",["F.I.Sh.","Tug'ilgan sana","Telefon raqami","Oylik maoshi"],[0,1,2],"Maosh kerak emas."],
-    ["RECEPTION_START","REC2","single","CRM","'O'ylab ko'raman' degan bemorga follow-up qachon?",["Hech qachon","24 soat ichida","1 oydan keyin","Faqat u qo'ng'iroq qilsa"],1,"24 soat ichida."],
-    ["RECEPTION_START","REC2","single","No-show","Yaxshi registraturada no-show maqsadli darajasi?",["<10%","30%","50%","Ahamiyati yo'q"],0,"<10%."],
-    ["RECEPTION_START","REC3","case","Shoshilinch holat","Bemor navbatda turib: 'Ko'kragim qattiq og'riyapti, nafas yetmayapti' dedi. Registrator?",["Navbat kutishini aytadi","Darhol shifokorni chaqiradi / bemorni navbatsiz shoshilinch yordamga yo'naltiradi","Ertaga yozadi","Dorixonaga yuboradi"],1,"Ko'krak og'rig'i + nafas qisishi — qizil bayroq."],
-    ["RECEPTION_START","REC3","multiple","Shoshilinch holat","Insultga xos belgilar (bir nechta):",["Yuz qiyshayishi","Qo'lda to'satdan kuchsizlik","Nutq buzilishi","Tirnoq sinishi"],[0,1,2],"FAST belgilari."],
-    ["RECEPTION_START","REC3","tf","Medical terminology","'Anamnez' — kasallik tarixi degani.",null,true,"Anamnez — bemor so'zlaridan olingan kasallik va hayot tarixi."],
-    ["RECEPTION_START","REC1","single","Maxfiylik","Registratura monitorida bemorlar ro'yxati ochiq qoldi. Siz chiqib ketyapsiz. Nima qilasiz?",["Shunday qoldirish","Ekranni qulflash","Monitorni o'chirish","Hamkasbga aytish"],1,"Ekranni qulflash — maxfiylik qoidasi."],
-    ["RECEPTION_START","REC2","short","Appointment booking","Bemor qabulga kelmasligi inglizcha qanday ataladi?",null,["no-show","noshow","no show"],"No-show."],
-
-    // ---- RESIDENT_START
-    ["RESIDENT_START","RS1","single","Klinik fikrlash","SOAP yozuvidagi 'A' nima?",["Anamnesis","Assessment","Allergy","Action"],1,"Assessment — baholash/tashxis."],
-    ["RESIDENT_START","RS1","single","Differensial diagnoz","Differensial diagnozda birinchi navbatda nimani istisno qilish kerak?",["Eng kam uchraydiganni","Eng xavfli (hayotga tahdid soluvchi) holatni","Eng arzon tekshiruvni","Bemor aytganini"],1,"Avval xavfli holatlar istisno qilinadi."],
-    ["RESIDENT_START","RS2","single","ABCDE","ABCDE yondashuvida birinchi baholanadigan narsa?",["Qon aylanishi","Nafas yo'llari","Nevrologik holat","Teri"],1,"Airway."],
-    ["RESIDENT_START","RS2","case","Sepsis","72 yoshli bemor: harorat 39 °C, NOS 26, AQB 92/55, ong chalkash. Pnevmoniya gumoni. Birinchi soatdagi taktika?",["Ertaga rentgen","Qon ekmasi, laktat, keng spektrli antibiotik, kristalloid infuziyasi","Faqat isitma tushiruvchi","Uyga javob berish"],1,"Sepsis 'hour-1 bundle'."],
-    ["RESIDENT_START","RS2","multiple","Sepsis","qSOFA mezonlari (bir nechta):",["NOS ≥22","Sistolik AQB ≤100","Ong o'zgarishi","Harorat >38 °C"],[0,1,2],"Harorat qSOFA mezoni emas."],
-    ["RESIDENT_START","RS1","tf","Hujjatlashtirish","Hujjatlashtirilmagan muolaja huquqiy jihatdan bajarilmagan hisoblanishi mumkin.",null,true,"'Yozilmagan — qilinmagan'."],
-    ["RESIDENT_START","RS2","single","ABCDE","ABCDE'da topilgan muammo qachon hal qilinadi?",["Barcha bosqichlardan keyin","Darhol, keyingi bosqichga o'tishdan oldin","Ertasi kuni","Konsiliumdan keyin"],1,"Har bir muammo darhol bartaraf etiladi."],
-    ["RESIDENT_START","RS1","short","Klinik fikrlash","SOAP'dagi 'P' qaysi so'z? (inglizcha)",null,["plan"],"Plan."],
-
-    // ---- CARDIO_BASIC
-    ["CARDIO_BASIC","CB1","single","EKG","Normal PR interval davomiyligi?",["0.04–0.10 s","0.12–0.20 s","0.22–0.30 s","0.40 s"],1,"0.12–0.20 s."],
-    ["CARDIO_BASIC","CB1","single","EKG","Keng QRS kompleksi chegarasi?",["≥0.08 s","≥0.10 s","≥0.12 s","≥0.20 s"],2,"QRS ≥0.12 s — keng."],
-    ["CARDIO_BASIC","CB1","case","EKG","II, III, aVF tarmoqlarida ST elevatsiyasi, I va aVL da reciprok depressiya. Qaysi devor infarkti?",["Oldingi","Pastki (inferior)","Lateral","Orqa"],1,"II, III, aVF — pastki devor."],
-    ["CARDIO_BASIC","CB2","case","ACS","65 yoshli bemorda ko'krak og'rig'i, ST elevatsiyasi va gipotenziya (AQB 80/50). Birinchi navbatdagi taktika?",["Nitroglitserin til ostiga va kuzatuv","Shoshilinch reperfuziya — birlamchi PCI (kardiogen shok), aspirin, antikoagulyant","Faqat diuretik","Ertaga koronarografiya"],1,"STEMI + gipotenziya (kardiogen shok xavfi) — shoshilinch PCI; nitratlar gipotenziyada qarshi ko'rsatma.","ESC 2023 ACS Guidelines","ESC 2023 Guidelines for the management of acute coronary syndromes"],
-    ["CARDIO_BASIC","CB2","single","ACS","Birinchi tibbiy kontaktdan birlamchi PCI gacha maqsadli vaqt (STEMI)?",["≤30 daqiqa","≤120 daqiqa","≤6 soat","≤24 soat"],1,"≤120 daqiqa; imkoni bo'lmasa fibrinoliz.","ESC 2023 ACS Guidelines"],
-    ["CARDIO_BASIC","CB2","tf","ACS","O'ng qorincha infarktida nitratlar xavfsiz va tavsiya etiladi.",null,false,"Preload'ga bog'liq — nitratlar og'ir gipotenziyaga olib keladi."],
-    ["CARDIO_BASIC","CB3","multiple","Heart Failure","HFrEF'da prognozni yaxshilovchi '4 ustun' (bir nechta):",["ARNI/IAPF","Beta-bloker","MRA","Digoksin","SGLT2 ingibitori"],[0,1,2,4],"Digoksin prognozni yaxshilamaydi.","ESC 2021/2023 HF Guidelines"],
-    ["CARDIO_BASIC","CB3","single","Heart Failure","HFrEF qaysi otish fraksiyasida aniqlanadi?",["≤40%","41–49%","≥50%","≥60%"],0,"EF ≤40%."],
-    ["CARDIO_BASIC","CB3","single","Hypertension","Ko'pchilik gipertenziyali bemorlarda (toqat qilsa) maqsadli ofis AQB?",["<160/100","<150/90","<130/80","<110/70"],2,"ESC 2024: toqat qilsa 120–129 sistolik.","ESC 2024 Hypertension Guidelines"],
-    ["CARDIO_BASIC","CB1","single","Arrhythmia","Tartibsiz ritm, P to'lqinlar yo'q, f-to'lqinlar. Ritm?",["Sinus taxikardiya","Bo'lmachalar fibrillyatsiyasi","AV blokada I","Qorinchalar taxikardiyasi"],1,"Bo'lmachalar fibrillyatsiyasi."],
-    ["CARDIO_BASIC","CB1","short","EKG","Erkaklarda normal QTc yuqori chegarasi (ms)?",null,["450"],"<450 ms."],
-
-    // ---- DOC_EM
-    ["DOC_EM","DE1","case","Anafilaksiya","Antibiotik in'eksiyasidan keyin bemorda stridor, toshma, AQB 70/40. Birinchi dori?",["Dimedrol v/i","Prednizolon v/i","Adrenalin 0.5 mg m/i","Kalsiy glyukonat"],2,"Adrenalin m/i — birinchi qator.","Resuscitation Council UK 2021"],
-    ["DOC_EM","DE1","single","Anafilaksiya","Adrenalin m/i yuborishning optimal joyi?",["Dumba","Son old-lateral yuzasi","Yelka","Qorin"],1,"Son old-lateral yuzasi — tez so'rilish."],
-    ["DOC_EM","DE1","single","Gipoglikemiya","Hushsiz gipoglikemiyali bemor, v/i yo'l yo'q. Tanlov?",["Shakar sharbati og'izga","Glyukagon 1 mg m/i","Insulin","Kutish"],1,"Hushsiz bemorga og'iz orqali berilmaydi."],
-    ["DOC_EM","DE2","case","Lab interpretation","K⁺ 7.1 mmol/l, EKG'da baland o'tkir T va QRS kengayishi. Birinchi qadam?",["Furosemid","Kalsiy glyukonat v/i","Kaliy xlorid","Kuzatuv"],1,"Miokardni himoya qilish — kalsiy birinchi."],
-    ["DOC_EM","DE2","single","Drug selection","Varfarin olayotgan bemorlarda odatiy maqsadli INR?",["1.0–1.5","2.0–3.0","4.0–5.0",">5"],1,"Ko'pchilik ko'rsatmalarda 2–3."],
-    ["DOC_EM","DE2","tf","Contraindications","DOAC dozasi buyrak funksiyasiga qarab tuzatiladi.",null,true,"Kreatinin klirensi hisobga olinadi."],
-    ["DOC_EM","DE1","multiple","Emergency","Anafilaksiyada ikkinchi qator choralar (bir nechta):",["Antigistaminlar","Kortikosteroidlar","Adrenalin","Bemorni yotqizish"],[0,1],"Adrenalin — birinchi qator; yotqizish — darhol umumiy chora."],
-    ["DOC_EM","DE2","single","Clinical decision","Gipoglikemiya ta'rifi (glyukoza)?",["<3.9 mmol/l","<5.5 mmol/l","<7.0 mmol/l","<2.0 mmol/l"],0,"<3.9 mmol/l."],
-
-    // ---- NURSING_CORE
-    ["NURSING_CORE","NC1","single","Vital signs","Kattalarda normal nafas soni?",["6–10","12–20","22–30","30–40"],1,"12–20 /daq."],
-    ["NURSING_CORE","NC1","single","SpO2","KOAK bemorlarida odatiy maqsadli SpO₂?",["98–100%","94–98%","88–92%","80–85%"],2,"Giperkapniya xavfi tufayli 88–92%."],
-    ["NURSING_CORE","NC1","multiple","Blood pressure","AQB to'g'ri o'lchash shartlari (bir nechta):",["5 daqiqa tinch o'tirish","Manjet yurak sathida","Mos o'lchamdagi manjet","Kiyim ustidan qalin qilib o'rash"],[0,1,2],"Manjet yalang'och qo'lga."],
-    ["NURSING_CORE","NC2","single","IV therapy","IV kateter qo'yishdan oldin teri antisepsiyasidan keyin nima qilinadi?",["Darhol punksiya","Antiseptik qurishini kutish","Qayta paypaslash","Qo'lqopni yechish"],1,"Antiseptik quriganda samara beradi; qayta paypaslash — kontaminatsiya."],
-    ["NURSING_CORE","NC2","tf","Catheter care","Siydik qopi qovuq sathidan yuqorida turishi kerak.",null,false,"Pastda — retrograd oqim va infeksiya oldini olish."],
-    ["NURSING_CORE","NC2","case","IV therapy","Kateter joyida qizarish, og'riq, shish va venada qattiq tasma. Harakat?",["Infuziyani tezlashtirish","Kateterni olib tashlash, qayd etish, shifokorga xabar berish","Bint bilan o'rab qo'yish","Hech narsa"],1,"Flebit belgilari — kateter olib tashlanadi."],
-    ["NURSING_CORE","NC2","single","Wound care","Yara bog'lashda qanday texnika?",["Toza qo'l bilan","Aseptik no-touch texnika","Faqat spirt","Ixtiyoriy"],1,"Aseptik no-touch."],
-    ["NURSING_CORE","NC1","single","Temperature","Kattalarda normal tana harorati diapazoni (taxminan)?",["35.0–35.9 °C","36.1–37.2 °C","37.5–38.5 °C","38–39 °C"],1,"36.1–37.2 °C."],
-    ["NURSING_CORE","NC1","short","Pulse","Kattalarda normal puls diapazonining yuqori chegarasi (/daq)?",null,["100"],"60–100."],
-
-    // ---- SANITARY_CORE
-    ["SANITARY_CORE","SC1","single","Cleaning","Tozalash qaysi yo'nalishda olib boriladi?",["Iflosdan tozaga","Tozadan iflosga, yuqoridan pastga","Pastdan yuqoriga","Farqi yo'q"],1,"Tozadan iflosga, yuqoridan pastga."],
-    ["SANITARY_CORE","SC1","tf","Disinfection","Dezinfektant eritmani yo'riqnomadagidan kuchliroq qilish har doim yaxshiroq.",null,false,"Konsentratsiya va ekspozitsiya yo'riqnoma bo'yicha — ortiqchasi zararli."],
-    ["SANITARY_CORE","SC1","case","Disinfection","Polga qon to'kildi. Birinchi harakat?",["Latta bilan artish","Qo'lqop kiyish, absorbent bilan yopish, dezinfektant qo'llash","Suv sepish","Hech narsa"],1,"PPE → absorbent → dezinfeksiya."],
-    ["SANITARY_CORE","SC2","single","Medical waste","Ishlatilgan igna qayerga tashlanadi?",["Oddiy qopga","O'tkir buyumlar konteyneriga","Unitazga","Stol ustiga"],1,"Teshilmaydigan konteynerga."],
-    ["SANITARY_CORE","SC2","single","Medical waste","Chiqindi qopi qachon bog'lanadi?",["To'liq to'lganda","3/4 qismi to'lganda","Yarim to'lganda","Kunda bir marta, to'lishidan qat'i nazar"],1,"3/4 to'lganda."],
-    ["SANITARY_CORE","SC2","tf","Patient privacy","Palataga kirishdan oldin taqillatish va o'zini tanishtirish kerak.",null,true,"Bemor shaxsiy hayotini hurmat qilish."],
-    ["SANITARY_CORE","SC1","multiple","Cleaning","Har bir zona uchun alohida bo'lishi kerak (bir nechta):",["Latta","Chelak","Shvabra","Telefon"],[0,1,2],"Rangli kodlash — kross-kontaminatsiya oldini oladi."],
-
-    // ---- DOCASSIST_CORE
-    ["DOCASSIST_CORE","DA1","single","ECG preparation","V1 elektrodi qayerga qo'yiladi?",["IV qovurg'alararo, to'sh o'ng chetida","V qovurg'alararo, o'rta o'mrov chizig'ida","Qo'ltiq ostida","To'sh o'rtasida"],0,"IV qovurg'alararo, to'sh o'ng chetida."],
-    ["DOCASSIST_CORE","DA1","single","ECG preparation","Qizil qo'l-oyoq elektrodi qayerga?",["Chap qo'l","O'ng qo'l","Chap oyoq","O'ng oyoq"],1,"Qizil — o'ng qo'l."],
-    ["DOCASSIST_CORE","DA1","single","ECG preparation","V4 elektrodi joyi?",["IV qovurg'alararo, to'sh chap chetida","V qovurg'alararo, o'rta o'mrov chizig'ida","O'rta qo'ltiq chizig'i","To'sh o'ng chetida"],1,"V qovurg'alararo, o'rta o'mrov chizig'i."],
-    ["DOCASSIST_CORE","DA2","single","Doctor workflow","Qabul oqimida bemor chaqirilgandan keyingi birinchi qadam?",["Vital signs","Identifikatsiya","Tashxis","To'lov"],1,"Avval identifikatsiya."],
-    ["DOCASSIST_CORE","DA2","tf","Documentation","Shifokor yordamchisi tavsiyalarni bemorga tushuntirishi va nazorat qabuliga yozishi mumkin.",null,true,"Shifokor tavsiyasi doirasida."],
-    ["DOCASSIST_CORE","DA1","multiple","Patient preparation","EKGdan oldin bemorni tayyorlash (bir nechta):",["Tinch yotqizish","Elektrod joylarini quruq va toza qilish","Metall buyumlarni olish","Kofe ichirish"],[0,1,2],"Kofe kerak emas."],
-    ["DOCASSIST_CORE","DA1","short","ECG preparation","Qora elektrod qayerga qo'yiladi? (masalan: chap qo'l)",null,["o'ng oyoq","ong oyoq","o‘ng oyoq"],"Qora — o'ng oyoq (yerga ulash)."],
-  ];
-
-  const QUESTIONS = Q.map((r, i) => ({
-    id: "Q" + String(i + 1).padStart(3, "0"),
-    course: r[0], module: r[1], type: r[2], topic: r[3], q: r[4], o: r[5], a: r[6], e: r[7],
-    ev: r[8] || "", r: r[9] || "", status: "approved",
-  }));
+  const QUESTIONS = []; // savollar banki alohida: questions.js (demo) yoki serverdagi questions jadvali (live)
 
   const SKILLS = [
     { id: "SK_HAND", name: "Qo'l gigiyenasi (WHO 6 bosqich)", academies: "*", steps: ["Kaftlar", "Kaft ustki tomoni", "Barmoqlar orasi", "Barmoq orqasi", "Bosh barmoq", "Barmoq uchlari", "20–30 soniya"] },
@@ -655,7 +493,7 @@ window.SEED = (function () {
   ];
 
   const DEFAULT_SETTINGS = {
-    weights: { medical: 30, practical: 25, communication: 15, safety: 10, public_health: 10, sales: 10 },
+    weights: { medical: 30, practical: 25, communication: 10, ethics: 5, safety: 10, public_health: 10, sales: 10 },
     levels: [
       { id: "beginner", name: "Beginner", icon: "🔴", min: 0 },
       { id: "developing", name: "Developing", icon: "🟠", min: 50 },
@@ -673,12 +511,13 @@ window.SEED = (function () {
 })();
 
 </script>
+<!-- questions.js: live build'da yo'q (savollar serverda) -->
 <script>/* js/core.js */
 /* MedAcademy core: store (adapterlar), auth, RBAC, curriculum, exam engine, score, sertifikat, analitika. */
 (function () {
   const S = window.SEED;
   const COLLECTIONS = ["employees", "attempts", "certificates", "plans", "progress", "skill_assess", "initial",
-    "notifications", "audit", "settings", "questions_custom", "exam_overrides"];
+    "notifications", "audit", "settings", "questions_custom", "exam_overrides", "resets"];
 
   /* ---------------- util ---------------- */
   const U = {
@@ -717,7 +556,22 @@ window.SEED = (function () {
       if (e1) throw e1;
       const { data: docs, error: e2 } = await this.client.from("docs").select("collection,id,data");
       if (e2) throw e2;
-      (docs || []).forEach((d) => { if (db[d.collection]) db[d.collection].push(d.data); });
+      // urinish va sertifikatlar endi serverdagi alohida jadvallardan olinadi (docs'dagi eski nusxalar e'tiborga olinmaydi)
+      (docs || []).forEach((d) => { if (db[d.collection] && !SERVER_OWNED.includes(d.collection)) db[d.collection].push(d.data); });
+      const [att, cer, cfg, rst, meta] = await Promise.all([
+        this.client.from("exam_attempts").select("*"),
+        this.client.from("certificates").select("*"),
+        this.client.from("exam_configs").select("*"),
+        this.client.from("attempt_resets").select("*"),
+        this.client.rpc("question_meta"),
+      ]);
+      [att, cer, cfg, rst, meta].forEach((r) => { if (r.error) throw r.error; });
+      db.attempts = (att.data || []).map(mapAttempt);
+      db.certificates = (cer.data || []).map(mapCert);
+      db.exam_overrides = (cfg.data || []).map((c) => ({ id: c.course_id, count: c.question_count, time: c.time_min, pass: Number(c.pass_score),
+        attempts: c.max_attempts, neg: Number(c.negative_mark), retakeDays: c.retake_days }));
+      db.resets = rst.data || [];
+      Content.setMeta(meta.data || []);
       // profiles → employees (rol va holat faqat profiles'dan olinadi)
       const byId = Object.fromEntries(db.employees.map((e) => [e.id, e]));
       (profs || []).forEach((p) => {
@@ -730,6 +584,13 @@ window.SEED = (function () {
       return db;
     },
     async save(col, obj) {
+      if (SERVER_OWNED.includes(col)) return; // faqat server (RPC) yozadi
+      if (col === "exam_overrides") {
+        const { error } = await this.client.from("exam_configs").update({ question_count: obj.count, time_min: obj.time, pass_score: obj.pass,
+          max_attempts: obj.attempts, negative_mark: obj.neg, retake_days: obj.retakeDays, updated_at: new Date().toISOString() }).eq("course_id", obj.id);
+        if (error) UI.toast("Saqlashda xato: " + error.message, "err");
+        return;
+      }
       const owner = obj.empId || (col === "employees" ? obj.id : null);
       const row = { collection: col, id: obj.id, data: obj };
       if (owner) row.owner = owner;
@@ -742,6 +603,11 @@ window.SEED = (function () {
       }
     },
     async remove(col, id) { await this.client.from("docs").delete().eq("collection", col).eq("id", id); },
+    async rpc(fn, args) {
+      const { data, error } = await this.client.rpc(fn, args || {});
+      if (error) throw new Error(error.message);
+      return data;
+    },
     async setProfile(id, fields) {
       const { error } = await this.client.from("profiles").update(fields).eq("id", id);
       if (error) { UI.toast("Xato: " + error.message, "err"); return false; }
@@ -749,6 +615,13 @@ window.SEED = (function () {
     },
   };
 
+  const SERVER_OWNED = ["attempts", "certificates"];
+  const mapAttempt = (a) => ({ id: a.id, empId: a.user_id, courseId: a.course_id, moduleId: a.module_id || null, kind: a.kind, qids: a.qids || [],
+    order: a.option_order || {}, dom: a.domain_map, answers: a.answers || {}, results: a.results, score: a.score == null ? null : Number(a.score),
+    passed: a.passed, preview: a.is_preview, cfg: a.config || {}, startedAt: a.started_at, deadline: a.deadline, finishedAt: a.finished_at, retakeAfter: a.retake_after, live: true });
+  const mapCertOut = (c) => Object.assign({}, c, { score: c.score == null ? null : Number(c.score) });
+  const mapCert = (c) => ({ id: c.id, empId: c.user_id, courseId: c.course_id, courseTitle: c.course_title, name: c.name, position: c.position,
+    department: c.department, score: c.score == null ? null : Number(c.score), attemptId: c.attempt_id, issuedAt: c.issued_at, expiresAt: c.expires_at, revoked: c.revoked });
   function emptyDB() { const d = {}; COLLECTIONS.forEach((c) => (d[c] = [])); return d; }
 
   let DB = emptyDB();
@@ -782,11 +655,21 @@ window.SEED = (function () {
     courses() { return S.COURSES; },
     course(id) { return S.COURSES.find((c) => c.id === id); },
     examCfg(courseId) { const c = this.course(courseId); const o = Store.find("exam_overrides", courseId); return Object.assign({}, c.exam, o || {}); },
-    questions(courseId, moduleId, includeDraft) {
-      const all = S.QUESTIONS.concat(Store.all("questions_custom"));
-      return all.filter((q) => q.course === courseId && (!moduleId || q.module === moduleId) && (includeDraft || q.status === "approved"));
+    _meta: [], _cache: {}, _admin: null,
+    setMeta(list) { this._meta = list; },
+    cache(list) { (list || []).forEach((q) => { this._cache[q.id] = Object.assign({}, this._cache[q.id] || {}, q); }); },
+    bank(includeDraft) {
+      if (Store.mode === "live") return includeDraft && this._admin ? this._admin : this._meta;
+      return S.QUESTIONS.concat(Store.all("questions_custom"));
     },
-    question(id) { return S.QUESTIONS.find((q) => q.id === id) || Store.find("questions_custom", id); },
+    questions(courseId, moduleId, includeDraft) {
+      return this.bank(includeDraft).filter((q) => q.course === courseId && (!moduleId || q.module === moduleId) && (includeDraft || q.status === "approved"));
+    },
+    question(id) {
+      return this._cache[id] || S.QUESTIONS.find((q) => q.id === id) || Store.find("questions_custom", id) || (this._admin || []).find((q) => q.id === id) || this._meta.find((q) => q.id === id);
+    },
+    /* Mavjud tahlil (review) uchun to'liq savol bormi */
+    hasFull(id) { const q = this.question(id); return !!(q && q.q && q.a !== undefined); },
     position(id) { return S.POSITIONS.find((p) => p.id === id); },
     skill(id) { return S.SKILLS.find((s) => s.id === id); },
     visibleModules(course, emp) {
@@ -905,23 +788,29 @@ window.SEED = (function () {
   const Exam = {
     attempts(empId, courseId, moduleId, kind) {
       return Store.where("attempts", (a) => a.empId === empId && (courseId == null || a.courseId === courseId) &&
-        (moduleId === undefined || (a.moduleId || null) === moduleId) && (!kind || a.kind === kind) && a.finishedAt)
+        (moduleId === undefined || (a.moduleId || null) === moduleId) && (!kind || a.kind === kind) && a.finishedAt && !a.preview)
         .sort((a, b) => a.finishedAt.localeCompare(b.finishedAt));
     },
     best(empId, courseId, moduleId) { const a = this.attempts(empId, courseId, moduleId); return a.length ? Math.max(...a.map((x) => x.score)) : null; },
     eligibility(emp, courseId) {
       const cfg = Content.examCfg(courseId); const plan = Store.find("plans", emp.id + "_" + courseId);
       const finals = this.attempts(emp.id, courseId, null, "final");
-      const resetAt = plan && plan.attemptsResetAt;
+      const srv = Store.where("resets", (r) => r.user_id === emp.id && r.course_id === courseId)[0];
+      const resetAt = (srv && srv.reset_at) || (plan && plan.attemptsResetAt);
       const used = finals.filter((a) => !resetAt || a.finishedAt > resetAt).length;
       const last = finals.slice(-1)[0];
       if (Cert.active(emp.id, courseId)) return { ok: true, used, left: cfg.attempts - used, note: "Sertifikat mavjud — qayta topshirish ixtiyoriy" };
       if (used >= cfg.attempts) return { ok: false, used, left: 0, reason: "Urinishlar tugadi. Instructor yoki Education Manager urinishlarni tiklashi kerak." };
-      if (last && !last.passed && plan && plan.retakeAfter && new Date(plan.retakeAfter) > new Date())
-        return { ok: false, used, left: cfg.attempts - used, reason: "Qayta topshirish sanasi: " + U.fmtDate(plan.retakeAfter) + ". Avval Remedial Training'ni o'ting." };
+      const retake = (last && last.retakeAfter) || (plan && plan.retakeAfter);
+      if (last && !last.passed && retake && new Date(retake) > new Date() && !(resetAt && resetAt > last.finishedAt))
+        return { ok: false, used, left: cfg.attempts - used, reason: "Qayta topshirish sanasi: " + U.fmtDate(retake) + ". Avval Remedial Training'ni o'ting." };
       return { ok: true, used, left: cfg.attempts - used };
     },
-    build(emp, courseId, moduleId, kind) {
+    async build(emp, courseId, moduleId, kind, preview) {
+      if (Store.mode === "live") {
+        const r = await SupaAdapter.rpc("start_exam", { p_course: courseId, p_kind: kind, p_module: moduleId || null, p_domains: null, p_preview: !!preview });
+        return Exam.fromServer(r);
+      }
       const cfg = Content.examCfg(courseId);
       let bank = Content.questions(courseId, moduleId);
       let count = kind === "module" ? Math.min(4, bank.length) : Math.min(cfg.count, bank.length);
@@ -947,21 +836,46 @@ window.SEED = (function () {
       pts = ok ? 1 : -(neg || 0);
       return { ok, pts };
     },
-    async submit(att) {
+    /* Server javobini klient urinish obyektiga aylantirish; savollar keshga olinadi (javobsiz) */
+    fromServer(r) {
+      Content.cache(r.questions || []);
+      const att = mapAttempt({ id: r.id, user_id: r.empId, course_id: r.courseId, module_id: r.moduleId, kind: r.kind, qids: r.qids, option_order: r.order,
+        domain_map: r.dom, answers: r.answers, results: r.results, score: r.score, passed: r.passed, is_preview: r.preview, config: r.cfg,
+        started_at: r.startedAt, deadline: r.deadline, finished_at: r.finishedAt, retake_after: r.retakeAfter });
+      const i = DB.attempts.findIndex((x) => x.id === att.id); if (i >= 0) DB.attempts[i] = att; else DB.attempts.push(att);
+      return att;
+    },
+    async saveProgress(att) { if (Store.mode === "live" && att.kind === "final") { try { await SupaAdapter.rpc("save_answers", { p_attempt: att.id, p_answers: att.answers }); } catch (e) { console.warn(e); } } },
+    /* Live: baholash serverda. Demo: lokal. Natijadan keyingi qadamlar (reja, ball, bildirishnoma) ikkalasida bir xil. */
+    async grade(att) {
+      if (Store.mode === "live") {
+        const r = await SupaAdapter.rpc("submit_exam", { p_attempt: att.id, p_answers: att.answers });
+        Content.cache(r.questions || []);
+        const done = Exam.fromServer(r.attempt);
+        const cert = r.certificate ? mapCertOut(r.certificate) : null;
+        if (cert) DB.certificates.push(cert);
+        return { att: done, cert, domains: r.domains };
+      }
       const neg = att.kind === "final" ? att.cfg.neg : 0; let total = 0; const results = {};
-      att.qids.forEach((id) => { const q = Content.question(id); const r = this.gradeOne(q, att.answers[id], neg); results[id] = r; total += r.pts; });
+      att.qids.forEach((id) => { const q = Content.question(id); const r = this.gradeOne(q, att.answers[id], neg); results[id] = Object.assign(r, { topic: q.topic, course: q.course, module: q.module }); total += r.pts; });
       att.results = results;
       att.score = Math.max(0, Math.round((total / att.qids.length) * 1000) / 10);
       att.passed = att.score >= att.cfg.pass;
       att.finishedAt = U.now();
+      if (att.kind === "final" && !att.passed) att.retakeAfter = U.addDays(U.now(), att.cfg.retakeDays);
       delete att.deadline;
       await Store.put("attempts", att);
+      return { att, cert: null };
+    },
+    async submit(att0) {
+      const g = await this.grade(att0); const att = g.att;
       const emp = Store.find("employees", att.empId);
-      let cert = null;
+      let cert = g.cert;
+      if (att.preview) return { att, cert };
       if (att.kind === "final") {
         const plan = Store.find("plans", emp.id + "_" + att.courseId);
         if (att.passed) {
-          cert = await Cert.issue(emp, att);
+          cert = cert ? await Cert.announce(emp, cert) : await Cert.issue(emp, att);
           emp.points = (emp.points || 0) + 50 + Math.round(att.score / 10);
           if (plan) { plan.status = "completed"; plan.completedAt = U.now(); plan.remedial = false; await Store.put("plans", plan); }
         } else {
@@ -979,7 +893,7 @@ window.SEED = (function () {
       return { att, cert };
     },
     weakTopicsOf(att) {
-      const t = {}; att.qids.forEach((id) => { const q = Content.question(id); t[q.topic] = t[q.topic] || [0, 0]; t[q.topic][1]++; if (att.results[id].ok) t[q.topic][0]++; });
+      const t = {}; att.qids.forEach((id) => { const r = att.results[id] || {}; const q = Content.question(id) || {}; const k = r.topic || q.topic || "—"; t[k] = t[k] || [0, 0]; t[k][1]++; if (r.ok) t[k][0]++; });
       return Object.entries(t).filter(([, [c, n]]) => c / n < 0.7).map(([k]) => k);
     },
   };
@@ -1001,6 +915,11 @@ window.SEED = (function () {
       await Store.put("certificates", cert);
       await Notify.push(emp.id, "cert", "Yangi sertifikat: " + c.title, "Tabriklaymiz! Sertifikat ID: " + cert.id);
       await audit("cert.issue", { code: cert.id, course: c.id, emp: emp.id });
+      return cert;
+    },
+    async announce(emp, cert) {
+      await Notify.push(emp.id, "cert", "Yangi sertifikat: " + cert.courseTitle, "Tabriklaymiz! Sertifikat ID: " + cert.id);
+      await audit("cert.issue", { code: cert.id, course: cert.courseId, emp: emp.id });
       return cert;
     },
     verifyLocal(code) { return Store.find("certificates", (code || "").trim().toUpperCase()); },
@@ -1035,7 +954,7 @@ window.SEED = (function () {
     },
     topics(empId) {
       const t = {};
-      Exam.attempts(empId, null).forEach((a) => a.qids.forEach((id) => { const q = Content.question(id); if (!q || !a.results) return; const k = q.topic; t[k] = t[k] || { c: 0, n: 0, course: q.course }; t[k].n++; if (a.results[id] && a.results[id].ok) t[k].c++; }));
+      Exam.attempts(empId, null).forEach((a) => a.qids.forEach((id) => { const q = Content.question(id) || {}; const r = a.results && a.results[id]; if (!r) return; const k = r.topic || q.topic; if (!k) return; t[k] = t[k] || { c: 0, n: 0, course: r.course || q.course }; t[k].n++; if (r.ok) t[k].c++; }));
       return Object.entries(t).map(([topic, v]) => ({ topic, course: v.course, pct: Math.round((v.c / v.n) * 100), n: v.n })).sort((a, b) => a.pct - b.pct);
     },
   };
@@ -1106,7 +1025,7 @@ window.SEED = (function () {
     analyze(emp, lastN) {
       const atts = Exam.attempts(emp.id, null).filter((a) => a.kind !== "initial").slice(-(lastN || 5));
       const t = {};
-      atts.forEach((a) => a.qids.forEach((id) => { const q = Content.question(id); if (!q || !a.results || !a.results[id]) return; t[q.topic] = t[q.topic] || { c: 0, n: 0, course: q.course, module: q.module }; t[q.topic].n++; if (a.results[id].ok) t[q.topic].c++; }));
+      atts.forEach((a) => a.qids.forEach((id) => { const q = Content.question(id) || {}; const r = a.results && a.results[id]; if (!r) return; const k = r.topic || q.topic; if (!k) return; t[k] = t[k] || { c: 0, n: 0, course: r.course || q.course, module: r.module || q.module }; t[k].n++; if (r.ok) t[k].c++; }));
       const rows = Object.entries(t).map(([topic, v]) => ({ topic, ...v, pct: Math.round((v.c / v.n) * 100) }));
       const weak = rows.filter((r) => r.pct < 70).sort((a, b) => a.pct - b.pct);
       const strong = rows.filter((r) => r.pct >= 85).sort((a, b) => b.pct - a.pct);
@@ -1140,21 +1059,29 @@ window.SEED = (function () {
 
   /* ---------------- Initial assessment ---------------- */
   const Initial = {
-    build(emp) {
+    sources(emp) {
       const pos = Content.position(emp.positionId);
       const acad = S.COURSES.find((c) => c.academy && pos && c.academy.includes(pos.academy)) || Content.course("RESIDENT_START");
-      const src = { medical: acad.id, communication: "COMM", safety: "SAFETY", public_health: "PH", sales: "SALES" };
+      return { medical: acad.id, ethics: "ETHICS", communication: "COMM", safety: "SAFETY", public_health: "PH", sales: "SALES" };
+    },
+    async build(emp) {
+      const src = this.sources(emp);
+      if (Store.mode === "live") return Exam.fromServer(await SupaAdapter.rpc("start_exam", { p_course: "INITIAL", p_kind: "initial", p_module: null, p_domains: src, p_preview: false }));
       const qids = [], dom = {};
       Object.entries(src).forEach(([d, cid]) => { U.shuffle(Content.questions(cid).filter((q) => ["single", "tf", "case"].includes(q.type))).slice(0, 2).forEach((q) => { qids.push(q.id); dom[q.id] = d; }); });
       return { id: U.uid("T"), empId: emp.id, courseId: "INITIAL", moduleId: null, kind: "initial", qids, dom, order: {}, answers: {}, startedAt: U.now(), cfg: { pass: 0, neg: 0 } };
     },
     async submit(att) {
-      const res = {}; const per = {};
-      att.qids.forEach((id) => { const q = Content.question(id); const r = Exam.gradeOne(q, att.answers[id], 0); res[id] = r; const d = att.dom[id]; per[d] = per[d] || [0, 0]; per[d][1]++; if (r.ok) per[d][0]++; });
-      att.results = res; att.finishedAt = U.now();
-      att.score = Math.round((Object.values(res).filter((r) => r.ok).length / att.qids.length) * 100); att.passed = true;
-      await Store.put("attempts", att);
-      const domains = {}; Object.entries(per).forEach(([d, [c, n]]) => (domains[d] = Math.round((c / n) * 100)));
+      let domains = {};
+      if (Store.mode === "live") { const g = await Exam.grade(att); domains = g.domains || {}; att = g.att; }
+      else {
+        const res = {}; const per = {};
+        att.qids.forEach((id) => { const q = Content.question(id); const r = Exam.gradeOne(q, att.answers[id], 0); res[id] = Object.assign(r, { topic: q.topic, course: q.course, module: q.module }); const d = att.dom[id]; per[d] = per[d] || [0, 0]; per[d][1]++; if (r.ok) per[d][0]++; });
+        att.results = res; att.finishedAt = U.now();
+        att.score = Math.round((Object.values(res).filter((r) => r.ok).length / att.qids.length) * 100); att.passed = true;
+        await Store.put("attempts", att);
+        Object.entries(per).forEach(([d, [c, n]]) => (domains[d] = Math.round((c / n) * 100)));
+      }
       const emp = Store.find("employees", att.empId);
       await Store.put("initial", { id: emp.id, empId: emp.id, domains, at: U.now() });
       emp.onboarded = true; await Store.put("employees", emp);
@@ -1325,7 +1252,8 @@ window.SEED = (function () {
 
   V.authForm = function (tab) {
     const live = window.APP.liveAvailable;
-    const tabs = (live ? [["login", "Kirish"], ["register", "Ro'yxatdan o'tish"]] : []).concat([["demo", "Demo"]]);
+    const demoOk = S.QUESTIONS.length > 0; // ommaviy (live) build'da savollar banki yo'q → demo o'chirilgan
+    const tabs = (live ? [["login", "Kirish"], ["register", "Ro'yxatdan o'tish"]] : []).concat(demoOk ? [["demo", "Demo"]] : []);
     let body = "";
     if (tab === "login") body = `<form onsubmit="A.login(event)"><label>Email</label><input name="email" type="email" required autocomplete="email">
       <label>Parol</label><input name="password" type="password" required autocomplete="current-password">
@@ -1364,7 +1292,7 @@ window.SEED = (function () {
     if (!c) return `<div class="note" style="border-color:var(--red);background:var(--red-50)">❌ Bunday sertifikat topilmadi.</div>`;
     const st = c.status || Cert.status(c); const ok = st === "Amalda";
     return `<div class="note" style="border-color:${ok ? "var(--green)" : "var(--amber)"};background:${ok ? "var(--green-50)" : "var(--amber-50)"}">${ok ? "✅" : "⚠️"} <b>${e(st)}</b></div>
-      <div class="kv"><div>Xodim</div><div><b>${e(c.name)}</b></div><div>Kurs</div><div>${e(c.courseTitle)}</div><div>Berilgan sana</div><div>${U.fmtDate(c.issuedAt)}</div><div>Amal qilish muddati</div><div>${U.fmtDate(c.expiresAt)}</div><div>ID</div><div>${e(c.id)}</div></div>`;
+      <div class="kv"><div>Xodim</div><div><b>${e(c.name)}</b></div>${c.position || c.department ? `<div>Lavozim / bo'lim</div><div>${e([c.position, c.department].filter(Boolean).join(" · "))}</div>` : ""}<div>Kurs</div><div>${e(c.courseTitle)}</div><div>Berilgan sana</div><div>${U.fmtDate(c.issuedAt)}</div><div>Amal qilish muddati</div><div>${U.fmtDate(c.expiresAt)}</div><div>ID</div><div>${e(c.id)}</div></div>`;
   };
 
   /* ======================= ONBOARDING ======================= */
@@ -1387,7 +1315,7 @@ window.SEED = (function () {
     if (step === 2) {
       const pos = Content.position(emp.positionId);
       return `<div class="content" style="max-width:720px;margin:0 auto">${steps}<div class="card"><h2>Initial assessment</h2>
-        <p class="muted">10 ta savol, 5 ta soha bo'yicha: kasbiy bilim, kommunikatsiya, bemor xavfsizligi, public health, sales & service. Natija baho emas — u faqat sizning individual o'quv dasturingizni tuzish uchun.</p>
+        <p class="muted">12 ta savol, 6 ta soha bo'yicha: kasbiy bilim, medical ethics, kommunikatsiya, bemor xavfsizligi, public health, sales & service. Natija baho emas — u faqat sizning individual o'quv dasturingizni tuzish uchun.</p>
         <div class="kv"><div>Lavozim</div><div>${e(pos ? pos.name : "")}</div><div>Akademiya</div><div>${e(pos ? S.ACADEMIES[pos.academy] : "")}</div></div>
         <div class="row" style="margin-top:16px"><button class="btn" onclick="A.onboardBack()">← Orqaga</button><div class="grow"></div><button class="btn primary" onclick="A.startInitial()">Boshlash</button></div></div></div>`;
     }
@@ -1500,7 +1428,7 @@ window.SEED = (function () {
     if (["single", "case"].includes(q.type)) body = ord.map((k, n) => `<div class="opt ${resp === k ? "sel" : ""}" onclick="A.answer(${k})"><span class="mk">${String.fromCharCode(65 + n)}</span><span>${e(q.o[k])}</span></div>`).join("");
     if (q.type === "multiple") body = `<p class="tiny">Bir nechta to'g'ri javob bo'lishi mumkin</p>` + ord.map((k, n) => `<div class="opt ${(resp || []).includes(k) ? "sel" : ""}" onclick="A.answerMulti(${k})"><span class="mk">${(resp || []).includes(k) ? "✓" : String.fromCharCode(65 + n)}</span><span>${e(q.o[k])}</span></div>`).join("");
     if (q.type === "tf") body = [[true, "To'g'ri"], [false, "Noto'g'ri"]].map(([v, t]) => `<div class="opt ${resp === v ? "sel" : ""}" onclick="A.answer(${v})"><span class="mk">${v ? "T" : "F"}</span><span>${t}</span></div>`).join("");
-    if (q.type === "match") { const rights = (att.order[id] || q.o.map((_, k) => k)).map((k) => q.o[k][1]); body = q.o.map((p, k) => `<div class="row" style="margin:8px 0"><div style="flex:1;font-weight:600">${e(p[0])}</div><select style="flex:1" onchange="A.answerMatch(${k},this.value)"><option value="">— tanlang —</option>${rights.map((r) => `<option ${resp && resp[k] === r ? "selected" : ""}>${e(r)}</option>`).join("")}</select></div>`).join(""); }
+    if (q.type === "match") { const rights = q.rights || (att.order[id] || q.o.map((_, k) => k)).map((k) => q.o[k][1]); body = q.o.map((p, k) => `<div class="row" style="margin:8px 0"><div style="flex:1;font-weight:600">${e(p[0])}</div><select style="flex:1" onchange="A.answerMatch(${k},this.value)"><option value="">— tanlang —</option>${rights.map((r) => `<option ${resp && resp[k] === r ? "selected" : ""}>${e(r)}</option>`).join("")}</select></div>`).join(""); }
     if (q.type === "short") body = `<input placeholder="Javobingiz" value="${e(resp || "")}" oninput="A.answerText(this.value)" autofocus>`;
     const answered = att.qids.filter((x) => att.answers[x] != null && att.answers[x] !== "" && !(Array.isArray(att.answers[x]) && !att.answers[x].length)).length;
     return `<div class="row between" style="margin-bottom:12px"><div><div class="tiny">${e(title)}</div><h2 style="margin:0">Savol ${i + 1} / ${att.qids.length}</h2></div>${att.deadline ? `<div class="card" style="padding:8px 14px">⏱ <span class="timer" id="timer">--:--</span></div>` : ""}</div>
@@ -1527,7 +1455,8 @@ window.SEED = (function () {
   };
   V.review = function (a) {
     return a.qids.map((id, n) => {
-      const q = Content.question(id); const r = a.results[id]; const resp = a.answers[id];
+      const q = Content.question(id); const r = (a.results || {})[id] || {}; const resp = (a.answers || {})[id];
+      if (!q || q.a === undefined) return `<div class="card" style="margin-bottom:10px"><b class="small">${n + 1}.</b> <span class="tiny">Savol tahlili mavjud emas</span></div>`;
       let yours = "—", right = "";
       const opt = (k) => q.o && q.o[k] != null ? q.o[k] : k;
       if (["single", "case"].includes(q.type)) { yours = resp != null ? opt(resp) : "—"; right = opt(q.a); }
@@ -1572,7 +1501,7 @@ window.SEED = (function () {
     setTimeout(() => { const el = document.getElementById("qr"); if (el && window.QRCode) { el.innerHTML = ""; new QRCode(el, { text: window.APP.verifyUrl(c.id), width: 192, height: 192, correctLevel: QRCode.CorrectLevel.M }); } }, 30);
     return `<div class="row" style="margin-bottom:12px"><a href="#certificates" class="small">← Sertifikatlar</a><div class="grow"></div><button class="btn sm" onclick="A.copy('${window.APP.verifyUrl(c.id)}')">🔗 Tekshirish havolasini nusxalash</button></div>
       <div class="cert"><div style="text-align:center" class="tiny">${e(Content.settings().org)} · MedAcademy</div><h1>SERTIFIKAT</h1><div style="text-align:center" class="muted">Ushbu sertifikat</div>
-      <div class="nm">${e(c.name)}</div><div style="text-align:center" class="muted">${e(c.position || "")}</div>
+      <div class="nm">${e(c.name)}</div><div style="text-align:center" class="muted">${e([c.position, c.department].filter(Boolean).join(" · "))}</div>
       <p style="text-align:center;max-width:560px;margin:14px auto">ga <b>"${e(c.courseTitle)}"</b> o'quv kursini muvaffaqiyatli tamomlagani va yakuniy imtihonni <b>${c.score}%</b> natija bilan topshirgani uchun berildi.</p>
       <div class="meta"><div>Sertifikat ID<b>${e(c.id)}</b></div><div>Berilgan sana<b>${U.fmtDate(c.issuedAt)}</b></div><div>Amal qilish muddati<b>${U.fmtDate(c.expiresAt)}</b></div></div>
       <div class="qr"><div id="qr"></div>QR orqali tekshirish</div><div style="height:70px"></div></div>`;
@@ -1702,7 +1631,9 @@ window.SEED = (function () {
   };
 
   V.questionBank = function () {
-    const fc = window.APP.qbCourse || "ETHICS"; const qs = Content.questions(fc, null, true);
+    const fc = window.APP.qbCourse || "ETHICS";
+    if (Store.mode === "live" && !Content._admin) { setTimeout(() => window.A.loadQB(), 0); return `<h1>Savollar banki</h1><div class="card empty">Yuklanmoqda…</div>`; }
+    const qs = Content.questions(fc, null, true);
     return `<div class="row between"><h1>Savollar banki</h1>${Auth.can("courses.manage") ? `<button class="btn primary" onclick="A.addQuestionModal('${fc}')">+ Savol qo'shish</button>` : ""}</div>
       <div class="row" style="margin-bottom:12px"><select style="max-width:340px" onchange="A.setQB(this.value)">${S.COURSES.map((c) => `<option value="${c.id}" ${c.id === fc ? "selected" : ""}>${e(c.title)} (${Content.questions(c.id, null, true).length})</option>`).join("")}</select>
       <span class="tiny">Savol turlari: single, multiple, true/false, matching, clinical case, short answer · Image/ECG/Lab-based — keyingi bosqich (fayl yuklash)</span></div>
@@ -1900,11 +1831,14 @@ window.SEED = (function () {
     /* onboarding */
     async onboardSave(ev) {
       ev.preventDefault(); const f = Object.fromEntries(new FormData(ev.target)); const me = Auth.current;
-      Object.assign(me, f, { experience: Number(f.experience || 0), hireDate: new Date(f.hireDate || Date.now()).toISOString() });
+      Object.assign(me, f, { experience: Number(f.experience || 0), hireDate: new Date(f.hireDate || Date.now()).toISOString(), positionName: posName(f.positionId) });
       await Store.put("employees", me); APP.obStep = 2; route();
     },
     onboardBack() { APP.obStep = 1; route(); },
-    startInitial() { APP.exam = { att: Initial.build(Auth.current), i: 0 }; route(); },
+    async startInitial() {
+      try { APP.exam = { att: await Initial.build(Auth.current), i: 0 }; } catch (err) { return UI.toast(err.message, "err"); }
+      route();
+    },
 
     /* lessons */
     toggleLesson(id) { APP.openLesson = APP.openLesson === id ? null : id; route(); const el = document.querySelector(".lesson .lb"); if (el) el.parentElement.scrollIntoView({ block: "nearest" }); },
@@ -1919,26 +1853,41 @@ window.SEED = (function () {
     async startExam(courseId, moduleId, kind, preview) {
       const me = Auth.current;
       if (kind === "final" && !preview) { const el = Exam.eligibility(me, courseId); if (!el.ok) return UI.toast(el.reason, "err"); }
-      const att = Exam.build(me, courseId, moduleId, kind);
+      let att;
+      try { att = await Exam.build(me, courseId, moduleId, kind, preview); } catch (err) { return UI.toast(err.message, "err"); }
       if (!att.qids.length) return UI.toast("Savollar bankida savol yo'q", "err");
-      if (kind === "final") { att.preview = !!preview; await Store.put("attempts", att); await audit("exam.start", { course: courseId }); }
+      if (kind === "final") { att.preview = !!preview; if (Store.mode === "demo") await Store.put("attempts", att); await audit("exam.start", { course: courseId, preview: !!preview }); }
       APP.exam = { att, i: 0 }; location.hash = "exam"; route();
     },
     answer(v) { const s = APP.exam; s.att.answers[s.att.qids[s.i]] = v; route(); },
     answerMulti(k) { const s = APP.exam; const id = s.att.qids[s.i]; const cur = s.att.answers[id] || []; s.att.answers[id] = cur.includes(k) ? cur.filter((x) => x !== k) : cur.concat(k); route(); },
     answerMatch(k, v) { const s = APP.exam; const id = s.att.qids[s.i]; const cur = Object.assign({}, s.att.answers[id] || {}); cur[k] = v || undefined; s.att.answers[id] = cur; },
     answerText(v) { const s = APP.exam; s.att.answers[s.att.qids[s.i]] = v; },
-    qgo(i) { APP.exam.i = i; if (APP.exam.att.kind !== "initial") { const t = APP.exam.att; if (t.kind === "final") Store.put("attempts", t); } route(); },
+    qgo(i) {
+      APP.exam.i = i; const t = APP.exam.att;
+      if (t.kind === "final") { if (Store.mode === "demo") Store.put("attempts", t); else Exam.saveProgress(t); }
+      route();
+    },
     async finishExam(force) {
       const s = APP.exam; if (!s) return; const att = s.att;
       const blank = att.qids.filter((id) => att.answers[id] == null || att.answers[id] === "").length;
       if (!force && blank && !APP.confirmFinish) { APP.confirmFinish = true; UI.modal(`<h3>Imtihonni yakunlaysizmi?</h3><p>${blank} ta savolga javob berilmagan.</p><div class="row"><div class="grow"></div><button class="btn" onclick="UI.closeModal();APP.confirmFinish=false">Qaytish</button><button class="btn green" onclick="UI.closeModal();A.finishExam(true)">Ha, yakunlash</button></div>`); return; }
       APP.confirmFinish = false; clearInterval(APP.timer);
-      if (att.kind === "initial") { const d = await Initial.submit(att); APP.exam = null; APP.initialDone = d; Auth.current = Store.find("employees", att.empId); A.go("welcome"); return; }
-      const res = await Exam.submit(att); APP.exam = null; APP.lastResult = res; location.hash = "result"; route();
+      if (APP.submitting) return; APP.submitting = true;
+      try {
+        if (att.kind === "initial") { const d = await Initial.submit(att); APP.exam = null; APP.initialDone = d; Auth.current = Store.find("employees", att.empId); A.go("welcome"); return; }
+        const res = await Exam.submit(att); APP.exam = null; APP.lastResult = res; location.hash = "result"; route();
+      } catch (err) { UI.toast("Topshirishda xato: " + err.message, "err"); }
+      finally { APP.submitting = false; }
     },
     async abortExam() { const att = APP.exam && APP.exam.att; if (att && att.kind === "final") { UI.modal(`<h3>Imtihonni bekor qilish</h3><p>Yakuniy imtihon bekor qilinsa, joriy javoblar bilan baholanadi va urinish hisoblanadi.</p><div class="row"><div class="grow"></div><button class="btn" onclick="UI.closeModal()">Davom etish</button><button class="btn red" onclick="UI.closeModal();A.finishExam(true)">Yakunlash</button></div>`); return; } const c = att && att.courseId; APP.exam = null; location.hash = c ? "course-" + c : "courses"; },
-    showReview(id) { const a = Store.find("attempts", id); UI.modal(`<div class="row between"><h3>${e(Content.course(a.courseId).title)} — ${a.score}%</h3><button class="btn sm" onclick="UI.closeModal()">✕</button></div>${V.review(a)}`); },
+    async showReview(id) {
+      const a = Store.find("attempts", id);
+      if (Store.mode === "live" && !a.qids.every((q) => Content.hasFull(q))) {
+        try { const r = await SupaAdapter.rpc("get_attempt_review", { p_attempt: id }); Content.cache(r.questions || []); } catch (err) { return UI.toast(err.message, "err"); }
+      }
+      UI.modal(`<div class="row between"><h3>${e(Content.course(a.courseId).title)} — ${a.score}%</h3><button class="btn sm" onclick="UI.closeModal()">✕</button></div>${V.review(a)}`);
+    },
 
     /* misc employee */
     async readAll() { for (const n of Store.where("notifications", (n) => n.empId === Auth.current.id && !n.read)) { n.read = true; await Store.put("notifications", n); } },
@@ -1991,6 +1940,7 @@ window.SEED = (function () {
     },
     async saveEmp(ev, id) {
       ev.preventDefault(); const x = Store.find("employees", id); const f = Object.fromEntries(new FormData(ev.target)); Object.assign(x, f, { experience: Number(f.experience) });
+      x.positionName = posName(x.positionId);
       if (Store.mode === "live") await SupaAdapter.setProfile(id, { department: x.department });
       await Store.put("employees", x); await Curriculum.assign(x); await audit("employee.edit", { emp: id }); UI.closeModal(); UI.toast("Saqlandi, curriculum yangilandi", "ok"); route();
     },
@@ -2024,6 +1974,13 @@ window.SEED = (function () {
     },
     async saveExamCfg(ev, cid) { ev.preventDefault(); const f = Object.fromEntries(new FormData(ev.target)); Object.keys(f).forEach((k) => (f[k] = Number(f[k]))); await Store.put("exam_overrides", Object.assign({ id: cid }, f)); await audit("exam.configure", { course: cid, ...f }); UI.closeModal(); UI.toast("Saqlandi", "ok"); route(); },
     setQB(v) { APP.qbCourse = v; route(); },
+    /* Live: to'liq savollar banki faqat kontent mas'ullariga (RLS) yuklanadi */
+    async loadQB(force) {
+      if (Store.mode !== "live" || (Content._admin && !force)) return;
+      const { data, error } = await SupaAdapter.client.from("questions").select("*").order("id");
+      if (error) return UI.toast(error.message, "err");
+      Content._admin = (data || []).map(qFromRow); Content.cache(Content._admin); route();
+    },
     addQuestionModal(cid) {
       const c = Content.course(cid);
       UI.modal(`<h3>Yangi savol: ${e(c.title)}</h3><form onsubmit="A.addQuestion(event,'${cid}')"><div class="grid g2" style="gap:8px"><div><label>Modul</label><select name="module">${c.modules.map((m) => `<option value="${m.id}">${e(m.title)}</option>`).join("")}</select></div>
@@ -2040,11 +1997,34 @@ window.SEED = (function () {
       if (["single", "case", "multiple"].includes(f.type)) { q.o = lines.map((l) => l.replace(/^\*\s*/, "")); const idx = lines.map((l, i) => (l.startsWith("*") ? i : -1)).filter((i) => i >= 0); if (!idx.length) return UI.toast("To'g'ri javobni * bilan belgilang", "err"); q.a = f.type === "multiple" ? idx : idx[0]; }
       if (f.type === "tf") { q.o = null; q.a = /^\*\s*to/i.test(lines.find((l) => l.startsWith("*")) || ""); }
       if (f.type === "short") { q.o = null; q.a = lines.map((l) => l.replace(/^\*\s*/, "")); }
+      if (Store.mode === "live") {
+        const { error } = await SupaAdapter.client.from("questions").insert({ id: q.id, course_id: cid, module_id: q.module, type: q.type, topic: q.topic, stem: q.q,
+          options: q.o || null, answer: q.a, explanation: q.e, evidence: q.ev || null, status: "draft" });
+        if (error) return UI.toast(error.message, "err");
+        await audit("question.create", { id: q.id }); UI.closeModal(); UI.toast("Draft sifatida saqlandi", "ok"); return A.loadQB(true);
+      }
       await Store.put("questions_custom", q); await audit("question.create", { id: q.id }); UI.closeModal(); UI.toast("Draft sifatida saqlandi", "ok"); route();
     },
-    async approveQ(id) { const q = Store.find("questions_custom", id); q.status = "approved"; q.approvedBy = Auth.current.id; await Store.put("questions_custom", q); await audit("question.approve", { id }); UI.toast("Tasdiqlandi", "ok"); route(); },
-    async resetAttempts(empId, cid) { const id = empId + "_" + cid; const p = Store.find("plans", id) || { id, empId, courseId: cid, reason: "manual", mandatory: true, assignedAt: U.now() }; p.attemptsResetAt = U.now(); p.retakeAfter = null; await Store.put("plans", p); await audit("exam.reset_attempts", { emp: empId, course: cid }); UI.toast("Urinishlar tiklandi", "ok"); route(); },
-    async revoke(code) { const c = Store.find("certificates", code); c.revoked = true; await Store.put("certificates", c); await audit("cert.revoke", { code }); UI.toast("Bekor qilindi"); route(); },
+    async approveQ(id) {
+      if (Store.mode === "live") {
+        const { error } = await SupaAdapter.client.from("questions").update({ status: "approved" }).eq("id", id);
+        if (error) return UI.toast(error.message, "err");
+        await audit("question.approve", { id }); UI.toast("Tasdiqlandi", "ok"); return A.loadQB(true);
+      }
+      const q = Store.find("questions_custom", id); q.status = "approved"; q.approvedBy = Auth.current.id; await Store.put("questions_custom", q); await audit("question.approve", { id }); UI.toast("Tasdiqlandi", "ok"); route();
+    },
+    async resetAttempts(empId, cid) {
+      if (Store.mode === "live") {
+        try { await SupaAdapter.rpc("admin_reset_attempts", { p_user: empId, p_course: cid }); } catch (err) { return UI.toast(err.message, "err"); }
+        const r = Store.all("resets").find((x) => x.user_id === empId && x.course_id === cid);
+        if (r) r.reset_at = U.now(); else Store.all("resets").push({ user_id: empId, course_id: cid, reset_at: U.now() });
+        await audit("exam.reset_attempts", { emp: empId, course: cid }); UI.toast("Urinishlar tiklandi", "ok"); return route();
+      }
+      const id = empId + "_" + cid; const p = Store.find("plans", id) || { id, empId, courseId: cid, reason: "manual", mandatory: true, assignedAt: U.now() }; p.attemptsResetAt = U.now(); p.retakeAfter = null; await Store.put("plans", p); await audit("exam.reset_attempts", { emp: empId, course: cid }); UI.toast("Urinishlar tiklandi", "ok"); route(); },
+    async revoke(code) {
+      const c = Store.find("certificates", code);
+      if (Store.mode === "live") { try { await SupaAdapter.rpc("revoke_certificate", { p_code: code }); } catch (err) { return UI.toast(err.message, "err"); } }
+      c.revoked = true; await Store.put("certificates", c); await audit("cert.revoke", { code }); UI.toast("Bekor qilindi"); route(); },
     setAiEmp(v) { APP.aiEmp = v; route(); },
 
     /* settings */
@@ -2064,17 +2044,28 @@ window.SEED = (function () {
     if (names && !me.firstName) Object.assign(me, names);
     if (!me.firstName) { const fn = (sess.user.user_metadata || {}).full_name || ""; const [a, ...b] = fn.split(" "); me.firstName = a || sess.user.email.split("@")[0]; me.lastName = b.join(" "); }
     Auth.current = me; ss.set("ma_mode", "live");
+    if (me.positionId && !me.positionName && me.status === "active") { me.positionName = posName(me.positionId); Store.put("employees", me); }
     // tugallanmagan yakuniy imtihonni tiklash (sahifa yangilanganda urinish yo'qolmasin)
-    resumeExam();
+    await resumeExam();
     if (fresh) await audit("register", {}); else await audit("login", {});
     route(); return true;
   }
-  function resumeExam() {
-    const open = Store.where("attempts", (a) => a.empId === Auth.current.id && !a.finishedAt && a.kind === "final")[0];
+  async function resumeExam() {
+    const open = Store.where("attempts", (a) => a.empId === Auth.current.id && !a.finishedAt && a.kind === "final" && !a.preview)[0];
     if (!open) return;
-    if (open.deadline && new Date(open.deadline) < new Date()) { Exam.submit(open).then((res) => { APP.lastResult = res; UI.toast("Tugallanmagan imtihon vaqti tugagan — avtomatik baholandi"); }); return; }
-    APP.exam = { att: open, i: 0 }; location.hash = "exam";
+    if (open.deadline && new Date(open.deadline) < new Date()) {
+      try { const res = await Exam.submit(open); APP.lastResult = res; UI.toast("Tugallanmagan imtihon vaqti tugagan — saqlangan javoblar bilan baholandi"); route(); } catch (err) { console.warn(err); }
+      return;
+    }
+    if (Store.mode === "live") {
+      // server tugallanmagan urinishni (savollar bilan) qaytaradi, yangi urinish ochilmaydi
+      try { APP.exam = { att: await Exam.build(Auth.current, open.courseId, null, "final"), i: 0 }; } catch (err) { return UI.toast(err.message, "err"); }
+    } else APP.exam = { att: open, i: 0 };
+    location.hash = "exam";
   }
+  const posName = (id) => { const p = Content.position(id); return p ? p.name : ""; };
+  const qFromRow = (r) => ({ id: r.id, course: r.course_id, module: r.module_id, type: r.type, topic: r.topic, difficulty: r.difficulty, q: r.stem, o: r.options,
+    a: r.answer, e: r.explanation, ev: r.evidence, r: r.reading, status: r.status, ai: r.ai_generated });
 
   async function boot() {
     const cfg = window.MEDACADEMY_CONFIG || {};
