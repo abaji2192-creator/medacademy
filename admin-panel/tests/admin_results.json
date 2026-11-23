@@ -1,0 +1,682 @@
+[
+ {
+  "id": "B01",
+  "grp": "Leakage",
+  "name": "Admin bundle: savollar banki / javob kalitlari yo'q (Q001 matni, SEED.QUESTIONS)",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "B02",
+  "grp": "Leakage",
+  "name": "Admin bundle: service role / secret kalit yo'q",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "B03",
+  "grp": "Regression",
+  "name": "Xodim ilovasi live build o'zgarmagan (Admin Panel alohida admin.html)",
+  "exp": "e8dc98a4",
+  "act": "e8dc98a4",
+  "ok": true
+ },
+ {
+  "id": "A01",
+  "grp": "Auth",
+  "name": "Noto'g'ri parol bilan kirish",
+  "exp": "rad etiladi",
+  "act": "Email yoki parol noto'g'ri",
+  "ok": true
+ },
+ {
+  "id": "A02",
+  "grp": "Auth",
+  "name": "Super Admin login",
+  "exp": "Dashboard",
+  "act": "Dashboard",
+  "ok": true
+ },
+ {
+  "id": "A03",
+  "grp": "Auth",
+  "name": "Sahifa yangilanganda sessiya saqlanadi",
+  "exp": "Admin layout",
+  "act": "ok",
+  "ok": true
+ },
+ {
+  "id": "A04",
+  "grp": "Auth",
+  "name": "Logout → login ekrani; anon REST so'rovi savollarni olmaydi",
+  "exp": "login / 0 qator",
+  "act": "login / 0",
+  "ok": true
+ },
+ {
+  "id": "A05",
+  "grp": "Auth",
+  "name": "Session expiry: token muddati tugadi + refresh rad etildi → login ekrani",
+  "exp": "login + \"Sessiya\" xabari",
+  "act": "Sessiya muddati tugadi. Qayta kiring.",
+  "ok": true
+ },
+ {
+  "id": "P01",
+  "grp": "Authorization",
+  "name": "sa: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P02",
+  "grp": "Authorization",
+  "name": "hr: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P03",
+  "grp": "Authorization",
+  "name": "hr: URL orqali #/questions ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P04",
+  "grp": "Authorization",
+  "name": "hr: URL orqali #/evidence/queue ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P05",
+  "grp": "Authorization",
+  "name": "edu: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P06",
+  "grp": "Authorization",
+  "name": "edu: URL orqali #/audit ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P07",
+  "grp": "Authorization",
+  "name": "ins: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P08",
+  "grp": "Authorization",
+  "name": "ins: URL orqali #/employees ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P09",
+  "grp": "Authorization",
+  "name": "ins: URL orqali #/audit ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P10",
+  "grp": "Authorization",
+  "name": "rev: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P11",
+  "grp": "Authorization",
+  "name": "rev: URL orqali #/employees ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P12",
+  "grp": "Authorization",
+  "name": "rev: URL orqali #/edu/courses ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P13",
+  "grp": "Authorization",
+  "name": "head: sidebar bo'limlari",
+  "exp": "mos",
+  "act": "yetishmaydi=[] ortiqcha=[]",
+  "ok": true
+ },
+ {
+  "id": "P14",
+  "grp": "Authorization",
+  "name": "head: URL orqali #/questions ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P15",
+  "grp": "Authorization",
+  "name": "head: URL orqali #/evidence/queue ochish",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P17",
+  "grp": "Authorization",
+  "name": "edu (department.view, manage yo'q): bo'limlar faqat o'qish",
+  "exp": "qo'shish/tahrirlash yo'q",
+  "act": "False/False",
+  "ok": true
+ },
+ {
+  "id": "P18",
+  "grp": "Authorization",
+  "name": "hr (exam.view, exam.manage yo'q): imtihon sozlamasi faqat o'qish (UI + REST)",
+  "exp": "tahrir yo'q / 0 qator",
+  "act": "False / 0",
+  "ok": true
+ },
+ {
+  "id": "P20",
+  "grp": "Authorization",
+  "name": "Employee: Admin Panel umuman ochilmaydi",
+  "exp": "no-admin",
+  "act": "no-admin",
+  "ok": true
+ },
+ {
+  "id": "S01",
+  "grp": "Server",
+  "name": "Employee → questions (javob kalitlari) REST",
+  "exp": "0 qator",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "S02",
+  "grp": "Server",
+  "name": "Employee → question_reviews / question_evidence / question_versions",
+  "exp": "0/0/0",
+  "act": "0/0/0",
+  "ok": true
+ },
+ {
+  "id": "S03",
+  "grp": "Server",
+  "name": "Employee → employees: faqat o'zi",
+  "exp": "1 (o'zi)",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "S04",
+  "grp": "Server",
+  "name": "Instructor → faqat biriktirilgan kurs (CARDIO_BASIC) savollari",
+  "exp": "faqat CARDIO_BASIC",
+  "act": "['CARDIO_BASIC']",
+  "ok": true
+ },
+ {
+  "id": "S05",
+  "grp": "Server",
+  "name": "Instructor → biriktirilmagan kurs savolini tahrirlash",
+  "exp": "0 qator yangilandi",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "S06",
+  "grp": "Server",
+  "name": "Department head → faqat o'z bo'limi xodimlari",
+  "exp": "1 bo'lim",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "S07",
+  "grp": "Server",
+  "name": "Medical reviewer → employees",
+  "exp": "0 (yoki o'zi)",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "S08",
+  "grp": "Server",
+  "name": "Medical reviewer → faqat tayinlangan savollar (tayinlovsiz: 0)",
+  "exp": "0",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "S09",
+  "grp": "Server",
+  "name": "Employee → set_employee_status RPC",
+  "exp": "rad etiladi",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "S10",
+  "grp": "Server",
+  "name": "Employee → ichki _q_full RPC",
+  "exp": "401/403 permission denied",
+  "act": "403 permission denied for function _q_full",
+  "ok": true
+ },
+ {
+  "id": "S11",
+  "grp": "Server",
+  "name": "Anon → _q_refs RPC (manba ro'yxati)",
+  "exp": "permission denied",
+  "act": "401",
+  "ok": true
+ },
+ {
+  "id": "S12",
+  "grp": "Server",
+  "name": "HR → employees DELETE (REST)",
+  "exp": "o'chirilmaydi",
+  "act": "204, qoldi=1",
+  "ok": true
+ },
+ {
+  "id": "O01",
+  "grp": "Org isolation",
+  "name": "Org B admin → Org A ma'lumotlari (10 jadval)",
+  "exp": "hammasi 0",
+  "act": "{'questions': 0, 'employees': 0, 'courses': 0, 'exam_attempts': 0, 'certificates': 0, 'audit_logs': 0, 'departments': 0, 'evidence_sources': 0, 'question_eviden",
+  "ok": true
+ },
+ {
+  "id": "O02",
+  "grp": "Org isolation",
+  "name": "Org B admin → Org A ga bo'lim yozish",
+  "exp": "rad etiladi",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "O03",
+  "grp": "Org isolation",
+  "name": "Org B admin UI → Org A savoli (URL orqali)",
+  "exp": "topilmadi",
+  "act": "∅ Savol topilmadi yoki ko'rish uchun ruxsat yo'q Q001",
+  "ok": true
+ },
+ {
+  "id": "Q01",
+  "grp": "Leakage",
+  "name": "Savollar ro'yxati so'rovida answer/explanation ustunlari yo'q",
+  "exp": "0 so'rov",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "Q02",
+  "grp": "Leakage",
+  "name": "Correct Answer tabi: javob faqat shu tab ochilganda, ruxsatli rolga yuklanadi",
+  "exp": "answer so'rovi + ko'rinadi",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "Q03",
+  "grp": "Leakage",
+  "name": "HR → savol javobi (URL orqali)",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "W01",
+  "grp": "Evidence workflow",
+  "name": "Manba qo'shish (UI) → Unverified, origin=manual",
+  "exp": "unverified/manual",
+  "act": "unverified/manual",
+  "ok": true
+ },
+ {
+  "id": "W02",
+  "grp": "Evidence workflow",
+  "name": "Instructor (evidence.verify yo'q): Verify tugmasi yo'q + REST orqali verify",
+  "exp": "tugma yo'q / unverified",
+  "act": "yo'q / unverified",
+  "ok": true
+ },
+ {
+  "id": "W03",
+  "grp": "Evidence workflow",
+  "name": "Education manager → Verify (inson tasdig'i, verified_by server yozadi)",
+  "exp": "verified + verified_by=EDU",
+  "act": "verified / True",
+  "ok": true
+ },
+ {
+  "id": "W04",
+  "grp": "Evidence workflow",
+  "name": "Dalil + claim bog'lash (UI)",
+  "exp": "1",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "W05",
+  "grp": "Evidence workflow",
+  "name": "Approve checklist'siz",
+  "exp": "rad etiladi (UI)",
+  "act": "Approve uchun uchala tekshiruv belgilanishi shart",
+  "ok": true
+ },
+ {
+  "id": "W06",
+  "grp": "Evidence workflow",
+  "name": "Evidence review → Approve → evidence_status=current (server)",
+  "exp": "current",
+  "act": "current",
+  "ok": true
+ },
+ {
+  "id": "W07",
+  "grp": "Evidence workflow",
+  "name": "Medical review'siz klinik savolni Publish",
+  "exp": "server rad etadi",
+  "act": "review_required | error: Klinik savol: shu versiya uchun Medical Review tasdig'i kerak",
+  "ok": true
+ },
+ {
+  "id": "W08",
+  "grp": "Evidence workflow",
+  "name": "Medical review'ga yuborish (tayinlash)",
+  "exp": "1 ochiq tayinlov",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "W09",
+  "grp": "Evidence workflow",
+  "name": "Medical reviewer navbatida faqat tayinlangan savol",
+  "exp": "1 ta",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "W10",
+  "grp": "Evidence workflow",
+  "name": "Medical review → Approve (medical reviewer)",
+  "exp": "1",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "W11",
+  "grp": "Evidence workflow",
+  "name": "Publish → published; server eligibility +1",
+  "exp": "published / 0→1",
+  "act": "published / 0→1",
+  "ok": true
+ },
+ {
+  "id": "E01",
+  "grp": "Eligibility",
+  "name": "Current + published → eligible",
+  "exp": "true",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "E02",
+  "grp": "Eligibility",
+  "name": "Unknown → not eligible",
+  "exp": "false",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "E03",
+  "grp": "Eligibility",
+  "name": "Review Due → not eligible",
+  "exp": "false",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "E04",
+  "grp": "Eligibility",
+  "name": "Outdated → not eligible",
+  "exp": "false",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "E05",
+  "grp": "Eligibility",
+  "name": "Superseded → not eligible",
+  "exp": "false",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "E06",
+  "grp": "Eligibility",
+  "name": "Conflicting → not eligible",
+  "exp": "false",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "E07",
+  "grp": "Eligibility",
+  "name": "Current'ga qaytdi → yana eligible",
+  "exp": "true",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "E08",
+  "grp": "Eligibility",
+  "name": "UI: Mark outdated → Review Required, not eligible",
+  "exp": "review_required/outdated/false",
+  "act": "review_required/outdated/False",
+  "ok": true
+ },
+ {
+  "id": "E09",
+  "grp": "Eligibility",
+  "name": "UI: manba Retracted → bog'langan savol not eligible + review_required",
+  "exp": "True→false / review_required",
+  "act": "True→False / review_required",
+  "ok": true
+ },
+ {
+  "id": "H01",
+  "grp": "Historical",
+  "name": "Savollar yangilangandan keyin eski urinish yozuvi aynan",
+  "exp": "aynan",
+  "act": "aynan",
+  "ok": true
+ },
+ {
+  "id": "C01",
+  "grp": "Employees",
+  "name": "Xodim kartasida Delete tugmasi yo'q",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "C02",
+  "grp": "Employees",
+  "name": "HR → Deactivate (UI, sabab bilan) → profil deactivated, xodim inactive, yozuv joyida",
+  "exp": "deactivated/inactive",
+  "act": "deactivated/inactive",
+  "ok": true
+ },
+ {
+  "id": "C03",
+  "grp": "Certificate",
+  "name": "Deactivate'dan keyin sertifikat aynan + ommaviy tekshiruv \"Amalda\"",
+  "exp": "aynan / Amalda",
+  "act": "aynan / Amalda",
+  "ok": true
+ },
+ {
+  "id": "C04",
+  "grp": "Certificate",
+  "name": "Deactivated xodim imtihon boshlay olmaydi",
+  "exp": "rad etiladi",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "C05",
+  "grp": "Employees",
+  "name": "HR → Deactivated akkauntni qayta faollashtirish",
+  "exp": "server rad etadi (faqat Super Admin)",
+  "act": "deactivated | error: Deactivated akkauntni faqat Super Admin qayta faollas",
+  "ok": true
+ },
+ {
+  "id": "C06",
+  "grp": "Employees",
+  "name": "Super Admin → qayta faollashtirish",
+  "exp": "active",
+  "act": "active",
+  "ok": true
+ },
+ {
+  "id": "U01",
+  "grp": "Audit",
+  "name": "Manba yaratish → audit_logs",
+  "exp": ">= 1",
+  "act": "2",
+  "ok": true
+ },
+ {
+  "id": "U02",
+  "grp": "Audit",
+  "name": "Manba verify / retracted → audit_logs",
+  "exp": ">= 1",
+  "act": "2",
+  "ok": true
+ },
+ {
+  "id": "U03",
+  "grp": "Audit",
+  "name": "Dalil bog'lash → audit_logs",
+  "exp": ">= 1",
+  "act": "2",
+  "ok": true
+ },
+ {
+  "id": "U04",
+  "grp": "Audit",
+  "name": "Evidence / medical review → audit_logs",
+  "exp": ">= 1",
+  "act": "3",
+  "ok": true
+ },
+ {
+  "id": "U05",
+  "grp": "Audit",
+  "name": "Medical review tayinlash → audit_logs",
+  "exp": ">= 1",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "U06",
+  "grp": "Audit",
+  "name": "Xodim deactivate (sabab bilan) → audit_logs",
+  "exp": ">= 1",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "U07",
+  "grp": "Audit",
+  "name": "Qayta faollashtirish → audit_logs",
+  "exp": ">= 1",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "U08",
+  "grp": "Audit (006 bo'shliq)",
+  "name": "Savol publish / kurs status / sertifikat revoke audit_logs'da",
+  "exp": "0 (kutilgan bo'shliq → 006a)",
+  "act": "{'q': 0, 'c': 0, 'ce': 0}",
+  "ok": true
+ },
+ {
+  "id": "Q10",
+  "grp": "UI",
+  "name": "Empty state (natija yo'q)",
+  "exp": "empty",
+  "act": "empty",
+  "ok": true
+ },
+ {
+  "id": "Q11",
+  "grp": "UI",
+  "name": "Pagination (server-side range)",
+  "exp": "26–50 / 131+",
+  "act": "26–50 / 131",
+  "ok": true
+ },
+ {
+  "id": "Q12",
+  "grp": "UI",
+  "name": "Qidiruv debounce (4 harf → ~1 so'rov)",
+  "exp": "<= 2",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "Q13",
+  "grp": "UI",
+  "name": "Mavjud bo'lmagan yozuv → aniq xabar",
+  "exp": "topilmadi",
+  "act": "∅ Manba topilmadi yoki ruxsat yo'q",
+  "ok": true
+ },
+ {
+  "id": "Q14",
+  "grp": "UI",
+  "name": "Mobil (390px): gorizontal sahifa overflow yo'q, sidebar yig'iladi",
+  "exp": "ha",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "Q15",
+  "grp": "UI",
+  "name": "JS xatolari (pageerror) butun test davomida",
+  "exp": "0",
+  "act": "0",
+  "ok": true
+ }
+]
