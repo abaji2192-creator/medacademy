@@ -1,0 +1,88 @@
+PASS B01  [Leakage] Admin bundle: savollar banki / javob kalitlari yo'q (Q001 matni, SEED.QUESTIONS) | kutilgan: yo'q | natija: yo'q
+PASS B02  [Leakage] Admin bundle: service role / secret kalit yo'q | kutilgan: yo'q | natija: yo'q
+PASS B03  [Regression] Xodim ilovasi live build o'zgarmagan (Admin Panel alohida admin.html) | kutilgan: e8dc98a4 | natija: e8dc98a4
+PASS A01  [Auth] Noto'g'ri parol bilan kirish | kutilgan: rad etiladi | natija: Email yoki parol noto'g'ri
+PASS A02  [Auth] Super Admin login | kutilgan: Dashboard | natija: Dashboard
+PASS A03  [Auth] Sahifa yangilanganda sessiya saqlanadi | kutilgan: Admin layout | natija: ok
+PASS A04  [Auth] Logout → login ekrani; anon REST so'rovi savollarni olmaydi | kutilgan: login / 0 qator | natija: login / 0
+PASS A05  [Auth] Session expiry: token muddati tugadi + refresh rad etildi → login ekrani | kutilgan: login + "Sessiya" xabari | natija: Sessiya muddati tugadi. Qayta kiring.
+PASS P01  [Authorization] sa: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P02  [Authorization] hr: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P03  [Authorization] hr: URL orqali #/questions ochish | kutilgan: denied | natija: denied
+PASS P04  [Authorization] hr: URL orqali #/evidence/queue ochish | kutilgan: denied | natija: denied
+PASS P05  [Authorization] edu: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P06  [Authorization] edu: URL orqali #/audit ochish | kutilgan: denied | natija: denied
+PASS P07  [Authorization] ins: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P08  [Authorization] ins: URL orqali #/employees ochish | kutilgan: denied | natija: denied
+PASS P09  [Authorization] ins: URL orqali #/audit ochish | kutilgan: denied | natija: denied
+PASS P10  [Authorization] rev: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P11  [Authorization] rev: URL orqali #/employees ochish | kutilgan: denied | natija: denied
+PASS P12  [Authorization] rev: URL orqali #/edu/courses ochish | kutilgan: denied | natija: denied
+PASS P13  [Authorization] head: sidebar bo'limlari | kutilgan: mos | natija: yetishmaydi=[] ortiqcha=[]
+PASS P14  [Authorization] head: URL orqali #/questions ochish | kutilgan: denied | natija: denied
+PASS P15  [Authorization] head: URL orqali #/evidence/queue ochish | kutilgan: denied | natija: denied
+PASS P17  [Authorization] edu (department.view, manage yo'q): bo'limlar faqat o'qish | kutilgan: qo'shish/tahrirlash yo'q | natija: False/False
+PASS P18  [Authorization] hr (exam.view, exam.manage yo'q): imtihon sozlamasi faqat o'qish (UI + REST) | kutilgan: tahrir yo'q / 0 qator | natija: False / 0
+PASS P20  [Authorization] Employee: Admin Panel umuman ochilmaydi | kutilgan: no-admin | natija: no-admin
+PASS S01  [Server] Employee → questions (javob kalitlari) REST | kutilgan: 0 qator | natija: 0
+PASS S02  [Server] Employee → question_reviews / question_evidence / question_versions | kutilgan: 0/0/0 | natija: 0/0/0
+PASS S03  [Server] Employee → employees: faqat o'zi | kutilgan: 1 (o'zi) | natija: 1
+PASS S04  [Server] Instructor → faqat biriktirilgan kurs (CARDIO_BASIC) savollari | kutilgan: faqat CARDIO_BASIC | natija: ['CARDIO_BASIC']
+PASS S05  [Server] Instructor → biriktirilmagan kurs savolini tahrirlash | kutilgan: 0 qator yangilandi | natija: 0
+PASS S06  [Server] Department head → faqat o'z bo'limi xodimlari | kutilgan: 1 bo'lim | natija: 1
+PASS S07  [Server] Medical reviewer → employees | kutilgan: 0 (yoki o'zi) | natija: 1
+PASS S08  [Server] Medical reviewer → faqat tayinlangan savollar (tayinlovsiz: 0) | kutilgan: 0 | natija: 0
+PASS S09  [Server] Employee → set_employee_status RPC | kutilgan: rad etiladi | natija: 400
+PASS S10  [Server] Employee → ichki _q_full RPC | kutilgan: 401/403 permission denied | natija: 403 permission denied for function _q_full
+PASS S11  [Server] Anon → _q_refs RPC (manba ro'yxati) | kutilgan: permission denied | natija: 401
+PASS S12  [Server] HR → employees DELETE (REST) | kutilgan: o'chirilmaydi | natija: 204, qoldi=1
+PASS O01  [Org isolation] Org B admin → Org A ma'lumotlari (10 jadval) | kutilgan: hammasi 0 | natija: {'questions': 0, 'employees': 0, 'courses': 0, 'exam_attempts': 0, 'certificates': 0, 'audit_logs': 0, 'departments': 0, 'evidence_sources': 0, 'question_eviden
+PASS O02  [Org isolation] Org B admin → Org A ga bo'lim yozish | kutilgan: rad etiladi | natija: 403
+PASS O03  [Org isolation] Org B admin UI → Org A savoli (URL orqali) | kutilgan: topilmadi | natija: ∅ Savol topilmadi yoki ko'rish uchun ruxsat yo'q Q001
+PASS Q01  [Leakage] Savollar ro'yxati so'rovida answer/explanation ustunlari yo'q | kutilgan: 0 so'rov | natija: 0
+PASS Q02  [Leakage] Correct Answer tabi: javob faqat shu tab ochilganda, ruxsatli rolga yuklanadi | kutilgan: answer so'rovi + ko'rinadi | natija: True
+PASS Q03  [Leakage] HR → savol javobi (URL orqali) | kutilgan: denied | natija: denied
+PASS W01  [Evidence workflow] Manba qo'shish (UI) → Unverified, origin=manual | kutilgan: unverified/manual | natija: unverified/manual
+PASS W02  [Evidence workflow] Instructor (evidence.verify yo'q): Verify tugmasi yo'q + REST orqali verify | kutilgan: tugma yo'q / unverified | natija: yo'q / unverified
+PASS W03  [Evidence workflow] Education manager → Verify (inson tasdig'i, verified_by server yozadi) | kutilgan: verified + verified_by=EDU | natija: verified / True
+PASS W04  [Evidence workflow] Dalil + claim bog'lash (UI) | kutilgan: 1 | natija: 1
+PASS W05  [Evidence workflow] Approve checklist'siz | kutilgan: rad etiladi (UI) | natija: Approve uchun uchala tekshiruv belgilanishi shart
+PASS W06  [Evidence workflow] Evidence review → Approve → evidence_status=current (server) | kutilgan: current | natija: current
+PASS W07  [Evidence workflow] Medical review'siz klinik savolni Publish | kutilgan: server rad etadi | natija: review_required | error: Klinik savol: shu versiya (v1) bo'yicha oxirgi Medical Review q
+PASS W08  [Evidence workflow] Medical review'ga yuborish (tayinlash) | kutilgan: 1 ochiq tayinlov | natija: 1
+PASS W09  [Evidence workflow] Medical reviewer navbatida faqat tayinlangan savol | kutilgan: 1 ta | natija: 1
+PASS W10  [Evidence workflow] Medical review → Approve (medical reviewer) | kutilgan: 1 | natija: 1
+PASS W10b [Evidence workflow (005e)] MR: Publish tugmasi ko'rinmaydi | kutilgan: yo'q | natija: yo'q
+PASS W11  [Evidence workflow] Publish → published; server eligibility +1 | kutilgan: published / 0→1 | natija: published / 0→1
+PASS E01  [Eligibility] Current + published → eligible | kutilgan: true | natija: True
+PASS E02  [Eligibility] Unknown → not eligible | kutilgan: false | natija: False
+PASS E03  [Eligibility] Review Due → not eligible | kutilgan: false | natija: False
+PASS E04  [Eligibility] Outdated → not eligible | kutilgan: false | natija: False
+PASS E05  [Eligibility] Superseded → not eligible | kutilgan: false | natija: False
+PASS E06  [Eligibility] Conflicting → not eligible | kutilgan: false | natija: False
+PASS E07  [Eligibility] Current'ga qaytdi → yana eligible | kutilgan: true | natija: True
+FAIL E08  [Eligibility] UI: Mark outdated → Review Required, not eligible | kutilgan: review_required/outdated/false | natija: published/current/True
+FAIL E09  [Eligibility] UI: manba Retracted → bog'langan savol not eligible + review_required | kutilgan: False→false / review_required | natija: False→False / review_required
+PASS H01  [Historical] Savollar yangilangandan keyin eski urinish yozuvi aynan | kutilgan: aynan | natija: aynan
+PASS C01  [Employees] Xodim kartasida Delete tugmasi yo'q | kutilgan: yo'q | natija: yo'q
+PASS C02  [Employees] HR → Deactivate (UI, sabab bilan) → profil deactivated, xodim inactive, yozuv joyida | kutilgan: deactivated/inactive | natija: deactivated/inactive
+PASS C03  [Certificate] Deactivate'dan keyin sertifikat aynan + ommaviy tekshiruv "Amalda" | kutilgan: aynan / Amalda | natija: aynan / Amalda
+PASS C04  [Certificate] Deactivated xodim imtihon boshlay olmaydi | kutilgan: rad etiladi | natija: 400
+PASS C05  [Employees] HR → Deactivated akkauntni qayta faollashtirish | kutilgan: server rad etadi (faqat Super Admin) | natija: deactivated | error: Deactivated akkauntni faqat Super Admin qayta faollas
+PASS C06  [Employees] Super Admin → qayta faollashtirish | kutilgan: active | natija: active
+PASS U01  [Audit] Manba yaratish → audit_logs | kutilgan: >= 1 | natija: 2
+PASS U02  [Audit] Manba verify / retracted → audit_logs | kutilgan: >= 1 | natija: 2
+PASS U03  [Audit] Dalil bog'lash → audit_logs | kutilgan: >= 1 | natija: 2
+PASS U04  [Audit] Evidence / medical review → audit_logs | kutilgan: >= 1 | natija: 2
+PASS U05  [Audit] Medical review tayinlash → audit_logs | kutilgan: >= 1 | natija: 1
+PASS U06  [Audit] Xodim deactivate (sabab bilan) → audit_logs | kutilgan: >= 1 | natija: 1
+PASS U07  [Audit] Qayta faollashtirish → audit_logs | kutilgan: >= 1 | natija: 1
+PASS U08  [Audit (006 bo'shliq)] Savol publish / kurs status / sertifikat revoke audit_logs'da | kutilgan: 0 (kutilgan bo'shliq → 006a) | natija: {'q': 0, 'c': 0, 'ce': 0}
+PASS Q10  [UI] Empty state (natija yo'q) | kutilgan: empty | natija: empty
+PASS Q11  [UI] Pagination (server-side range) | kutilgan: 26–50 / 131+ | natija: 26–50 / 131
+PASS Q12  [UI] Qidiruv debounce (4 harf → ~1 so'rov) | kutilgan: <= 2 | natija: 1
+PASS Q13  [UI] Mavjud bo'lmagan yozuv → aniq xabar | kutilgan: topilmadi | natija: ∅ Manba topilmadi yoki ruxsat yo'q
+PASS Q14  [UI] Mobil (390px): gorizontal sahifa overflow yo'q, sidebar yig'iladi | kutilgan: ha | natija: True
+PASS Q15  [UI] JS xatolari (pageerror) butun test davomida | kutilgan: 0 | natija: 0
+
+ADMIN PANEL: 86 test, 2 FAIL
