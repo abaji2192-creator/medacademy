@@ -1,0 +1,816 @@
+{
+ "pre": {
+  "anon_exec": 58,
+  "cascade": 6
+ },
+ "results": [
+  {
+   "id": "D01",
+   "group": "Migration",
+   "name": "005d apply",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "D02",
+   "group": "Migration",
+   "name": "005d qayta apply (idempotent, 3-marta ham) — sxema/huquqlar bir xil",
+   "expected": "OK, o'zgarishsiz",
+   "actual": "OK, o'zgarishsiz",
+   "pass": true
+  },
+  {
+   "id": "D03",
+   "group": "Data",
+   "name": "Mavjud ma'lumot o'zgarmagan (barcha public jadvallar: qator soni + md5)",
+   "expected": "0 farq",
+   "actual": "0 farq ",
+   "pass": true
+  },
+  {
+   "id": "D04",
+   "group": "Data",
+   "name": "RLS policy'lar o'zgarmagan (005d RLS'ga tegmaydi)",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "D05",
+   "group": "FK",
+   "name": "Target 6 FK: CASCADE soni",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "D06",
+   "group": "FK",
+   "name": "Target 6 FK: RESTRICT soni",
+   "expected": "6",
+   "actual": "6",
+   "pass": true
+  },
+  {
+   "id": "D07",
+   "group": "FK",
+   "name": "public sxemasidagi barcha CASCADE FK",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "D08",
+   "group": "Grants",
+   "name": "anon EXECUTE qila oladigan funksiyalar",
+   "expected": "1 (verify_certificate)",
+   "actual": "1 (verify_certificate)",
+   "pass": true
+  },
+  {
+   "id": "D09",
+   "group": "Grants",
+   "name": "authenticated → internal funksiyalar (_q_full, _q_refs, _grade, …)",
+   "expected": "hech biri",
+   "actual": "hech biri",
+   "pass": true
+  },
+  {
+   "id": "D10",
+   "group": "Grants",
+   "name": "authenticated → ilova RPC va RLS helper'lari saqlangan",
+   "expected": "barchasi bor",
+   "actual": "barchasi bor",
+   "pass": true
+  },
+  {
+   "id": "D11",
+   "group": "Grants",
+   "name": "Tasniflanmagan (trigger bo'lmagan) funksiyalar",
+   "expected": "yo'q",
+   "actual": "yo'q",
+   "pass": true
+  },
+  {
+   "id": "D12",
+   "group": "History",
+   "name": "Sertifikat va urinish guard trigger'lari",
+   "expected": "2",
+   "actual": "2",
+   "pass": true
+  },
+  {
+   "id": "R01",
+   "group": "Rollback",
+   "name": "005d rollback",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "R02",
+   "group": "Rollback",
+   "name": "FK va CHECK constraint'lar 005d'dan oldingi holat bilan aynan bir xil",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "R03",
+   "group": "Rollback",
+   "name": "Funksiya EXECUTE huquqlari (anon/authenticated) aynan tiklandi",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "R04",
+   "group": "Rollback",
+   "name": "Trigger'lar ro'yxati 005d'dan oldingi bilan bir xil",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "R05",
+   "group": "Rollback",
+   "name": "RLS policy'lar bir xil",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "R06",
+   "group": "Rollback",
+   "name": "Ma'lumot o'zgarmagan (rollback ham hech narsa o'chirmaydi)",
+   "expected": "0 farq",
+   "actual": "0 farq",
+   "pass": true
+  },
+  {
+   "id": "R07",
+   "group": "Rollback",
+   "name": "Rollback'dan keyin anon executable funksiyalar 005d'dan oldingi soniga qaytdi",
+   "expected": "58",
+   "actual": "58",
+   "pass": true
+  },
+  {
+   "id": "V01",
+   "group": "Recovery",
+   "name": "Rollback'dan keyin qayta apply",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "V05",
+   "group": "FK",
+   "name": "Target 6 FK: CASCADE soni",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "V06",
+   "group": "FK",
+   "name": "Target 6 FK: RESTRICT soni",
+   "expected": "6",
+   "actual": "6",
+   "pass": true
+  },
+  {
+   "id": "V07",
+   "group": "FK",
+   "name": "public sxemasidagi barcha CASCADE FK",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "V08",
+   "group": "Grants",
+   "name": "anon EXECUTE qila oladigan funksiyalar",
+   "expected": "1 (verify_certificate)",
+   "actual": "1 (verify_certificate)",
+   "pass": true
+  },
+  {
+   "id": "V09",
+   "group": "Grants",
+   "name": "authenticated → internal funksiyalar (_q_full, _q_refs, _grade, …)",
+   "expected": "hech biri",
+   "actual": "hech biri",
+   "pass": true
+  },
+  {
+   "id": "V10",
+   "group": "Grants",
+   "name": "authenticated → ilova RPC va RLS helper'lari saqlangan",
+   "expected": "barchasi bor",
+   "actual": "barchasi bor",
+   "pass": true
+  },
+  {
+   "id": "V11",
+   "group": "Grants",
+   "name": "Tasniflanmagan (trigger bo'lmagan) funksiyalar",
+   "expected": "yo'q",
+   "actual": "yo'q",
+   "pass": true
+  },
+  {
+   "id": "V12",
+   "group": "History",
+   "name": "Sertifikat va urinish guard trigger'lari",
+   "expected": "2",
+   "actual": "2",
+   "pass": true
+  },
+  {
+   "id": "V13",
+   "group": "Recovery",
+   "name": "Recovery'dan keyin sxema/huquqlar birinchi apply bilan bir xil",
+   "expected": "bir xil",
+   "actual": "bir xil",
+   "pass": true
+  },
+  {
+   "id": "V14",
+   "group": "Recovery",
+   "name": "Ma'lumot o'zgarmagan",
+   "expected": "0 farq",
+   "actual": "0 farq",
+   "pass": true
+  },
+  {
+   "id": "F01",
+   "group": "RESTRICT",
+   "name": "Tarixi bor auth user'ni o'chirish (service role / Dashboard ekvivalenti)",
+   "expected": "DENIED",
+   "actual": "DENIED: update or delete on table \"users\" violates RESTRICT setting of foreign",
+   "pass": true
+  },
+  {
+   "id": "F02",
+   "group": "RESTRICT",
+   "name": "Profili bor oddiy xodim auth user'ini o'chirish",
+   "expected": "DENIED",
+   "actual": "DENIED: update or delete on table \"users\" violates RESTRICT setting of foreign",
+   "pass": true
+  },
+  {
+   "id": "F03",
+   "group": "RESTRICT",
+   "name": "Exam config'i bor kursni o'chirish",
+   "expected": "DENIED",
+   "actual": "DENIED: update or delete on table \"courses\" violates foreign key constraint \"q",
+   "pass": true
+  },
+  {
+   "id": "F04",
+   "group": "RESTRICT",
+   "name": "O'chirishga urinishdan keyin profil/urinish/sertifikat joyida",
+   "expected": "o'zgarmagan",
+   "actual": "o'zgarmagan",
+   "pass": true
+  },
+  {
+   "id": "G01",
+   "group": "Grants",
+   "name": "anon → _q_full (savol + javob + manba)",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function _q_full",
+   "pass": true
+  },
+  {
+   "id": "G02",
+   "group": "Grants",
+   "name": "xodim → _q_refs('Q001') (istalgan savol manbalari)",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function _q_refs",
+   "pass": true
+  },
+  {
+   "id": "G03",
+   "group": "Grants",
+   "name": "anon va xodim → _grade",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G04",
+   "group": "Grants",
+   "name": "anon va xodim → _q_at",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G05",
+   "group": "Grants",
+   "name": "anon va xodim → recompute_question_evidence",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G06",
+   "group": "Grants",
+   "name": "anon va xodim → refresh_evidence_freshness",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G07",
+   "group": "Grants",
+   "name": "anon va xodim → mark_overdue_assignments",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G08",
+   "group": "Grants",
+   "name": "anon va xodim → seed_org_defaults",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G09",
+   "group": "Grants",
+   "name": "anon va xodim → _q_exam_eligible",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G10",
+   "group": "Grants",
+   "name": "anon va xodim → _cert_out",
+   "expected": "DENIED/DENIED",
+   "actual": "DENIED/DENIED",
+   "pass": true
+  },
+  {
+   "id": "G11",
+   "group": "Grants",
+   "name": "anon → start_exam",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function start_exa",
+   "pass": true
+  },
+  {
+   "id": "G12",
+   "group": "Grants",
+   "name": "anon → question_meta",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function question_",
+   "pass": true
+  },
+  {
+   "id": "G13",
+   "group": "Grants",
+   "name": "anon → admin_reset_attempts",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function admin_res",
+   "pass": true
+  },
+  {
+   "id": "G14",
+   "group": "Grants",
+   "name": "anon → revoke_certificate",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function revoke_ce",
+   "pass": true
+  },
+  {
+   "id": "G15",
+   "group": "Grants",
+   "name": "anon → set_employee_status",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function set_emplo",
+   "pass": true
+  },
+  {
+   "id": "G16",
+   "group": "Grants",
+   "name": "anon → my_role",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function my_role",
+   "pass": true
+  },
+  {
+   "id": "G17",
+   "group": "Grants",
+   "name": "anon → has_perm",
+   "expected": "DENIED",
+   "actual": "DENIED: permission denied for function has_perm",
+   "pass": true
+  },
+  {
+   "id": "E01",
+   "group": "Fixture",
+   "name": "Nazoratli fixture: ETHICS+COMM yaroqli savollar (test bazasida)",
+   "expected": "> 0",
+   "actual": "23",
+   "pass": true
+  },
+  {
+   "id": "E02",
+   "group": "Employee",
+   "name": "Xodim question_meta() (faqat meta, yaroqlilar)",
+   "expected": "23",
+   "actual": "23",
+   "pass": true
+  },
+  {
+   "id": "E03",
+   "group": "Employee",
+   "name": "Xodim start_exam(ETHICS, final)",
+   "expected": "OK",
+   "actual": "OK, 10 savol",
+   "pass": true
+  },
+  {
+   "id": "E04",
+   "group": "Leakage",
+   "name": "start_exam payload: javob kaliti / izoh / manba / evidence",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "E05",
+   "group": "Employee",
+   "name": "save_answers",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "E06",
+   "group": "Employee",
+   "name": "submit_exam → 100%, sertifikat",
+   "expected": "PASSED + sertifikat",
+   "actual": "100% IMP-2026-5D5F5E",
+   "pass": true
+  },
+  {
+   "id": "E07",
+   "group": "Employee",
+   "name": "O'z urinishini review qilish (yakunlangandan keyin javoblar)",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "E08",
+   "group": "Employee",
+   "name": "Boshqa xodimning urinish review'i",
+   "expected": "DENIED",
+   "actual": "DENIED",
+   "pass": true
+  },
+  {
+   "id": "E09",
+   "group": "Leakage",
+   "name": "Xodim → questions jadvali (javob kalitlari)",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "E10",
+   "group": "Leakage",
+   "name": "Xodim → question_versions",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "E11",
+   "group": "Leakage",
+   "name": "Xodim → question_reviews (reviewer izohlari)",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "E12",
+   "group": "Leakage",
+   "name": "Xodim → question_evidence (ichki evidence metadata)",
+   "expected": "0",
+   "actual": "0",
+   "pass": true
+  },
+  {
+   "id": "E13",
+   "group": "Public",
+   "name": "anon → verify_certificate (ommaviy QR tekshiruv)",
+   "expected": "Amalda",
+   "actual": "Amalda",
+   "pass": true
+  },
+  {
+   "id": "E14",
+   "group": "Public",
+   "name": "verify_certificate faqat minimal maydonlar (email/user_id/ball yo'q)",
+   "expected": "courseTitle,department,expiresAt,id,issuedAt,name,position,status",
+   "actual": "courseTitle,department,expiresAt,id,issuedAt,name,position,status",
+   "pass": true
+  },
+  {
+   "id": "E15",
+   "group": "Admin",
+   "name": "Education manager → savollar banki",
+   "expected": "> 0",
+   "actual": "131",
+   "pass": true
+  },
+  {
+   "id": "E16",
+   "group": "Admin",
+   "name": "Education manager → admin_reset_attempts",
+   "expected": "true",
+   "actual": "true",
+   "pass": true
+  },
+  {
+   "id": "E17",
+   "group": "Admin",
+   "name": "Xodim → admin_reset_attempts",
+   "expected": "DENIED",
+   "actual": "DENIED",
+   "pass": true
+  },
+  {
+   "id": "E18",
+   "group": "Admin",
+   "name": "Education manager → xodim urinishi review",
+   "expected": "OK",
+   "actual": "OK",
+   "pass": true
+  },
+  {
+   "id": "E19",
+   "group": "Admin",
+   "name": "Instruktor: faqat biriktirilgan kurs savollari",
+   "expected": "CARDIO_BASIC > 0, boshqa 0",
+   "actual": "11 / 0",
+   "pass": true
+  },
+  {
+   "id": "E20",
+   "group": "Cross-org",
+   "name": "Org B admin → Org A savol/urinish/sertifikat/xodim",
+   "expected": "0/0/0/0",
+   "actual": "0/0/0/0",
+   "pass": true
+  },
+  {
+   "id": "E21",
+   "group": "Cross-org",
+   "name": "Org B admin → Org A urinish review",
+   "expected": "DENIED",
+   "actual": "DENIED",
+   "pass": true
+  },
+  {
+   "id": "E22",
+   "group": "Cross-org",
+   "name": "Org B admin → Org A sertifikatini revoke",
+   "expected": "false (topilmadi)",
+   "actual": "false",
+   "pass": true
+  },
+  {
+   "id": "H01",
+   "group": "Certificate",
+   "name": "Sertifikat ismini o'zgartirish (hatto SQL/service role)",
+   "expected": "DENIED",
+   "actual": "DENIED: Sertifikat ma'lumotlari o'zgarmas (ism, kurs, ball, sana, ur",
+   "pass": true
+  },
+  {
+   "id": "H02",
+   "group": "Certificate",
+   "name": "Sertifikat balini o'zgartirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Sertifikat ma'lumotlari o'zgarmas (ism, kurs, ball, sana, ur",
+   "pass": true
+  },
+  {
+   "id": "H03",
+   "group": "Certificate",
+   "name": "Sertifikatni o'chirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Sertifikat tarixiy yozuv — o'chirib bo'lmaydi (bekor qilish ",
+   "pass": true
+  },
+  {
+   "id": "H04",
+   "group": "Attempt",
+   "name": "Yakunlangan urinish balini o'zgartirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Yakunlangan urinish o'zgarmas",
+   "pass": true
+  },
+  {
+   "id": "H05",
+   "group": "Attempt",
+   "name": "Urinishni o'chirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Imtihon urinishi tarixiy yozuv — o'chirib bo'lmaydi",
+   "pass": true
+  },
+  {
+   "id": "H06",
+   "group": "Historical",
+   "name": "Savol yangilangandan keyin eski urinish yozuvi aynan o'zgarmagan",
+   "expected": "o'zgarmagan",
+   "actual": "o'zgarmagan",
+   "pass": true
+  },
+  {
+   "id": "H07",
+   "group": "Historical",
+   "name": "Eski urinish review'i eski (v1) savol matnini ko'rsatadi",
+   "expected": "v2 matni yo'q",
+   "actual": "v2 matni yo'q",
+   "pass": true
+  },
+  {
+   "id": "L01",
+   "group": "Lifecycle",
+   "name": "Xodim boshqa xodimni faolsizlantira oladimi",
+   "expected": "DENIED",
+   "actual": "DENIED",
+   "pass": true
+  },
+  {
+   "id": "L02",
+   "group": "Lifecycle",
+   "name": "Department head → faolsizlantirish (ruxsat yo'q)",
+   "expected": "DENIED",
+   "actual": "DENIED",
+   "pass": true
+  },
+  {
+   "id": "L03",
+   "group": "Lifecycle",
+   "name": "Sababsiz faolsizlantirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Faolsizlantirish sababi kiritilishi shar",
+   "pass": true
+  },
+  {
+   "id": "L04",
+   "group": "Lifecycle",
+   "name": "Org B admin → Org A xodimini faolsizlantirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Xodim topilmadi",
+   "pass": true
+  },
+  {
+   "id": "L05",
+   "group": "Lifecycle",
+   "name": "O'z akkauntini faolsizlantirish",
+   "expected": "DENIED",
+   "actual": "DENIED: O'z akkauntingiz holatini o'zgartira olm",
+   "pass": true
+  },
+  {
+   "id": "L06",
+   "group": "Lifecycle",
+   "name": "HR → Super Admin'ni faolsizlantirish",
+   "expected": "DENIED",
+   "actual": "DENIED: Super Admin holatini faqat Super Admin o",
+   "pass": true
+  },
+  {
+   "id": "L07",
+   "group": "Lifecycle",
+   "name": "HR → xodimni deactivate (sabab bilan)",
+   "expected": "OK",
+   "actual": "{\"employee\":\"31c179ae-a082-4250-bcb2-61de959e06dd\",\"account_status\":\"deactivated\",\"employment_status\":\"inactive\"}",
+   "pass": true
+  },
+  {
+   "id": "L08",
+   "group": "Lifecycle",
+   "name": "Profil = deactivated, employee = inactive; yozuvlar o'chirilmagan",
+   "expected": "deactivated/inactive",
+   "actual": "deactivated/inactive",
+   "pass": true
+  },
+  {
+   "id": "L09",
+   "group": "Audit",
+   "name": "Server-side audit: employee.status_deactivated (actor, sabab) + employee.deactivated",
+   "expected": "ikkalasi",
+   "actual": "employee.status_deactivated,employee.deactivated,learning_paths.created",
+   "pass": true
+  },
+  {
+   "id": "L10",
+   "group": "Lifecycle",
+   "name": "Deactivated xodim: my_role() → null (barcha RLS yopiladi)",
+   "expected": "null",
+   "actual": "null",
+   "pass": true
+  },
+  {
+   "id": "L11",
+   "group": "Lifecycle",
+   "name": "Deactivated xodim imtihon boshlay olmaydi",
+   "expected": "DENIED",
+   "actual": "DENIED: Faol akkaunt talab qilinadi",
+   "pass": true
+  },
+  {
+   "id": "L12",
+   "group": "Lifecycle",
+   "name": "Deactivated xodim o'z sertifikatini baribir ko'radi (user_id = o'zi)",
+   "expected": "1",
+   "actual": "1",
+   "pass": true
+  },
+  {
+   "id": "C01",
+   "group": "Certificate",
+   "name": "Deactivate'dan keyin sertifikat yozuvi aynan o'zgarmagan",
+   "expected": "o'zgarmagan",
+   "actual": "o'zgarmagan",
+   "pass": true
+  },
+  {
+   "id": "C02",
+   "group": "Certificate",
+   "name": "Deactivate'dan keyin ommaviy tekshiruv: ism va holat o'zgarmagan",
+   "expected": "Test Employee / Amalda",
+   "actual": "Test Employee / Amalda",
+   "pass": true
+  },
+  {
+   "id": "C03",
+   "group": "Certificate",
+   "name": "Profil ismi o'zgarsa ham sertifikatdagi berilgan ism o'zgarmaydi",
+   "expected": "Test Employee",
+   "actual": "Test Employee",
+   "pass": true
+  },
+  {
+   "id": "C04",
+   "group": "Certificate",
+   "name": "Revoke ishlaydi; qayta revoke birinchi yozuvni (kim/qachon) o'zgartirmaydi",
+   "expected": "revoked, revoked_by=EDU saqlandi",
+   "actual": "revoked, revoked_by=EDU saqlandi",
+   "pass": true
+  },
+  {
+   "id": "C05",
+   "group": "Certificate",
+   "name": "Bekor qilingan sertifikatni qayta tiklash",
+   "expected": "DENIED",
+   "actual": "DENIED: Bekor qilingan sertifikatni qayta tiklab bo'lmaydi",
+   "pass": true
+  },
+  {
+   "id": "L13",
+   "group": "Lifecycle",
+   "name": "HR → deactivated akkauntni qayta faollashtirish (faqat Super Admin)",
+   "expected": "DENIED",
+   "actual": "DENIED: Deactivated akkauntni faqat Super Admin ",
+   "pass": true
+  },
+  {
+   "id": "R08",
+   "group": "Rollback",
+   "name": "Deactivated akkaunt mavjud bo'lsa rollback to'xtaydi (ma'lumot o'zgartirilmaydi)",
+   "expected": "BLOCKED, sxema o'zgarmagan",
+   "actual": "BLOCKED, sxema o'zgarmagan",
+   "pass": true
+  },
+  {
+   "id": "L14",
+   "group": "Lifecycle",
+   "name": "Super Admin → qayta faollashtirish",
+   "expected": "OK",
+   "actual": "active",
+   "pass": true
+  },
+  {
+   "id": "L15",
+   "group": "Lifecycle",
+   "name": "Oxirgi faol Super Admin himoyasi mavjud (org A faol super admin)",
+   "expected": ">= 1",
+   "actual": "1",
+   "pass": true
+  }
+ ]
+}

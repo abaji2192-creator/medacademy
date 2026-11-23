@@ -1,0 +1,650 @@
+[
+ {
+  "n": "_attempt_out",
+  "a": "a exam_attempts",
+  "d": "invoker",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_attempt_payload",
+  "a": "a exam_attempts",
+  "d": "invoker",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_cert_out",
+  "a": "c certificates",
+  "d": "invoker",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_default_evidence_tier",
+  "a": "p_type text",
+  "d": "invoker",
+  "r": "text",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_grade",
+  "a": "q questions, resp jsonb, neg numeric",
+  "d": "invoker",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "_norm",
+  "a": "t text",
+  "d": "invoker",
+  "r": "text",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_q_at",
+  "a": "p_id text, p_ver integer",
+  "d": "definer",
+  "r": "questions",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "_q_exam_eligible",
+  "a": "q questions",
+  "d": "definer",
+  "r": "boolean",
+  "c": "internal",
+  "pre": "auth",
+  "post": "—"
+ },
+ {
+  "n": "_q_full",
+  "a": "q questions",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_q_is_clinical",
+  "a": "q questions",
+  "d": "definer",
+  "r": "boolean",
+  "c": "internal",
+  "pre": "auth",
+  "post": "—"
+ },
+ {
+  "n": "_q_public",
+  "a": "q questions, ord jsonb",
+  "d": "invoker",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "_q_refs",
+  "a": "p_id text",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "_safe_date",
+  "a": "t text",
+  "d": "invoker",
+  "r": "date",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "admin_reset_attempts",
+  "a": "p_user uuid, p_course text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "role_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "audit_row",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "can_see_question",
+  "a": "p_q text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "can_see_question_row",
+  "a": "p_id text, p_org uuid, p_scope text, p_course text, p_created_by uuid",
+  "d": "definer",
+  "r": "boolean",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "can_see_source",
+  "a": "p_org uuid, p_scope text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "certificate_completes_assignment",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "docs_set_dept",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "enforce_same_org",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "enforce_same_org_005",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "evidence_source_effects",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "get_attempt_review",
+  "a": "p_attempt text",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "employee_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "guard_attempt_history",
+  "a": "",
+  "d": "invoker",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "yangi",
+  "post": "—"
+ },
+ {
+  "n": "guard_certificate_history",
+  "a": "",
+  "d": "invoker",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "yangi",
+  "post": "—"
+ },
+ {
+  "n": "guard_course_assignment",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_employee",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_evidence_classification",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_evidence_classification_origin_ok",
+  "a": "",
+  "d": "invoker",
+  "r": "boolean",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_evidence_source",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_evidence_summary",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_invitation",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_lesson_progress",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_org_from_question",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_profile",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_question",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_question_evidence",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_question_review",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "guard_requested_by",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "handle_new_user",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "has_perm",
+  "a": "p text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "import_research_result",
+  "a": "p_result uuid, p_source_type text",
+  "d": "definer",
+  "r": "uuid",
+  "c": "role_rpc",
+  "pre": "auth",
+  "post": "auth"
+ },
+ {
+  "n": "is_api_request",
+  "a": "",
+  "d": "invoker",
+  "r": "boolean",
+  "c": "internal",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "is_course_instructor",
+  "a": "p_course text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "mark_overdue_assignments",
+  "a": "",
+  "d": "definer",
+  "r": "integer",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "my_department_id",
+  "a": "",
+  "d": "definer",
+  "r": "uuid",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "my_dept",
+  "a": "",
+  "d": "definer",
+  "r": "text",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "my_employee_id",
+  "a": "",
+  "d": "definer",
+  "r": "uuid",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "my_org",
+  "a": "",
+  "d": "definer",
+  "r": "uuid",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "my_role",
+  "a": "",
+  "d": "definer",
+  "r": "text",
+  "c": "rls_helper",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "on_org_created",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "progress_marks_assignment",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "question_evidence_effects",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "question_meta",
+  "a": "",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "employee_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "question_review_effects",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "question_versioning",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "question_versions_immutable",
+  "a": "",
+  "d": "invoker",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "question_workflow",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "recompute_question_evidence",
+  "a": "p_q text",
+  "d": "definer",
+  "r": "text",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "refresh_evidence_freshness",
+  "a": "",
+  "d": "definer",
+  "r": "integer",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "revoke_certificate",
+  "a": "p_code text",
+  "d": "definer",
+  "r": "boolean",
+  "c": "role_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "rls_auto_enable",
+  "a": "",
+  "d": "definer",
+  "r": "event_trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "save_answers",
+  "a": "p_attempt text, p_answers jsonb",
+  "d": "definer",
+  "r": "boolean",
+  "c": "employee_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "seed_org_defaults",
+  "a": "p_org uuid",
+  "d": "definer",
+  "r": "void",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "seed_org_defaults_005",
+  "a": "p_org uuid",
+  "d": "definer",
+  "r": "void",
+  "c": "internal",
+  "pre": "—",
+  "post": "—"
+ },
+ {
+  "n": "set_employee_status",
+  "a": "p_employee uuid, p_status text, p_reason text",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "role_rpc",
+  "pre": "yangi",
+  "post": "auth"
+ },
+ {
+  "n": "start_exam",
+  "a": "p_course text, p_kind text, p_module text, p_domains jsonb, p_preview boolean",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "employee_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "submit_exam",
+  "a": "p_attempt text, p_answers jsonb",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "employee_rpc",
+  "pre": "anon+auth",
+  "post": "auth"
+ },
+ {
+  "n": "sync_employee_from_docs",
+  "a": "",
+  "d": "definer",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "touch_updated_at",
+  "a": "",
+  "d": "invoker",
+  "r": "trigger",
+  "c": "trigger",
+  "pre": "anon+auth",
+  "post": "—"
+ },
+ {
+  "n": "verify_certificate",
+  "a": "code text",
+  "d": "definer",
+  "r": "jsonb",
+  "c": "public_safe",
+  "pre": "anon+auth",
+  "post": "anon+auth"
+ }
+]

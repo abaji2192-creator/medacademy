@@ -1,0 +1,21 @@
+import { PGlite } from '/tmp/pgt/node_modules/@electric-sql/pglite/dist/index.js';
+import fs from 'fs';
+const B = '/home/claude/medacademy/site/backend/'; const db = new PGlite();
+await db.exec(`create role anon nologin; create role authenticated nologin; create role authenticator nologin; grant anon, authenticated to authenticator;
+create schema auth; create table auth.users (id uuid primary key, instance_id uuid, aud text, role text, email text, raw_user_meta_data jsonb, created_at timestamptz, updated_at timestamptz);
+create function auth.uid() returns uuid language sql stable as $$ select coalesce(nullif(current_setting('request.jwt.claim.sub', true),''), (nullif(current_setting('request.jwt.claims', true),'')::jsonb ->> 'sub'))::uuid $$;
+grant usage on schema auth to authenticated, anon; grant execute on function auth.uid() to authenticated, anon;`);
+const last = (res) => res.filter(r => r.fields.length).pop();
+const run = async (f, mode) => { try { const r = await db.exec(fs.readFileSync(B + f, 'utf8')); const t = last(r);
+  if (mode === 'all') t.rows.forEach(x => console.log('  ', JSON.stringify(x)));
+  else if (mode === 'ok') { const bad = t.rows.filter(x => x.ok === false || x.result === 'FAIL'); console.log(f, ':', t.rows.length, 'qator,', bad.length, 'FAIL'); bad.forEach(x => console.log('   FAIL', JSON.stringify(x))); }
+  else console.log('applied', f); return t; } catch (e) { console.log('ERROR', f, e.message, e.where || ''); process.exit(1); } };
+await run('supabase.sql'); await run('staging/01_prod_like_data.sql');
+await db.exec(`update auth.users set email='abaji2192@gmail.com' where id='262a128c-6fb7-470e-9452-5468cd6797c0'`);
+await run('production/01_apply_002_003.sql'); await run('production/10_backup_pre004.sql'); await run('production/12_apply_004.sql');
+await run('production/20_backup_pre005.sql', 'ok');
+await run('production/21_precheck_005.sql', 'all');
+await run('production/22_apply_005.sql', 'all');
+await run('production/23_verify_005.sql', 'ok');
+await run("migrations/005d_security_hardening.sql"); console.log("+ 005d"); await run("production/24_regression_005.sql", "ok");
+await run('production/23_verify_005.sql', 'ok');
