@@ -31,6 +31,10 @@ select json_build_object(
     'exam_attempts', (select count(*) || ':' || md5(coalesce(string_agg(to_jsonb(a)::text, '|' order by a.id), '')) from public.exam_attempts a),
     'certificates', (select count(*) || ':' || md5(coalesce(string_agg(to_jsonb(c)::text, '|' order by c.id), '')) from public.certificates c),
     'profiles', (select count(*) || ':' || md5(coalesce(string_agg(id || role || status || coalesce(org_id::text, ''), '|' order by id), '')) from public.profiles),
+    'courses', (select count(*) || ':' || md5(coalesce(string_agg(to_jsonb(c)::text, '|' order by c.id), '')) from public.courses c),
+    'reception_domain', (select coalesce(domain, '-') from public.courses where id = 'RECEPTION_START'),
+    'question_publications', (select count(*) || ':' || md5(coalesce(string_agg(to_jsonb(p)::text, '|' order by p.id), '')) from public.question_publications p),
+    'evidence_events', (select count(*) from public.evidence_events),
     'exam_configs', (select count(*) from public.exam_configs), 'docs', (select count(*) from public.docs),
     'eligible', (select count(*) from public.questions q where public._q_exam_eligible(q)))
 )::text as fingerprint_005e;

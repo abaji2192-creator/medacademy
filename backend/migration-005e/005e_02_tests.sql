@@ -90,6 +90,27 @@ do $$ declare i int; q text; begin
   end loop;
   perform pg_temp.sys(format($q$insert into public.question_evidence (org_id, question_id, evidence_source_id, relationship_type, supporting_claim)
     select '00000000-0000-0000-0000-000000000001', id, %L, 'primary_support', 'T5E' from public.questions where id in ('T5E_N01','T5E_N03','T5E_N04','T5E_N05')$q$, pg_temp.c('SRC_A')));
+  -- 2026-11-24 qarorlari uchun: Reception (5), klinik emas kurslar matritsasi (ETHICS/COMM/SALES/RECEPTION_START × 3), klinik (3)
+  for q in select unnest(array['T5E_R01','T5E_R02','T5E_R03','T5E_R04','T5E_R05']) loop
+    perform pg_temp.sys(format($q$insert into public.questions (id, org_id, course_id, type, difficulty, stem, options, answer, status, workflow_status)
+      values (%L, '00000000-0000-0000-0000-000000000001', 'RECEPTION_START', 'single', 'medium', 'T5E Reception test savoli', '["a","b"]', '0', 'draft', 'draft');
+      insert into public.question_evidence (org_id, question_id, evidence_source_id, relationship_type, supporting_claim) values ('00000000-0000-0000-0000-000000000001', %L, %L, 'primary_support', 'T5E')$q$,
+      q, q, pg_temp.c('SRC_A')));
+  end loop;
+  for q in select c || '_' || k from unnest(array['ETHICS','COMM','SALES','RECEPTION_START']) c, generate_series(1, 3) k loop
+    perform pg_temp.sys(format($q$insert into public.questions (id, org_id, course_id, type, difficulty, stem, options, answer, status, workflow_status)
+      values (%L, '00000000-0000-0000-0000-000000000001', %L, 'single', 'medium', 'T5E klinik emas matritsa savoli', '["a","b"]', '0', 'draft', 'draft');
+      insert into public.question_evidence (org_id, question_id, evidence_source_id, relationship_type, supporting_claim) values ('00000000-0000-0000-0000-000000000001', %L, %L, 'primary_support', 'T5E')$q$,
+      'T5E_NC_' || q, split_part(q, '_' || split_part(q, '_', array_length(string_to_array(q, '_'), 1)), 1), 'T5E_NC_' || q, pg_temp.c('SRC_A')));
+  end loop;
+  for i in 25..27 loop
+    q := 'T5E_C' || i;
+    perform pg_temp.sys(format($q$insert into public.questions (id, org_id, course_id, type, difficulty, stem, options, answer, status, workflow_status)
+      values (%L, '00000000-0000-0000-0000-000000000001', 'CARDIO_BASIC', 'single', 'medium', 'T5E klinik test savoli %s', '["a","b"]', '0', 'draft', 'draft');
+      insert into public.question_evidence (org_id, question_id, evidence_source_id, relationship_type, supporting_claim) values ('00000000-0000-0000-0000-000000000001', %L, %L, 'primary_support', 'T5E');
+      insert into public.question_review_assignments (org_id, question_id, reviewer_id, review_type) values ('00000000-0000-0000-0000-000000000001', %L, 'a0000000-0000-0000-0000-000000000008', 'medical')$q$,
+      q, i, q, pg_temp.c('SRC_A'), q));
+  end loop;
   -- Org B klinik savoli
   perform pg_temp.sys(format($q$insert into public.questions (id, org_id, course_id, type, difficulty, stem, options, answer, status, workflow_status)
       values ('T5E_B1', '0000000b-0000-0000-0000-00000000000b', 'TESTB_CARDIO', 'single', 'medium', 'T5E Org B test savoli', '["a","b"]', '0', 'draft', 'draft');
@@ -289,7 +310,7 @@ do $$ begin
   perform pg_temp.sys(format('insert into public.question_review_assignments (org_id, question_id, reviewer_id, review_type) values (%L, ''T5E_N03'', %L, ''evidence'')', pg_temp.c('OA'), pg_temp.c('REV')));
   perform pg_temp.ok('F03', 'Non-clinical', 'ETHICS: MR (tayinlangan, savolni ko''radi) publish → holat', 'DENIED draft', pg_temp.pub(pg_temp.u('REV'), 'T5E_N03') || ' ' || pg_temp.wf('T5E_N03'));
   perform pg_temp.ok('F04', 'Non-clinical', 'ETHICS: dalilsiz va ozod qilinmagan → EM publish', 'DENIED', pg_temp.pub(pg_temp.u('EDU'), 'T5E_N06'));
-  perform pg_temp.ok('F05', 'Non-clinical', 'Klinik emas deb hisoblanadigan kurslar (domain bo''yicha, mavjud siyosat)', 'COMM,ETHICS,SALES',
+  perform pg_temp.ok('F05', 'Non-clinical', 'Klinik emas deb hisoblanadigan kurslar (domain bo''yicha; 2026-11-24: RECEPTION_START klinik emas)', 'COMM,ETHICS,RECEPTION_START,SALES',
     (select string_agg(c.id, ',' order by c.id) from public.courses c where c.org_id = pg_temp.u('OA') and c.id in ('ETHICS','COMM','SALES','RECEPTION_START')
        and not (c.domain = any (coalesce((select p.clinical_domains from public.content_policies p where p.org_id = c.org_id), '{medical,public_health,safety}'::text[])))));
   perform pg_temp.ok('F06', 'Non-clinical', 'Klinik savol dalildan ozod qilinmaydi (EM)', 'DENIED', pg_temp.w(pg_temp.u('EDU'), 'update public.questions set evidence_exempt = true, evidence_exempt_reason = ''T5E: klinik savolni ozod qilishga urinish'' where id = ''T5E_C15'''));
@@ -316,10 +337,93 @@ do $$ declare n_qe int; n_rev int; begin
   -- G07: draft savolda evidence rejected → nashr qilinmaydi
   perform pg_temp.evready('T5E_N04'); perform pg_temp.rv(pg_temp.u('EDU'), 'T5E_N04', 'evidence', 'rejected');
   perform pg_temp.ok('G07', 'Evidence rejection', 'Draft (ETHICS): approved → rejected → EM publish', 'DENIED', pg_temp.pub(pg_temp.u('EDU'), 'T5E_N04'));
-  -- G08: evidence "changes_requested" — Qaror 3 faqat "rejected"ni qamraydi: holat o'zgarmaydi (hujjatlashtirilgan)
+  -- G08 (2026-11-24 qarori bilan yangilandi): evidence "changes_requested" → yangi imtihonlar uchun yaroqsiz; savol/dalil/review saqlanadi
   perform pg_temp.evready('T5E_N05'); perform pg_temp.pub(pg_temp.u('EDU'), 'T5E_N05');
-  perform pg_temp.ok('G08', 'Evidence rejection', 'Published ETHICS → evidence changes_requested → holat (o''zgarmaydi)', 'OK:1 published/current/- true',
-    pg_temp.rv(pg_temp.u('EDU'), 'T5E_N05', 'evidence', 'changes_requested') || ' ' || pg_temp.st('T5E_N05') || ' ' || pg_temp.elig('T5E_N05'));
+  perform pg_temp.ok('G08', 'Evidence rejection', 'Published ETHICS → evidence changes_requested → holat / yaroqlilik / qayta publish', 'OK:1 review_required/review_due/evidence_changes_requested false DENIED',
+    pg_temp.rv(pg_temp.u('EDU'), 'T5E_N05', 'evidence', 'changes_requested') || ' ' || pg_temp.st('T5E_N05') || ' ' || pg_temp.elig('T5E_N05') || ' ' || pg_temp.pub(pg_temp.u('EDU'), 'T5E_N05'));
+  perform pg_temp.ok('G09', 'Evidence rejection', 'changes_requested: savol / dalil / review yozuvlari saqlandi, event sababi', '1/1/approved,changes_requested/1',
+    (select count(*)::text from public.questions where id = 'T5E_N05') || '/' || (select count(*)::text from public.question_evidence where question_id = 'T5E_N05') || '/' ||
+    (select string_agg(decision, ',' order by review_seq) from public.question_reviews where question_id = 'T5E_N05' and review_type = 'evidence') || '/' ||
+    (select count(*)::text from public.evidence_events where question_id = 'T5E_N05' and details ->> 'decision' = 'evidence_changes_requested'));
+  perform pg_temp.ok('G10', 'Evidence rejection', 'changes_requested → tuzatish + yangi evidence approved (yangi versiyasiz) → EM publish → yaroqli', 'OK:1 OK:1 true 1',
+    pg_temp.evready('T5E_N05') || ' ' || pg_temp.pub(pg_temp.u('EDU'), 'T5E_N05') || ' ' || pg_temp.elig('T5E_N05') || ' ' || pg_temp.ver('T5E_N05'));
+end $$;
+
+-- ===== RC. RECEPTION_START klinik emas (2026-11-24 qarori 1) =====
+do $$ declare snap json; diffc text; begin
+  perform pg_temp.ok('RC00', 'Reception', 'RECEPTION_START.domain / Reception savoli klinikmi', 'communication/false',
+    (select domain from public.courses where id = 'RECEPTION_START') || '/' || (select public._q_is_clinical(q)::text from public.questions q where id = 'T5E_R01'));
+  select detail::json into snap from backup.security_pre005e where kind = 'course_domains_all';
+  select coalesce(string_agg(c.id, ',' order by c.id), '-') into diffc from public.courses c where c.domain is distinct from (snap ->> c.id) and c.id not like 'T5E%';
+  perform pg_temp.ok('RC01', 'Reception', 'Boshqa kurslar domain''i o''zgarmagan (snapshot bilan farq faqat RECEPTION_START)', 'RECEPTION_START', diffc);
+  perform pg_temp.ok('RC02', 'Reception', 'Snapshot: RECEPTION_START eski qiymati (rollback uchun)', 'medical',
+    (select detail from backup.security_pre005e where kind = 'course_domain' and name = 'RECEPTION_START'));
+  -- Case A: evidence approved → publish → yaroqli, medical review'siz
+  perform pg_temp.evready('T5E_R01');
+  perform pg_temp.ok('RC03', 'Reception', 'Case A: evidence approved → EM publish → yaroqli (medical review yo''q)', 'OK:1 true 0',
+    pg_temp.pub(pg_temp.u('EDU'), 'T5E_R01') || ' ' || pg_temp.elig('T5E_R01') || ' ' || (select count(*)::text from public.question_reviews where question_id = 'T5E_R01' and review_type = 'medical'));
+  -- Case B: approved → changes_requested → publish rad, yaroqsiz
+  perform pg_temp.evready('T5E_R02'); perform pg_temp.rv(pg_temp.u('EDU'), 'T5E_R02', 'evidence', 'changes_requested');
+  perform pg_temp.ok('RC04', 'Reception', 'Case B: evidence changes_requested → EM publish / yaroqlilik', 'DENIED false', pg_temp.pub(pg_temp.u('EDU'), 'T5E_R02') || ' ' || pg_temp.elig('T5E_R02'));
+  -- Case C: approved → rejected → publish rad, yaroqsiz
+  perform pg_temp.evready('T5E_R03'); perform pg_temp.rv(pg_temp.u('EDU'), 'T5E_R03', 'evidence', 'rejected');
+  perform pg_temp.ok('RC05', 'Reception', 'Case C: evidence rejected → EM publish / yaroqlilik', 'DENIED false', pg_temp.pub(pg_temp.u('EDU'), 'T5E_R03') || ' ' || pg_temp.elig('T5E_R03'));
+  -- Case D: published → changes_requested → yaroqsiz → yangi approved → qayta publish → yaroqli
+  perform pg_temp.evready('T5E_R04'); perform pg_temp.pub(pg_temp.u('EDU'), 'T5E_R04');
+  perform pg_temp.ok('RC06', 'Reception', 'Case D-1: published (yaroqli) → changes_requested → holat / yaroqlilik', 'true OK:1 review_required/review_due/evidence_changes_requested false',
+    pg_temp.elig('T5E_R04') || ' ' || pg_temp.rv(pg_temp.u('EDU'), 'T5E_R04', 'evidence', 'changes_requested') || ' ' || pg_temp.st('T5E_R04') || ' ' || pg_temp.elig('T5E_R04'));
+  perform pg_temp.ok('RC07', 'Reception', 'Case D-2: yangi evidence approved → EM publish → yana yaroqli', 'OK:1 OK:1 true',
+    pg_temp.evready('T5E_R04') || ' ' || pg_temp.pub(pg_temp.u('EDU'), 'T5E_R04') || ' ' || pg_temp.elig('T5E_R04'));
+  -- Super Admin ham nashr qila oladi; MR nashr qila olmaydi
+  perform pg_temp.evready('T5E_R05');
+  perform pg_temp.sys('insert into public.question_review_assignments (org_id, question_id, reviewer_id, review_type) values (''00000000-0000-0000-0000-000000000001'', ''T5E_R05'', ''a0000000-0000-0000-0000-000000000008'', ''evidence'')');
+  perform pg_temp.ok('RC08', 'Reception', 'MR (savolni ko''radi) publish / SA publish → yaroqli', 'DENIED OK:1 true',
+    pg_temp.pub(pg_temp.u('REV'), 'T5E_R05') || ' ' || pg_temp.pub(pg_temp.u('SA'), 'T5E_R05') || ' ' || pg_temp.elig('T5E_R05'));
+end $$;
+
+-- ===== NC. Klinik bo'lmagan kurslar matritsasi: ETHICS / COMM / SALES / RECEPTION_START =====
+do $$ declare c text; k int := 0; q text; r text; begin
+  foreach c in array array['ETHICS','COMM','SALES','RECEPTION_START'] loop
+    k := k + 1;
+    q := 'T5E_NC_' || c || '_';
+    perform pg_temp.evready(q || '1');
+    r := pg_temp.pub(pg_temp.u('EDU'), q || '1') || ' ' || pg_temp.elig(q || '1');
+    perform pg_temp.evready(q || '2'); perform pg_temp.rv(pg_temp.u('EDU'), q || '2', 'evidence', 'changes_requested');
+    r := r || ' / ' || pg_temp.pub(pg_temp.u('EDU'), q || '2') || ' ' || pg_temp.elig(q || '2');
+    perform pg_temp.evready(q || '3'); perform pg_temp.rv(pg_temp.u('EDU'), q || '3', 'evidence', 'rejected');
+    r := r || ' / ' || pg_temp.pub(pg_temp.u('EDU'), q || '3') || ' ' || pg_temp.elig(q || '3');
+    r := r || ' / clin=' || (select public._q_is_clinical(x)::text from public.questions x where id = q || '1')
+           || ' med=' || (select count(*)::text from public.question_reviews where question_id like q || '%' and review_type = 'medical');
+    perform pg_temp.ok('NC0' || k, 'Non-clinical matrix', c || ': approved → publish+yaroqli / changes_requested → rad / rejected → rad; medical talab qilinmaydi',
+      'OK:1 true / DENIED false / DENIED false / clin=false med=0', r);
+  end loop;
+end $$;
+
+-- ===== CL. Klinik savol: evidence va medical qarorlari ketma-ketligi =====
+do $$ begin
+  -- CL01: Evidence approved + medical approved → publish → yaroqli; keyin evidence changes_requested → yaroqsiz
+  perform pg_temp.evready('T5E_C25'); perform pg_temp.rv(pg_temp.u('REV'), 'T5E_C25', 'medical', 'approved');
+  perform pg_temp.ok('CL01', 'Clinical eligibility', 'Evidence + medical approved → publish → yaroqli → evidence changes_requested → holat / yaroqlilik', 'OK:1 true OK:1 review_required/review_due/evidence_changes_requested false',
+    pg_temp.pub(pg_temp.u('EDU'), 'T5E_C25') || ' ' || pg_temp.elig('T5E_C25') || ' ' || pg_temp.rv(pg_temp.u('EDU'), 'T5E_C25', 'evidence', 'changes_requested') || ' ' || pg_temp.st('T5E_C25') || ' ' || pg_temp.elig('T5E_C25'));
+  perform pg_temp.ok('CL02', 'Clinical eligibility', 'changes_requested → qayta publish (medical approved bor)', 'DENIED', pg_temp.pub(pg_temp.u('EDU'), 'T5E_C25'));
+  perform pg_temp.ok('CL03', 'Clinical eligibility', 'Changes requested → evidence approved → medical approved saqlangan → publish → yaroqli', 'OK:1 OK:1 true',
+    pg_temp.evready('T5E_C25') || ' ' || pg_temp.pub(pg_temp.u('EDU'), 'T5E_C25') || ' ' || pg_temp.elig('T5E_C25'));
+  -- CL04: evidence approved, medical YO'Q → publish rad (klinikda medical shart)
+  perform pg_temp.evready('T5E_C26');
+  perform pg_temp.ok('CL04', 'Clinical eligibility', 'Evidence approved, medical yo''q → publish', 'DENIED', pg_temp.pub(pg_temp.u('EDU'), 'T5E_C26'));
+  -- CL05: published → medical changes_requested → yaroqsiz
+  perform pg_temp.rv(pg_temp.u('REV'), 'T5E_C26', 'medical', 'approved'); perform pg_temp.pub(pg_temp.u('EDU'), 'T5E_C26');
+  perform pg_temp.ok('CL05', 'Clinical eligibility', 'Published → medical changes_requested → holat / yaroqlilik', 'true OK:1 review_required/current/medical_changes_requested false',
+    pg_temp.elig('T5E_C26') || ' ' || pg_temp.rv(pg_temp.u('REV'), 'T5E_C26', 'medical', 'changes_requested') || ' ' || pg_temp.st('T5E_C26') || ' ' || pg_temp.elig('T5E_C26'));
+  -- CL06: evidence approved → changes_requested → approved → rejected (oxirgi qaror) → yaroqsiz
+  perform pg_temp.evready('T5E_C27'); perform pg_temp.rv(pg_temp.u('REV'), 'T5E_C27', 'medical', 'approved');
+  perform pg_temp.rv(pg_temp.u('EDU'), 'T5E_C27', 'evidence', 'changes_requested'); perform pg_temp.evready('T5E_C27');
+  perform pg_temp.ok('CL06', 'Clinical eligibility', 'Evidence: approved → changes_requested → approved → publish OK → rejected → yaroqsiz', 'OK:1 true OK:1 false',
+    pg_temp.pub(pg_temp.u('EDU'), 'T5E_C27') || ' ' || pg_temp.elig('T5E_C27') || ' ' || pg_temp.rv(pg_temp.u('EDU'), 'T5E_C27', 'evidence', 'rejected') || ' ' || pg_temp.elig('T5E_C27'));
+  -- CL07: changes_requested ham ruxsat talab qiladi (instruktor / HR / xodim yoza olmaydi); Org A EM → Org B
+  perform pg_temp.ok('CL07', 'Clinical eligibility', 'evidence changes_requested: INS / HR / EMP / Org A EM → Org B savoli', 'DENIED/DENIED/DENIED/DENIED',
+    pg_temp.rv(pg_temp.u('INS'), 'T5E_C27', 'evidence', 'changes_requested') || '/' || pg_temp.rv(pg_temp.u('HR'), 'T5E_C27', 'evidence', 'changes_requested') || '/' ||
+    pg_temp.rv(pg_temp.u('EMP'), 'T5E_C27', 'evidence', 'changes_requested') || '/' || pg_temp.rv(pg_temp.u('EDU'), 'T5E_B1', 'evidence', 'changes_requested'));
 end $$;
 
 -- ===== H. Instruktor hujum yo'llari (STEP 11) — nashr qilingan, yaroqli klinik savol T5E_C11 (D11) =====
@@ -336,8 +440,8 @@ do $$ declare v text; begin
     pg_temp.w(pg_temp.u('INS'), 'update public.questions set workflow_status = ''archived'' where id = ''T5E_C11''') || '/' ||
     pg_temp.w(pg_temp.u('INS'), 'update public.questions set status = ''archived'' where id = ''T5E_C11''') || '/' ||
     pg_temp.w(pg_temp.u('INS'), 'update public.questions set status = ''draft'' where id = ''T5E_C11'''));
-  perform pg_temp.ok('H06', 'Instructor bypass', 'evidence review rejected / approved', 'DENIED/DENIED', pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'evidence', 'rejected') || '/' || pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'evidence', 'approved'));
-  perform pg_temp.ok('H07', 'Instructor bypass', 'medical review rejected', 'DENIED', pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'medical', 'rejected'));
+  perform pg_temp.ok('H06', 'Instructor bypass', 'evidence review rejected / approved / changes_requested', 'DENIED/DENIED/DENIED', pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'evidence', 'rejected') || '/' || pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'evidence', 'approved') || '/' || pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'evidence', 'changes_requested'));
+  perform pg_temp.ok('H07', 'Instructor bypass', 'medical review rejected / changes_requested', 'DENIED/DENIED', pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'medical', 'rejected') || '/' || pg_temp.rv(pg_temp.u('INS'), 'T5E_C11', 'medical', 'changes_requested'));
   perform pg_temp.ok('H08', 'Instructor bypass', 'evidence_status / review_reason to''g''ridan-to''g''ri', 'DENIED/DENIED',
     pg_temp.w(pg_temp.u('INS'), 'update public.questions set evidence_status = ''outdated'' where id = ''T5E_C11''') || '/' || pg_temp.w(pg_temp.u('INS'), 'update public.questions set review_reason = ''x'' where id = ''T5E_C11'''));
   perform pg_temp.ok('H09', 'Instructor bypass', 'evidence_exempt / published_version / current_version', 'DENIED/DENIED/DENIED',

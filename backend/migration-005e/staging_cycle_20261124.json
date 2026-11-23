@@ -1,0 +1,15 @@
+{
+ "project": "zwzxyikocqxbeyejeyga (medacademy-staging)",
+ "S0_old_005e_state": {"migration_sha256_applied_previously": "787a108454102713ac7bb2eab3fed69e893b34771deb2d91805e8d3cf7fe7c59", "fn_md5": "2be0041624720afb9b64a4d9db532df2", "policy_md5": "01080a074cdde90d754b266ceb4bc206", "courses": "14:4878ef83d16858ee8b345f32a8c7d198", "reception_domain": "medical"},
+ "rollback_old_005e": {"file_sha256": "802aa04ec22384bd1716e447746ab54a7d783769e99bd01c9ebea356b2b33a0f", "diff_vs_original_pre005e_F0": [], "courses_vs_backup_courses_pre005e": "equal (4878ef83...)"},
+ "Spre": {"fn_md5": "88c2bbfafacc68c5cfe6f47e1bb5da44", "policy_md5": "7384de1f13d7253227afc881d887bcd4", "courses": "14:4878ef83d16858ee8b345f32a8c7d198"},
+ "apply_new_005e": {"file_sha256_in_browser": "06db1d7de5e611a6e7dc738f0d82691d5c44441ae0fcbd13ca909c24a198ffb5", "bytes": 34968, "reception_domain": "communication"},
+ "S1": {"fn_md5": "8bdab755ce579f860c0206805794841c", "policy_md5": "01080a074cdde90d754b266ceb4bc206", "constraint_md5": "31bba4a9678b798b2a8fef8e135e5675", "column_md5": "e87a26bffaa401f92b459d5f4aa3b046", "role_perm_md5": "096bce41ba13961c9386f44cab216d85", "courses": "14:3e91469b16b3b7511b99b578bbc3c3c7"},
+ "idempotent_second_apply_diff": [],
+ "tests_after_apply": {"005e": "146/146", "005d_04": "54/54", "005d_05_regression_005_staging": "26/26", "005d_06_role_matrix": "62/62", "004": "50/50", "005_suite": "114/114"},
+ "rollback_new_005e": {"file_sha256": "56ec44dd2fda79d3998993a271fcb27a6ff397dd51e6461aeb3100fb82a333be", "diff_vs_Spre": [], "diff_vs_original_F0": [], "reception_domain": "medical"},
+ "reapply_diff_vs_S1": [],
+ "tests_after_reapply": {"005e": "146/146", "005d_04": "54/54", "005_suite": "114/114"},
+ "final_fingerprint_diff_after_all_tests": [],
+ "final_state": "005e (updated) applied"
+}

@@ -15,6 +15,10 @@
 --   7. _q_exam_eligible: yuqoridagi qoidalar yangi imtihonlar uchun ham (himoya qatlami).
 --   7b. Dalil orqali bilvosita yo'llar: nashr qilingan savolning dalil bog'lanishini o'zgartirish va manbani
 --       superseded/retracted/withdrawn qilish (yoki supersedes_id) — faqat evidence.review (instruktor emas).
+--   7c. Qaror (2026-11-24): evidence "changes_requested" ham "rejected" kabi yangi imtihonlar uchun yaroqsiz qiladi
+--       (review_reason = evidence_changes_requested). Keyingi "approved" evidence review'dan so'ng yana yaroqli bo'lishi mumkin.
+--   7d. Qaror (2026-11-24): RECEPTION_START kursi klinik emas — domain medical → communication (faqat shu kurs;
+--       kutilmagan qiymat bo'lsa TO'XTAYDI; rollback eski qiymatni tiklaydi).
 --   8. RLS question_reviews: medical.review hisobga olinadi; INSERT faqat o'z tashkiloti.
 --
 -- Qoidalar: DROP TABLE / TRUNCATE / biznes ma'lumotini DELETE YO'Q. Urinishlar, sertifikatlar, review / evidence yozuvlari,
@@ -53,6 +57,30 @@ do $$ begin
         'exam_attempts', (select count(*) from public.exam_attempts),
         'certificates', (select count(*) from public.certificates),
         'eligible', (select count(*) from public.questions q where public._q_exam_eligible(q)))::text;
+  end if;
+end $$;
+
+-- 0b. Kurs domain snapshot'i (alohida: oldingi 005e versiyasi snapshot'i bo'lsa ham bir marta yoziladi)
+do $$ begin
+  if not exists (select 1 from backup.security_pre005e where kind = 'course_domain') then
+    insert into backup.security_pre005e (kind, name, detail, extra)
+      select 'course_domain', c.id, c.domain, c.org_id::text from public.courses c where c.id = 'RECEPTION_START';
+    insert into backup.security_pre005e (kind, name, detail)
+      select 'course_domains_all', 'baseline', coalesce(json_object_agg(c.id, c.domain order by c.id), '{}'::json)::text from public.courses c;
+  end if;
+end $$;
+
+-- ---------- 0c. RECEPTION_START: klinik emas (domain medical → communication). Faqat shu kurs. ----------
+do $$ declare v text; begin
+  select domain into v from public.courses where id = 'RECEPTION_START';
+  if not found then
+    raise notice '005e: RECEPTION_START kursi yo''q — o''zgarish yo''q';
+  elsif v = 'medical' then
+    update public.courses set domain = 'communication' where id = 'RECEPTION_START' and domain = 'medical';
+  elsif v = 'communication' then
+    null;   -- allaqachon to'g'ri (idempotent)
+  else
+    raise exception '005e TO''XTATILDI: RECEPTION_START.domain kutilmagan qiymatda (%), ustidan yozilmaydi', v;
   end if;
 end $$;
 
@@ -179,19 +207,20 @@ begin
            evidence_review_due_at = now() + make_interval(months => coalesce(v_months, 24))
      where id = new.question_id;
     perform set_config('medacademy.system_write', 'off', true);
-  elsif new.review_type = 'evidence' and new.decision = 'rejected' then
-    -- Qaror 3: evidence rad etildi → yangi imtihonlar uchun yaroqsiz. Savol, dalil, urinish, sertifikat o'chirilmaydi / o'zgarmaydi.
+  elsif new.review_type = 'evidence' and new.decision in ('rejected','changes_requested') then
+    -- Qaror 3 + 2026-11-24: evidence rad etildi yoki o'zgartirish so'raldi → yangi imtihonlar uchun yaroqsiz.
+    -- Savol, dalil, review, urinish, sertifikat o'chirilmaydi / o'zgarmaydi. Sabab alohida: evidence_rejected / evidence_changes_requested.
     perform set_config('medacademy.system_write', 'on', true);
     update public.questions set
            evidence_status = case when evidence_status = 'current' then 'review_due' else evidence_status end,
            evidence_review_due_at = now(),
            workflow_status = case when workflow_status in ('published','approved') then 'review_required' else workflow_status end,
-           review_reason = 'evidence_rejected', review_required_at = now()
+           review_reason = 'evidence_' || new.decision, review_required_at = now()
      where id = new.question_id;
     perform set_config('medacademy.system_write', 'off', true);
     insert into public.evidence_events (org_id, event_type, question_id, detected_by, details)
     values (new.org_id, 'review_due', new.question_id, 'manual',
-            jsonb_build_object('decision', 'evidence_rejected', 'review', new.id, 'workflow_before', v_q.workflow_status, 'evidence_before', v_q.evidence_status));
+            jsonb_build_object('decision', 'evidence_' || new.decision, 'review', new.id, 'workflow_before', v_q.workflow_status, 'evidence_before', v_q.evidence_status));
   elsif new.review_type in ('evidence','medical') and new.decision in ('mark_outdated','mark_conflicting') then
     perform set_config('medacademy.system_write', 'on', true);
     update public.questions set evidence_status = case new.decision when 'mark_outdated' then 'outdated' else 'conflicting' end,
@@ -287,8 +316,8 @@ begin
       if new.evidence_status in ('conflicting','outdated','superseded','review_due') then
         raise exception 'Dalil holati "%" — savol nashr qilinmaydi, review kerak', new.evidence_status;
       end if;
-      if public._q_latest_review(new.id, null, 'evidence') = 'rejected' then
-        raise exception 'Oxirgi evidence review qarori "rejected" — savol nashr qilinmaydi';
+      if public._q_latest_review(new.id, null, 'evidence') in ('rejected','changes_requested') then
+        raise exception 'Oxirgi evidence review qarori "%" — savol nashr qilinmaydi (tuzatish va yangi evidence review kerak)', public._q_latest_review(new.id, null, 'evidence');
       end if;
       if v_clin then
         if new.evidence_status <> 'current' then raise exception 'Klinik savol: tasdiqlangan evidence review (evidence_status = current) kerak'; end if;
@@ -342,9 +371,9 @@ begin
                 or (qe.relationship_type in ('primary_support','additional_support') and s.status in ('superseded','retracted','withdrawn')))) then
     return false;
   end if;
-  -- 005e: oxirgi evidence qarori "rejected" → yaroqsiz
+  -- 005e: oxirgi evidence qarori "rejected" yoki "changes_requested" → yaroqsiz
   if coalesce((select r.decision from public.question_reviews r where r.question_id = q.id and r.review_type = 'evidence'
-               order by r.review_seq desc limit 1), '-') = 'rejected' then
+               order by r.review_seq desc limit 1), '-') in ('rejected','changes_requested') then
     return false;
   end if;
   -- 005e: klinik savol — nashr qilingan versiya bo'yicha oxirgi haqiqiy (MR/SA rolida yozilgan) medical qaror = approved
@@ -413,7 +442,7 @@ create policy question_reviews_insert on public.question_reviews for insert to a
               and public.can_see_question(question_id));
 
 insert into public.schema_migrations (version, description) values
-  ('005e', 'Medical review authorization: medical.review permission (MR/SA only), reviewer_role_at_creation + review_seq, latest-decision publish/eligibility gate, MR cannot publish, evidence rejection -> ineligible, instructor bypass closed')
+  ('005e', 'Medical review authorization: medical.review permission (MR/SA only), reviewer_role_at_creation + review_seq, latest-decision publish/eligibility gate, MR cannot publish, evidence rejected/changes_requested -> ineligible, instructor bypass closed, RECEPTION_START non-clinical')
 on conflict (version) do nothing;
 
 commit;
@@ -425,5 +454,6 @@ select json_build_object(
   'mr_publish_rows', (select count(*) from public.role_permissions where role = 'medical_reviewer' and permission_key = 'question.publish'),
   'review_cols', (select json_agg(column_name order by column_name) from information_schema.columns where table_schema = 'public' and table_name = 'question_reviews' and column_name in ('reviewer_role_at_creation','review_seq')),
   'questions', (select count(*) from public.questions), 'eligible', (select count(*) from public.questions q where public._q_exam_eligible(q)),
+  'reception_domain', (select domain from public.courses where id = 'RECEPTION_START'),
   'reviews', (select count(*) from public.question_reviews), 'attempts', (select count(*) from public.exam_attempts), 'certificates', (select count(*) from public.certificates)
 )::text as result_005e;

@@ -1,6 +1,6 @@
 -- FAQAT REAL INCIDENT UCHUN: Migration 005e ni bekor qilish — backup.security_pre005e snapshot'idan.
 -- NON-DESTRUCTIVE: savol, review, evidence, urinish, sertifikat qatorlari o'chirilmaydi / o'zgarmaydi.
--- Tiklanadi: guard_question_review, question_review_effects, question_workflow, _q_exam_eligible, seed_org_defaults_005,
+-- Tiklanadi: RECEPTION_START.domain (snapshot'dagi qiymat), guard_question_review, question_review_effects, question_workflow, _q_exam_eligible, seed_org_defaults_005,
 --            guard_question_evidence, guard_evidence_source (aynan ta'rif),
 --            question_reviews RLS policy'lari, medical_reviewer → question.publish biriktiruvlari.
 -- Olib tashlanadi: medical.review ruxsat biriktiruvlari va kaliti, role_permissions_005e_chk, _q_latest_review(), indeks.
@@ -41,6 +41,18 @@ insert into public.role_permissions (org_id, role, permission_key)
 on conflict do nothing;
 delete from public.permissions where key = 'medical.review' and not exists (select 1 from public.role_permissions where permission_key = 'medical.review');
 
+-- 3b. RECEPTION_START.domain: 005e'dan oldingi qiymat (faqat kurs hozir 'communication' bo'lsa; kurs/kontent/savollarga tegilmaydi)
+do $$ declare s record; v text; begin
+  for s in select name, detail from backup.security_pre005e where kind = 'course_domain' loop
+    select domain into v from public.courses where id = s.name;
+    if v = 'communication' and s.detail is distinct from 'communication' then
+      update public.courses set domain = s.detail where id = s.name and domain = 'communication';
+    elsif v is distinct from s.detail then
+      raise notice '005e rollback: % domain = % (kutilgan communication) — o''zgartirilmadi', s.name, v;
+    end if;
+  end loop;
+end $$;
+
 -- 4. Yordamchi funksiya va indeks
 drop function if exists public._q_latest_review(text, int, text);
 do $$ begin if to_regclass('backup.function_categories_005d') is not null then delete from backup.function_categories_005d where name = '_q_latest_review'; end if; end $$;
@@ -72,6 +84,7 @@ select json_build_object(
   'mr_publish_rows', (select count(*) from public.role_permissions where role = 'medical_reviewer' and permission_key = 'question.publish'),
   'latest_fn', to_regprocedure('public._q_latest_review(text,int,text)') is not null,
   'review_cols', (select count(*) from information_schema.columns where table_schema = 'public' and table_name = 'question_reviews' and column_name in ('reviewer_role_at_creation','review_seq')),
+  'reception_domain', (select domain from public.courses where id = 'RECEPTION_START'),
   'questions', (select count(*) from public.questions), 'reviews', (select count(*) from public.question_reviews),
   'attempts', (select count(*) from public.exam_attempts), 'certificates', (select count(*) from public.certificates)
 )::text as result_005e_rollback;

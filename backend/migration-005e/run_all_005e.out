@@ -1,5 +1,5 @@
 == 005e security suite
-SUMMARY 005e total 124 / PASS 124 / FAIL 0
+SUMMARY 005e total 146 / PASS 146 / FAIL 0
 == 005e rollback/recovery
 005e rollback/recovery: 21 test, 0 FAIL
 == 005d suite (005e bilan)
@@ -18,9 +18,9 @@ SUMMARY 005e total 124 / PASS 124 / FAIL 0
 32
 Barcha SQL testlar o'tdi
 == Phase 1 (005e'siz)
-31
+32
 == Phase 1 (faqat 002/003)
-31
+32
 == staging/005d_04_tests.sql (005e bilan)
 SUMMARY total 54 / FAIL 0
 == staging/005d_06_role_matrix.sql (005e bilan)
