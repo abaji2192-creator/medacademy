@@ -1,0 +1,25 @@
+// 006b rollback/recovery lokal: (005e + 006a) fp0 → 006b apply → fp1 → rollback → fp2 (= fp0) → reapply (2x) → testlar → rollback → reapply
+import { mk, B } from './lib005e.mjs';
+import fs from 'fs';
+const R = []; const ok = (id, name, pass, info = '') => R.push({ id, name, pass, info });
+const db = await mk(['staging/005e_00_backup.sql', 'migrations/005e_medical_review_authorization.sql', 'migrations/006a_audit_hardening.sql']);
+const FP = fs.readFileSync(B + 'staging/006a_01_fingerprint.sql', 'utf8');
+const fp = async () => JSON.parse((await db.query(FP)).rows[0].fingerprint_006a);
+const run = async f => db.exec(fs.readFileSync(B + f, 'utf8'));
+const suite = async () => { const sets = (await db.exec(fs.readFileSync(B + 'staging/006b_02_tests.sql', 'utf8'))).filter(x => x.fields.length); return sets[sets.length - 2].rows[0].line; };
+const fp0 = await fp();
+await run('migrations/006b_course_delete_hardening.sql'); const fp1 = await fp();
+ok('B01', 'apply: biznes ma\'lumoti o\'zgarmagan', JSON.stringify(fp1.data_md5) === JSON.stringify(fp0.data_md5));
+ok('B02', 'apply: RLS policy\'lari o\'zgarmagan', fp1.policy_md5 === fp0.policy_md5);
+ok('B03', 'apply: table grant\'lar o\'zgarmagan', fp1.table_grant_md5 === fp0.table_grant_md5);
+ok('B04', 'apply: anon EXECUTE faqat verify_certificate', fp1.anon_exec === 'verify_certificate', fp1.anon_exec);
+await run('migrations/006b_rollback.sql'); const fp2 = await fp();
+for (const k of Object.keys(fp0)) ok('B1' + k.slice(0, 6), 'rollback: ' + k + ' = 006b\'dan oldingi holat', JSON.stringify(fp2[k]) === JSON.stringify(fp0[k]));
+await run('migrations/006b_course_delete_hardening.sql'); await run('migrations/006b_course_delete_hardening.sql'); const fp3 = await fp();
+ok('B20', 'reapply (2x): holat = birinchi apply', JSON.stringify(fp3) === JSON.stringify(fp1));
+const s = await suite(); ok('B21', 'reapply → 006b test to\'plami', / FAIL 0/.test(s), s);
+const fp4 = await fp(); ok('B22', 'test residue 0 (fingerprint o\'zgarmagan)', JSON.stringify(fp4) === JSON.stringify(fp3));
+await run('migrations/006b_rollback.sql'); await run('migrations/006b_course_delete_hardening.sql'); const fp5 = await fp();
+ok('B23', 'ikkinchi rollback → reapply = birinchi apply', JSON.stringify(fp5) === JSON.stringify(fp1));
+R.forEach(r => console.log((r.pass ? 'PASS ' : 'FAIL ') + r.id + ' ' + r.name + (r.info ? ' :: ' + r.info : '')));
+console.log(`006b rollback/recovery: ${R.length} test, ${R.filter(r => !r.pass).length} FAIL`);
