@@ -233,6 +233,9 @@ async def main():
         ok('E07', 'Eligibility', 'Current\'ga qaytdi → yana eligible', 'true', elig(qid), elig(qid) is True)
         await goto(pg, '#/questions/' + qid, 2500); elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible')
         ok('A09', '005e UI', 'Status panel: published + approved → ELIGIBLE (server question_meta)', 'true', elg, elg == 'true')
+        src = await pg.get_attribute('[data-status-panel] [data-elig-src]', 'data-elig-src')
+        exp_src = 'question_eligibility' if sql("select count(*)::int n from schema_migrations where version='006a'")[0]['n'] else 'question_meta'
+        ok('A24', '006a UI', 'Yaroqlilik manbai: 006a bo\'lsa question_eligibility(id), aks holda question_meta', exp_src, src, src == exp_src)
         # Latest-decision: MR changes_requested → INELIGIBLE (sabab ko'rsatiladi), keyin approved → yana ELIGIBLE
         await login(pg, 'rev'); await goto(pg, '#/evidence/review/' + qid, 2200)
         await pg.select_option('[data-review] [name=type]', 'medical'); await pg.select_option('[data-review] [name=decision]', 'changes_requested')

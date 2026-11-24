@@ -568,6 +568,14 @@
   "ok": true
  },
  {
+  "id": "A24",
+  "grp": "006a UI",
+  "name": "Yaroqlilik manbai: 006a bo'lsa question_eligibility(id), aks holda question_meta",
+  "exp": "question_eligibility",
+  "act": "question_eligibility",
+  "ok": true
+ },
+ {
   "id": "A10",
   "grp": "005e UI",
   "name": "Latest medical = changes_requested → INELIGIBLE + sabab",
@@ -812,7 +820,7 @@
   "grp": "Audit (006 bo'shliq)",
   "name": "Savol publish / kurs status / sertifikat revoke audit_logs'da",
   "exp": "0 (kutilgan bo'shliq → 006a)",
-  "act": "{'q': 0, 'c': 0, 'ce': 0}",
+  "act": "{'q': 28, 'c': 1, 'ce': 1}",
   "ok": true
  },
  {
