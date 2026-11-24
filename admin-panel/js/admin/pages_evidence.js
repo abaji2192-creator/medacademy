@@ -64,6 +64,51 @@
     });
   }
 
+  // ---------- 005e: savol holati (oxirgi qaror semantikasi; yaroqlilik — server javobi) ----------
+  const DEFAULT_CLINICAL = ['medical', 'public_health', 'safety'];
+  const MED_ROLES = ['medical_reviewer', 'super_admin'];
+  async function reviewStatus(q) {
+    const [course, pol, rv, meta] = await Promise.all([
+      API.get('courses', 'id', q.course_id, 'id,domain').catch(() => null),
+      API.list('content_policies', { select: 'clinical_domains,clinical_requires_medical_review', size: 1, count: false }).catch(() => ({ rows: [] })),
+      API.list('question_reviews', { select: 'id,review_type,version_no,decision,reviewer_id,reviewer_role_at_creation,review_seq,created_at,internal_notes', eq: { question_id: q.id }, order: ['review_seq', false], all: true, count: false }).catch(() => ({ rows: [] })),
+      API.rpc('question_meta').catch(() => null)]);
+    const p = pol.rows[0] || {};
+    const domains = Array.isArray(p.clinical_domains) && p.clinical_domains.length ? p.clinical_domains : DEFAULT_CLINICAL;
+    const clinical = !!(course && domains.includes(course.domain));
+    const medRequired = clinical && p.clinical_requires_medical_review !== false;
+    const rows = rv.rows;   // review_seq bo'yicha kamayish tartibida (oxirgisi birinchi)
+    const latestEvidence = rows.find(r => r.review_type === 'evidence') || null;
+    const validMed = v => rows.find(r => r.review_type === 'medical' && r.version_no === v && MED_ROLES.includes(r.reviewer_role_at_creation)) || null;
+    const latestMedical = validMed(q.current_version);
+    const latestMedicalPublished = q.published_version ? validMed(q.published_version) : null;
+    const eligible = Array.isArray(meta) ? meta.some(m => m.id === q.id) : null;   // serverning _q_exam_eligible natijasi (question_meta)
+    const evBlocked = latestEvidence && ['rejected', 'changes_requested'].includes(latestEvidence.decision);
+    let reason = q.review_reason || null;
+    if (!reason && evBlocked) reason = 'evidence_' + latestEvidence.decision;
+    if (!reason && medRequired && latestMedical && latestMedical.decision !== 'approved') reason = 'medical_' + latestMedical.decision;
+    return { course, clinical, medRequired, rows, latestEvidence, latestMedical, latestMedicalPublished, eligible, evBlocked, reason };
+  }
+  const decisionBadge = r => r ? badge('decision', r.decision) : '<span class="badge">—</span>';
+  async function statusPanel(q, st) {
+    const last = st.rows[0] || null;
+    const ppl = last ? await API.list('profiles', { select: 'id,full_name,email', in: { id: [last.reviewer_id] }, all: true, count: false }).catch(() => ({ rows: [] })) : { rows: [] };
+    const who = last ? (ppl.rows[0] ? esc(ppl.rows[0].full_name || ppl.rows[0].email) : `<span class="mono">${esc((last.reviewer_id || '').slice(0, 8))}</span>`) : '—';
+    const medCell = !st.medRequired ? `<span class="badge" data-med="not_required">Not required</span> <span class="small muted">klinik emas kurs${st.course ? ' (' + esc(st.course.domain) + ')' : ''}</span>`
+      : st.latestMedical ? decisionBadge(st.latestMedical) + ` <span class="small muted">v${st.latestMedical.version_no}</span>` : '<span class="badge b-amber" data-med="pending">Kutilmoqda</span>';
+    const elig = st.eligible === null ? '<span class="badge">Noma\'lum</span>' : st.eligible ? '<span class="badge b-green" data-eligible="true">✓ ELIGIBLE</span>' : '<span class="badge b-red" data-eligible="false">✕ INELIGIBLE</span>';
+    return `<div class="card" data-status-panel><h3>Question status</h3><dl class="kv">
+      <dt>Evidence</dt><dd>${badge('evidence', q.evidence_status)} ${st.latestEvidence ? '· oxirgi qaror: ' + decisionBadge(st.latestEvidence) : ''}</dd>
+      <dt>Medical Review</dt><dd data-med-cell>${medCell}</dd>
+      <dt>Exam eligibility (yangi imtihonlar)</dt><dd>${elig} <span class="tiny">server: _q_exam_eligible</span></dd>
+      <dt>Sabab</dt><dd>${st.reason ? badge('reason', st.reason) : '—'}</dd>
+      <dt>Oxirgi qaror</dt><dd>${last ? esc(last.review_type) + ' · ' + decisionBadge(last) + ' · v' + last.version_no : '—'}</dd>
+      <dt>Reviewer</dt><dd>${who}</dd>
+      <dt>Reviewer roli (yozilgan paytda)</dt><dd>${last ? esc(PERMS.ROLE_LABEL[last.reviewer_role_at_creation] || last.reviewer_role_at_creation || 'qayd etilmagan (005e oldi)') : '—'}</dd>
+      <dt>Oxirgi o'zgarish</dt><dd>${last ? fmtDT(last.created_at) : '—'}</dd></dl>
+      <div class="tiny">Faqat joriy versiya (v${q.current_version}) uchun oxirgi qaror hisobga olinadi; eski versiya tasdig'i yangi versiyaga o'tmaydi. Server baribir qayta tekshiradi.</div></div>`;
+  }
+
   // ---------- Review workspace ----------
   ADMIN.route('/evidence/review/:id', 'evidence_queue', async (el, ctx) => {
     const id = decodeURIComponent(ctx.params.id);
@@ -72,7 +117,8 @@
     if (!q) { el.innerHTML = `<div class="card">${empty('Savol topilmadi yoki ruxsat yo\'q', id)}</div>`; return; }
     ctx.setTitle('Review: ' + (q.code || q.id));
     const stage = q.workflow_status === 'published' && !q.draft_status ? 4 : q.evidence_status === 'current' ? 3 : 1;
-    const canEv = PERMS.can('evidence.review'), canMed = ['medical_reviewer', 'education_manager', 'super_admin'].includes(PERMS.role()) && PERMS.can('question.review');
+    const st = await reviewStatus(q); if (!ctx.alive()) return;
+    const canEv = PERMS.can('evidence.review'), canMed = PERMS.canMedicalReview() && st.medRequired;
     el.innerHTML = `<div class="adm-h"><div><div class="sub"><a href="#/evidence/queue">← Review Queue</a> · <a href="#/questions/${encodeURIComponent(q.id)}">Savol kartasi</a></div><h1>Review: ${esc(q.code || q.id)}</h1>
       <div class="steps">${['1. Question', '2. Evidence', '3. Claim', '4. Review', '5. Decision'].map((s, i) => `<span class="${i < stage ? 'done' : i === stage ? 'cur' : ''}">${s}</span>`).join('')}</div>
       <div class="row">${badge('workflow', q.workflow_status)} ${badge('evidence', q.evidence_status)} <span class="badge">v${q.current_version}</span></div></div></div>
@@ -86,25 +132,23 @@
           <label>Qo'llab-quvvatlanadigan da'vo (supporting claim) *</label><textarea name="claim" rows="2" required placeholder="Manbada aynan nima deyilgani (o'z so'zlaringiz bilan)"></textarea>
           <label>Bo'lim / sahifa (section reference)</label><input name="section"><div class="small" data-err style="color:#b91c1c"></div>
           <button class="btn primary" style="margin-top:10px">Bog'lash</button></form></div>` : ''}</div>
-      <div><div class="card"><h3>4–5. Review va qaror</h3>${canEv || canMed ? `<form data-review>
+      <div><div data-status>${await statusPanel(q, st)}</div>
+        <div class="card" style="margin-top:14px"><h3>4–5. Review va qaror</h3>${!st.medRequired ? `<div class="note" data-med-not-required>Medical Review talab qilinmaydi (klinik emas kurs).</div>` : ''}${canEv || canMed ? `<form data-review>
           <label>Review turi</label><select name="type">${canEv ? '<option value="evidence">Evidence review</option>' : ''}${canMed ? '<option value="medical">Medical review (klinik tasdiq)</option>' : ''}</select>
-          <label>Qaror</label><select name="decision"><option value="approved">Approve</option><option value="changes_requested">Request changes</option><option value="rejected">Reject</option>
-            <option value="mark_outdated">Mark outdated (manba eskirgan)</option><option value="mark_conflicting">Mark conflicting (ziddiyatli dalil)</option></select>
+          <label>Qaror</label><select name="decision"></select>
           <label class="check"><input type="checkbox" name="c1"> <span>Manba(lar)ni asl nusxada tekshirdim (DOI/PMID/guideline versiyasi)</span></label>
           <label class="check"><input type="checkbox" name="c2"> <span>Savol va to'g'ri javob manbadagi tavsiyaga mos</span></label>
           <label class="check"><input type="checkbox" name="c3"> <span>Manba joriy (superseded / retracted emas)</span></label>
-          <label>Ichki izoh (faqat reviewer'lar ko'radi)</label><textarea name="notes" rows="3"></textarea>
+          <label data-notes-label>Ichki izoh (faqat reviewer'lar ko'radi)</label><textarea name="notes" rows="3"></textarea>
           <div class="small" data-err style="color:#b91c1c"></div><button class="btn primary" style="margin-top:10px">Qarorni yuborish</button>
           <div class="tiny" style="margin-top:6px">Evidence holati faqat server tomonidan review natijasiga qarab o'zgaradi (to'g'ridan-to'g'ri o'zgartirib bo'lmaydi).</div></form>`
         : `<div class="note">Sizda review qilish ruxsati yo'q.</div>`}</div>
-        ${PERMS.can('question.review') || PERMS.can('evidence.review') ? `<div class="card" style="margin-top:14px"><h3>Medical review'ga yuborish</h3><form data-assign><label>Medical reviewer</label><select name="rev" data-rev-sel><option value="">yuklanmoqda…</option></select>
+        ${PERMS.canAssignReview() && st.medRequired ? `<div class="card" style="margin-top:14px"><h3>Medical review'ga yuborish</h3><form data-assign><label>Medical reviewer</label><select name="rev" data-rev-sel><option value="">yuklanmoqda…</option></select>
           <label>Muddat</label><input type="date" name="due"><button class="btn" style="margin-top:10px">Tayinlash</button></form></div>` : ''}
         <div class="card" style="margin-top:14px"><h3>Review tarixi</h3><div data-hist>${skeleton(2)}</div></div></div></div>`;
     await renderQuestionEvidence(q, el.querySelector('[data-ev]'), ctx, true);
     // review tarixi
-    API.list('question_reviews', { select: 'review_type,version_no,decision,created_at,internal_notes', eq: { question_id: q.id }, order: ['created_at', false], all: true, count: false })
-      .then(r => { if (ctx.alive()) el.querySelector('[data-hist]').innerHTML = r.rows.length ? r.rows.map(x => `<div class="row between small" style="padding:4px 0"><span>${esc(x.review_type)} · v${x.version_no} · ${fmtDT(x.created_at)}</span>${badge('decision', x.decision)}</div>`).join('') : empty('Hali review yo\'q'); })
-      .catch(e => { if (ctx.alive()) el.querySelector('[data-hist]').innerHTML = errorBox(API.friendly(e)); });
+    el.querySelector('[data-hist]').innerHTML = st.rows.length ? st.rows.map(x => `<div class="row between small" style="padding:4px 0" data-hist-row><span>${esc(x.review_type)} · v${x.version_no} · ${fmtDT(x.created_at)} · <span class="muted">${esc(PERMS.ROLE_LABEL[x.reviewer_role_at_creation] || x.reviewer_role_at_creation || '—')}</span></span>${badge('decision', x.decision)}</div>`).join('') : empty('Hali review yo\'q');
     // manba qidiruvi
     const af = el.querySelector('[data-attach]');
     if (af) {
@@ -119,11 +163,19 @@
           supporting_claim: af.claim.value.trim(), section_reference: af.section.value.trim() || null }); toast('Dalil bog\'landi'); ADMIN.render(); } catch (e2) { err.textContent = API.friendly(e2).message; } };
     }
     const rf = el.querySelector('[data-review]');
+    // 005e: qaror turlari review turiga bog'liq (mark_* faqat evidence; medical — approved / rejected / changes_requested)
+    const DEC = { evidence: ['approved', 'changes_requested', 'rejected', 'mark_outdated', 'mark_conflicting'], medical: ['approved', 'rejected', 'changes_requested'] };
+    const DEC_LABEL = { approved: 'Approve', changes_requested: 'Request changes', rejected: 'Reject', mark_outdated: 'Mark outdated (manba eskirgan)', mark_conflicting: 'Mark conflicting (ziddiyatli dalil)' };
+    const syncDec = () => { const t = rf.type.value; rf.decision.innerHTML = (DEC[t] || []).map(d => `<option value="${d}">${esc(DEC_LABEL[d])}</option>`).join('');
+      rf.querySelector('[data-notes-label]').textContent = t === 'medical' ? 'Sabab (majburiy)' : 'Ichki izoh (faqat reviewer\'lar ko\'radi)'; };
+    if (rf) { syncDec(); rf.type.addEventListener('change', syncDec); }
     if (rf) rf.onsubmit = async e => { e.preventDefault(); const err = rf.querySelector('[data-err]'); err.textContent = '';
       const dec = rf.decision.value, type = rf.type.value;
+      if (!(DEC[type] || []).includes(dec)) { err.textContent = 'Bu review turi uchun qaror mavjud emas'; return; }
       if (dec === 'approved' && !(rf.c1.checked && rf.c2.checked && rf.c3.checked)) { err.textContent = 'Approve uchun uchala tekshiruv belgilanishi shart'; return; }
-      if (dec !== 'approved' && !rf.notes.value.trim()) { err.textContent = 'Bu qaror uchun ichki izoh (sabab) majburiy'; return; }
-      if (!await dialog({ title: 'Qarorni tasdiqlash', body: `${esc(type === 'medical' ? 'Medical' : 'Evidence')} review: <b>${esc(UI.LABELS.decision[dec][0])}</b> (v${q.current_version}). Review yozuvlari o'zgarmas.`, okText: 'Yuborish', danger: dec !== 'approved' })) return;
+      if ((type === 'medical' || dec !== 'approved') && !rf.notes.value.trim()) { err.textContent = type === 'medical' ? 'Medical review uchun sabab majburiy' : 'Bu qaror uchun ichki izoh (sabab) majburiy'; return; }
+      const medNote = type === 'medical' ? '<div class="note warn" style="margin-top:8px">Bu medical review qarori klinik savolning <b>yangi imtihonlarga</b> yaroqliligiga ta\'sir qiladi (This medical review decision affects eligibility for future clinical exams).</div>' : '';
+      if (!await dialog({ title: 'Qarorni tasdiqlash', body: `${esc(type === 'medical' ? 'Medical' : 'Evidence')} review: <b>${esc(UI.LABELS.decision[dec][0])}</b> (v${q.current_version}). Review yozuvlari o'zgarmas.${medNote}`, okText: 'Yuborish', danger: dec !== 'approved' })) return;
       try { await API.insert('question_reviews', { org_id: PERMS.state.profile.org_id, question_id: q.id, version_no: q.current_version, review_type: type, reviewer_id: PERMS.state.profile.id, decision: dec,
         internal_notes: rf.notes.value.trim() || null, checklist: { source_checked: rf.c1.checked, answer_matches: rf.c2.checked, source_current: rf.c3.checked } });
         toast('Review saqlandi'); ADMIN.render(); } catch (e2) { err.textContent = API.friendly(e2).message; } };
@@ -190,7 +242,7 @@
     const own = s.scope_type === 'organization';
     const acts = [];
     if (own && PERMS.can('evidence.verify') && s.verification_status !== 'verified') acts.push(`<button class="btn green" data-act="verify">Verify (tekshirildi)</button>`);
-    if (own && PERMS.can('evidence.manage') && s.status === 'active') acts.push(`<button class="btn" data-act="superseded">Superseded deb belgilash</button><button class="btn red" data-act="retracted">Retracted deb belgilash</button>`);
+    if (own && PERMS.can('evidence.manage') && PERMS.can('evidence.review') && s.status === 'active') acts.push(`<button class="btn" data-act="superseded">Superseded deb belgilash</button><button class="btn red" data-act="retracted">Retracted deb belgilash</button>`);
     const links = await API.list('question_evidence', { select: 'question_id,relationship_type', eq: { evidence_source_id: s.id }, all: true, count: false }).catch(() => ({ rows: [] }));
     if (!ctx.alive()) return;
     el.innerHTML = `<div class="adm-h"><div><div class="sub"><a href="#/evidence/library">← Evidence Library</a></div><h1>${esc(s.title)}</h1><div class="row">${badge('source', s.status)} ${badge('verification', s.verification_status)} <span class="badge">${esc(s.scope_type === 'global' ? 'Global' : 'Tashkilot')}</span></div></div><div class="act">${acts.join('')}</div></div>
@@ -216,5 +268,5 @@
       } catch (e) { toast(API.friendly(e).message, true); } });
   });
 
-  window.EVIDENCE = { renderQuestionEvidence };
+  window.EVIDENCE = { renderQuestionEvidence, reviewStatus, statusPanel };
 })();

@@ -18,12 +18,18 @@
   const can = k => !!state.profile && state.profile.status === 'active' && (state.profile.role === 'super_admin' || state.perms.has(k));
   const any = (...ks) => ks.some(can);
   const isAdminUser = () => !!state.profile && state.profile.status === 'active' && ADMIN_ROLES.includes(state.profile.role);
+  // 005e: server qoidalari bilan bir xil (UX uchun; haqiqiy tekshiruv — guard_question_review / question_workflow trigger'lari)
+  const MEDICAL_REVIEW_ROLES = ['super_admin', 'medical_reviewer'];
+  const PUBLISH_ROLES = ['super_admin', 'education_manager'];
+  const canMedicalReview = () => can('medical.review') && MEDICAL_REVIEW_ROLES.includes(role());
+  const canPublish = () => can('question.publish') && PUBLISH_ROLES.includes(role());
+  const canAssignReview = () => PUBLISH_ROLES.includes(role()) && !!state.profile && state.profile.status === 'active';
 
   // Bo'limlar → kerakli ruxsat (server ham shu ruxsatlarni tekshiradi)
   const SECTIONS = {
     dashboard: () => isAdminUser(),
     questions: () => can('question.view'),
-    evidence_queue: () => any('evidence.review', 'question.review'),
+    evidence_queue: () => any('evidence.review', 'question.review', 'medical.review'),
     evidence_library: () => can('evidence.view'),
     employees: () => can('employee.view') || role() === 'department_head',
     organization: () => any('department.view', 'department.manage', 'position.manage', 'specialty.manage') && role() !== 'instructor' && role() !== 'content_author' && role() !== 'medical_reviewer',
@@ -32,5 +38,5 @@
     audit: () => can('audit.view'),
   };
   const section = s => !!(SECTIONS[s] && SECTIONS[s]());
-  window.PERMS = { load, can, any, role, section, isAdminUser, state, ROLE_LABEL, ADMIN_ROLES };
+  window.PERMS = { load, can, any, role, section, isAdminUser, state, ROLE_LABEL, ADMIN_ROLES, canMedicalReview, canPublish, canAssignReview };
 })();

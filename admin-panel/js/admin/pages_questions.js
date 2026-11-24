@@ -86,9 +86,12 @@
     const srcs = srcIds.length ? (await API.list('evidence_sources', { select: 'id,status,verification_status', in: { id: srcIds }, all: true, count: false }).catch(() => ({ rows: [] }))).rows : [];
     const primaryVerified = ev.rows.some(r => r.relationship_type === 'primary_support' && srcs.find(s => s.id === r.evidence_source_id && s.verification_status === 'verified' && s.status === 'active'));
     const conflicts = ev.rows.some(r => r.relationship_type === 'conflicting_evidence') || srcs.some(s => ['superseded', 'retracted', 'withdrawn'].includes(s.status));
-    const med = await API.list('question_reviews', { select: 'id', eq: { question_id: q.id, review_type: 'medical', decision: 'approved', version_no: q.current_version }, count: false }).catch(() => ({ rows: [] }));
+    // 005e: oxirgi qaror semantikasi (review_seq), faqat joriy versiya, faqat SA/MR medical qarori; klinik emas kurs — medical talab qilinmaydi
+    const st = await window.EVIDENCE.reviewStatus(q);
+    const medOk = !st.medRequired || (st.latestMedical && st.latestMedical.decision === 'approved');
     return [['Evidence holati = Current', q.evidence_status === 'current' || q.evidence_exempt], ['Tasdiqlangan (verified) asosiy manba', primaryVerified || q.evidence_exempt],
-      ['Ziddiyatli / eskirgan manba yo\'q', !conflicts], ['Joriy versiya uchun Medical Review (klinik savol)', med.rows.length > 0 || q.evidence_exempt]];
+      ['Ziddiyatli / eskirgan manba yo\'q', !conflicts], ['Oxirgi evidence qarori rejected / changes_requested emas', !st.evBlocked],
+      [st.medRequired ? 'Joriy versiya uchun oxirgi Medical Review = Approved (klinik savol)' : 'Medical Review talab qilinmaydi (klinik emas kurs)', medOk]];
   }
 
   ADMIN.route('/questions/:id', 'questions', async (el, ctx) => {
@@ -98,9 +101,9 @@
     if (!q) { el.innerHTML = `<div class="card">${empty('Savol topilmadi yoki ko\'rish uchun ruxsat yo\'q', id)}</div>`; return; }
     ctx.setTitle('Savol ' + (q.code || q.id));
     const acts = [];
-    if (PERMS.any('evidence.review', 'question.review')) acts.push(`<a class="btn primary" href="#/evidence/review/${encodeURIComponent(q.id)}" data-act="open-review">Review ochish</a>`);
+    if (PERMS.any('evidence.review', 'question.review', 'medical.review')) acts.push(`<a class="btn primary" href="#/evidence/review/${encodeURIComponent(q.id)}" data-act="open-review">Review ochish</a>`);
     if (PERMS.can('question.edit') && q.workflow_status === 'draft') acts.push(`<button class="btn" data-act="to-evidence-review">Evidence review'ga yuborish</button>`);
-    if (PERMS.can('question.publish') && (q.workflow_status !== 'published' || q.draft_status) && !['deprecated', 'archived'].includes(q.workflow_status)) acts.push(`<button class="btn green" data-act="publish">${q.draft_status ? 'Yangi versiyani nashr qilish' : 'Publish'}</button>`);
+    if (PERMS.canPublish() && (q.workflow_status !== 'published' || q.draft_status) && !['deprecated', 'archived'].includes(q.workflow_status)) acts.push(`<button class="btn green" data-act="publish">${q.draft_status ? 'Yangi versiyani nashr qilish' : 'Publish'}</button>`);
     if (PERMS.can('question.deprecate') && !['deprecated', 'archived'].includes(q.workflow_status)) acts.push(`<button class="btn red" data-act="deprecate">Deprecate</button>`);
     el.innerHTML = `<div class="adm-h"><div><div class="sub"><a href="#/questions">← Savollar banki</a></div><h1>${esc(q.code || q.id)}</h1>
       <div class="row" style="margin-top:6px">${badge('workflow', q.workflow_status)} ${badge('evidence', q.evidence_status)} <span class="badge">v${q.current_version}${q.published_version ? ' · nashr v' + q.published_version : ''}</span>${q.ai_generated ? ' <span class="badge b-violet">AI</span>' : ''}${q.review_reason ? ` <span class="small muted">sabab: ${esc(q.review_reason)}</span>` : ''}</div></div>
@@ -120,8 +123,10 @@
         <dt>Learning objective</dt><dd>${esc(q.learning_objective || '—')}</dd><dt>Guideline mavzusi</dt><dd>${esc(q.guideline_topic || '—')}</dd>
         <dt>Oxirgi evidence review</dt><dd>${fmtDT(q.last_evidence_reviewed_at)}</dd><dt>Keyingi review muddati</dt><dd>${fmtDate(q.evidence_review_due_at)}</dd>
         <dt>Evidence'dan ozod</dt><dd>${q.evidence_exempt ? 'Ha — ' + esc(q.evidence_exempt_reason) : 'Yo\'q'}</dd><dt>Yangilangan</dt><dd>${fmtDT(q.updated_at)}</dd></dl></div></div>
-        ${PERMS.can('question.publish') ? `<div class="card" style="margin-top:14px"><h3>Nashr shartlari (ma'lumot uchun — server baribir tekshiradi)</h3><div data-gates>${skeleton(2)}</div></div>` : ''}`;
-      if (PERMS.can('question.publish')) { const g = await gateInfo(q); if (ctx.alive()) body.querySelector('[data-gates]').innerHTML = g.map(([l, ok]) => `<div class="row" style="padding:3px 0">${ok ? '✅' : '⬜'} ${esc(l)}</div>`).join(''); }
+        ${PERMS.any('evidence.review', 'medical.review', 'question.publish') ? `<div style="margin-top:14px" data-status></div>` : ''}
+        ${PERMS.canPublish() ? `<div class="card" style="margin-top:14px"><h3>Nashr shartlari (ma'lumot uchun — server baribir tekshiradi)</h3><div data-gates>${skeleton(2)}</div></div>` : ''}`;
+      if (PERMS.any('evidence.review', 'medical.review', 'question.publish')) { const st = await window.EVIDENCE.reviewStatus(q); const html = await window.EVIDENCE.statusPanel(q, st); if (ctx.alive()) body.querySelector('[data-status]').innerHTML = html; }
+      if (PERMS.canPublish()) { const g = await gateInfo(q); if (ctx.alive()) body.querySelector('[data-gates]').innerHTML = g.map(([l, ok]) => `<div class="row" style="padding:3px 0" data-gate="${ok ? 'ok' : 'no'}">${ok ? '✅' : '⬜'} ${esc(l)}</div>`).join(''); }
     } else if (tab === 'options') {
       const opts = Array.isArray(q.options) ? q.options : [];
       body.innerHTML = `<div class="card"><h3>Variantlar</h3>${opts.length ? opts.map((o, i) => `<div class="opt">${String.fromCharCode(65 + i)}. ${esc(Array.isArray(o) ? o.join(' ↔ ') : (typeof o === 'object' ? JSON.stringify(o) : o))}</div>`).join('') : empty('Variantlar yo\'q (qisqa javob turi)')}
@@ -140,13 +145,13 @@
     } else if (tab === 'evidence') {
       await window.EVIDENCE.renderQuestionEvidence(q, body, ctx, false);
     } else if (tab === 'review') {
-      const [rv, as] = await Promise.all([API.list('question_reviews', { select: 'id,version_no,review_type,reviewer_id,decision,internal_notes,created_at', eq: { question_id: q.id }, order: ['created_at', false], all: true, count: false }),
+      const [rv, as] = await Promise.all([API.list('question_reviews', { select: 'id,version_no,review_type,reviewer_id,reviewer_role_at_creation,review_seq,decision,internal_notes,created_at', eq: { question_id: q.id }, order: ['review_seq', false], all: true, count: false }),
         API.list('question_review_assignments', { select: 'id,reviewer_id,review_type,status,due_at,created_at', eq: { question_id: q.id }, order: ['created_at', false], all: true, count: false }).catch(() => ({ rows: [] }))]);
       const ids = [...new Set([...rv.rows.map(r => r.reviewer_id), ...as.rows.map(r => r.reviewer_id)])];
       const ppl = ids.length ? Object.fromEntries((await API.list('profiles', { select: 'id,full_name,email,role', in: { id: ids }, all: true, count: false }).catch(() => ({ rows: [] }))).rows.map(p => [p.id, p])) : {};
       const who = id => ppl[id] ? esc(ppl[id].full_name || ppl[id].email) + `<div class="sub">${esc(PERMS.ROLE_LABEL[ppl[id].role] || '')}</div>` : `<span class="mono">${esc((id || '').slice(0, 8))}</span>`;
       body.innerHTML = `<div class="card"><h3>Review tarixi (o'zgarmas)</h3>${table(rv.rows, [{ h: 'Vaqt', r: x => fmtDT(x.created_at) }, { h: 'Tur', r: x => esc(x.review_type) }, { h: 'Versiya', r: x => 'v' + x.version_no },
-        { h: 'Reviewer', r: x => who(x.reviewer_id) }, { h: 'Qaror', r: x => badge('decision', x.decision) }, { h: 'Ichki izoh', r: x => esc(x.internal_notes || '') }], { empty: 'Hali review qilinmagan', id: 'reviews' })}</div>
+        { h: 'Reviewer', r: x => who(x.reviewer_id) }, { h: 'Rol (yozilgan paytda)', r: x => esc(PERMS.ROLE_LABEL[x.reviewer_role_at_creation] || x.reviewer_role_at_creation || '—') }, { h: 'Qaror', r: x => badge('decision', x.decision) }, { h: 'Ichki izoh', r: x => esc(x.internal_notes || '') }], { empty: 'Hali review qilinmagan', id: 'reviews' })}</div>
         <div class="card" style="margin-top:14px"><h3>Review tayinlovlari</h3>${table(as.rows, [{ h: 'Tur', r: x => esc(x.review_type) }, { h: 'Reviewer', r: x => who(x.reviewer_id) }, { h: 'Holat', r: x => badge('generic', x.status) }, { h: 'Muddat', r: x => fmtDate(x.due_at) }], { empty: 'Tayinlov yo\'q' })}</div>`;
     } else if (tab === 'versions') {
       const [v, p] = await Promise.all([API.list('question_versions', { select: 'id,version_no,change_reason,created_at,created_by', eq: { question_id: q.id }, order: ['version_no', false], all: true, count: false }),
