@@ -1,0 +1,49 @@
+{
+ "backup": {
+  "tables_backed_up": 43,
+  "tables_identical": 43,
+  "mismatched": "-"
+ },
+ "precheck": {
+  "m005e": 1,
+  "m006a": 0,
+  "m006b": 0,
+  "anon_exec": "verify_certificate",
+  "reception_domain": "communication",
+  "mr_publish": 0,
+  "fk_cascade": 0,
+  "reset_events_exists": false,
+  "snapshot_006a_exists": false,
+  "triggers_006": 0,
+  "backup_tables": 43,
+  "public_tables": 43,
+  "fn_md5": "cecb46b2a1e2ce82024d2a3a2b7553f8",
+  "policy_md5": "01080a074cdde90d754b266ceb4bc206"
+ },
+ "apply6a": "006a",
+ "apply6b": "006b",
+ "verify": {
+  "migrations": 3,
+  "triggers_006": 13,
+  "audit_client_write": 0,
+  "policies": 98,
+  "policies_before": 97,
+  "reset_events": 0,
+  "attempt_resets": 0,
+  "eligibility_rpc_authenticated": true,
+  "eligibility_rpc_anon": false,
+  "anon_exec": "verify_certificate",
+  "fk_cascade": 0
+ },
+ "verify_ok_except_counts": true,
+ "after_rollback": {
+  "m006a": 0,
+  "m006b": 0,
+  "fn_md5": "baec220aa33a331ee3bbcdd340f84dde",
+  "policy_md5": "f27165f643c693164399f85a4ee65f51",
+  "triggers_006": 0,
+  "snapshot_006a_exists": true,
+  "reset_events_exists": true
+ },
+ "rollback_restores_fn_policy": false
+}
