@@ -21,7 +21,7 @@ export async function makeDb() {
   alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
   grant usage on schema public to anon, authenticated, service_role;`);
   for (const f of ['supabase.sql', 'staging/01_prod_like_data.sql', 'production/01_apply_002_003.sql', 'production/12_apply_004.sql', 'production/22_apply_005.sql',
-                   'migrations/005d_security_hardening.sql', 'tests/004_test_setup.sql', 'tests/005_test_setup.sql']) await db.exec(fs.readFileSync(B + f, 'utf8'));
+                   'migrations/005d_security_hardening.sql', 'migrations/005e_medical_review_authorization.sql', 'tests/004_test_setup.sql', 'tests/005_test_setup.sql']) await db.exec(fs.readFileSync(B + f, 'utf8'));
   // Org A super admin'ni test uchun email bilan aniqlash + xodim yozuvlari (Admin Panel employees jadvalidan foydalanadi)
   await db.exec(`update auth.users set email = 'sa@test.local' where id = '262a128c-6fb7-470e-9452-5468cd6797c0';
     update public.profiles set email = u.email, full_name = coalesce(public.profiles.full_name, u.raw_user_meta_data->>'full_name') from auth.users u where u.id = public.profiles.id;

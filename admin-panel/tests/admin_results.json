@@ -404,7 +404,7 @@
   "grp": "Evidence workflow",
   "name": "Medical review'siz klinik savolni Publish",
   "exp": "server rad etadi",
-  "act": "review_required | error: Klinik savol: shu versiya uchun Medical Review tasdig'i kerak",
+  "act": "review_required | error: Klinik savol: shu versiya (v1) bo'yicha oxirgi Medical Review q",
   "ok": true
  },
  {
@@ -424,17 +424,81 @@
   "ok": true
  },
  {
+  "id": "A01",
+  "grp": "005e UI",
+  "name": "MR: medical form qarorlari = approved/rejected/changes_requested (mark_* yo'q)",
+  "exp": "approved,rejected,changes_requested",
+  "act": "approved,rejected,changes_requested",
+  "ok": true
+ },
+ {
+  "id": "A02",
+  "grp": "005e UI",
+  "name": "MR: review turlari — medical bor (evidence.review ruxsati bo'lsa evidence ham)",
+  "exp": "'medical' bor",
+  "act": "['evidence', 'medical']",
+  "ok": true
+ },
+ {
+  "id": "A03",
+  "grp": "005e UI",
+  "name": "MR: \"Medical review'ga yuborish\" formasi yo'q (faqat SA/EM)",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "A04",
+  "grp": "005e UI",
+  "name": "MR: medical qaror sababsiz → UI rad etadi",
+  "exp": "sabab majburiy",
+  "act": "Medical review uchun sabab majburiy",
+  "ok": true
+ },
+ {
+  "id": "A05",
+  "grp": "005e UI",
+  "name": "MR: tasdiqlash oynasida eligibility ogohlantirishi",
+  "exp": "affects eligibility for future clinical exams",
+  "act": "bor",
+  "ok": true
+ },
+ {
   "id": "W10",
   "grp": "Evidence workflow",
-  "name": "Medical review → Approve (medical reviewer)",
-  "exp": "1",
-  "act": "1",
+  "name": "Medical review → Approve (medical reviewer), reviewer_role_at_creation=medical_reviewer",
+  "exp": "1 / medical_reviewer",
+  "act": "1 / medical_reviewer",
+  "ok": true
+ },
+ {
+  "id": "A06",
+  "grp": "005e UI",
+  "name": "MR: Publish tugmasi ko'rinmaydi",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "A07",
+  "grp": "005e API",
+  "name": "MR: REST orqali publish → server rad etadi",
+  "exp": "published emas",
+  "act": "400 / review_required",
+  "ok": true
+ },
+ {
+  "id": "A08",
+  "grp": "005e UI",
+  "name": "EM: nashr shartlari hammasi ✅ (oxirgi medical = approved), status panel mavjud",
+  "exp": "all ok",
+  "act": "ok,ok,ok,ok,ok / eligible=false",
   "ok": true
  },
  {
   "id": "W11",
   "grp": "Evidence workflow",
-  "name": "Publish → published; server eligibility +1",
+  "name": "EM Publish → published; server eligibility +1",
   "exp": "published / 0→1",
   "act": "published / 0→1",
   "ok": true
@@ -496,6 +560,54 @@
   "ok": true
  },
  {
+  "id": "A09",
+  "grp": "005e UI",
+  "name": "Status panel: published + approved → ELIGIBLE (server question_meta)",
+  "exp": "true",
+  "act": "true",
+  "ok": true
+ },
+ {
+  "id": "A10",
+  "grp": "005e UI",
+  "name": "Latest medical = changes_requested → INELIGIBLE + sabab",
+  "exp": "false / sabab",
+  "act": "false / True",
+  "ok": true
+ },
+ {
+  "id": "A11",
+  "grp": "005e UI",
+  "name": "Medical approved qayta → hali review_required (MR nashr qilolmaydi); EM qayta Publish → ELIGIBLE",
+  "exp": "review_required,false → true",
+  "act": "review_required,false → true",
+  "ok": true
+ },
+ {
+  "id": "A12",
+  "grp": "005e UI",
+  "name": "EM: medical review varianti yo'q (medical authority yo'q)",
+  "exp": "'evidence' bor, 'medical' yo'q",
+  "act": "['evidence']",
+  "ok": true
+ },
+ {
+  "id": "A13",
+  "grp": "005e API",
+  "name": "EM: REST orqali medical review yozish → server rad etadi",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "A14",
+  "grp": "005e UI",
+  "name": "Latest evidence = changes_requested → INELIGIBLE + sabab",
+  "exp": "false / Evidence: o'zgartirish so'ralgan",
+  "act": "false / True",
+  "ok": true
+ },
+ {
   "id": "E08",
   "grp": "Eligibility",
   "name": "UI: Mark outdated → Review Required, not eligible",
@@ -509,6 +621,78 @@
   "name": "UI: manba Retracted → bog'langan savol not eligible + review_required",
   "exp": "True→false / review_required",
   "act": "True→False / review_required",
+  "ok": true
+ },
+ {
+  "id": "A15",
+  "grp": "005e UI",
+  "name": "Instructor: review qaror formasi (evidence/medical, mark_*) va assign formasi yo'q",
+  "exp": "yo'q / yo'q",
+  "act": "yoq / yoq",
+  "ok": true
+ },
+ {
+  "id": "A16",
+  "grp": "005e UI",
+  "name": "Instructor: Retract / Superseded tugmalari yo'q",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "A17",
+  "grp": "005e UI",
+  "name": "Instructor: Publish tugmasi yo'q",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "A18",
+  "grp": "005e API",
+  "name": "Instructor: REST orqali medical approve va evidence mark_outdated → rad etiladi",
+  "exp": "4xx / 4xx",
+  "act": "400 / 400",
+  "ok": true
+ },
+ {
+  "id": "A19",
+  "grp": "005e UI",
+  "name": "RECEPTION_START (communication): Medical Review = Not required, medical varianti yo'q",
+  "exp": "not_required / medical yo'q",
+  "act": "ok / ['evidence']",
+  "ok": true
+ },
+ {
+  "id": "A20",
+  "grp": "005e UI",
+  "name": "Klinik kurs (CARDIO_BASIC): SA uchun medical varianti bor, Not required emas",
+  "exp": "medical bor",
+  "act": "['evidence', 'medical']",
+  "ok": true
+ },
+ {
+  "id": "A21",
+  "grp": "005e UI",
+  "name": "MR: Review Queue navigatsiyada",
+  "exp": "#/evidence/queue bor",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "A22",
+  "grp": "005e Security",
+  "name": "Employee question_meta javobida javob kaliti / izoh / internal_notes yo'q",
+  "exp": "yo'q",
+  "act": "yo'q",
+  "ok": true
+ },
+ {
+  "id": "A23",
+  "grp": "005e Security",
+  "name": "Employee: question_reviews o'qib bo'lmaydi",
+  "exp": "0 qator",
+  "act": "0",
   "ok": true
  },
  {
@@ -596,7 +780,7 @@
   "grp": "Audit",
   "name": "Evidence / medical review → audit_logs",
   "exp": ">= 1",
-  "act": "3",
+  "act": "7",
   "ok": true
  },
  {

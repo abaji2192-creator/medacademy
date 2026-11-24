@@ -193,15 +193,36 @@ async def main():
         rows = await pg.eval_on_selector_all('[data-table=queue] tbody tr', 'els=>els.map(e=>e.innerText)')
         ok('W09', 'Evidence workflow', 'Medical reviewer navbatida faqat tayinlangan savol', '1 ta', len(rows), len(rows) == 1)
         await goto(pg, '#/evidence/review/' + qid, 2200)
-        await pg.select_option('[data-review] [name=type]', 'medical'); await pg.select_option('[data-review] [name=decision]', 'approved')
+        opts = await pg.eval_on_selector_all('[data-review] [name=type] option', 'els=>els.map(e=>e.value)')
+        await pg.select_option('[data-review] [name=type]', 'medical')
+        mdec = await pg.eval_on_selector_all('[data-review] [name=decision] option', 'els=>els.map(e=>e.value)')
+        ok('A01', '005e UI', 'MR: medical form qarorlari = approved/rejected/changes_requested (mark_* yo\'q)', 'approved,rejected,changes_requested', ','.join(mdec), mdec == ['approved', 'rejected', 'changes_requested'])
+        ok('A02', '005e UI', 'MR: review turlari — medical bor (evidence.review ruxsati bo\'lsa evidence ham)', "'medical' bor", opts, 'medical' in opts)
+        has_assign = await pg.query_selector('[data-assign]')
+        ok('A03', '005e UI', 'MR: "Medical review\'ga yuborish" formasi yo\'q (faqat SA/EM)', "yo'q", 'bor' if has_assign else "yo'q", not has_assign)
+        await pg.select_option('[data-review] [name=decision]', 'approved')
         for c in ['c1', 'c2', 'c3']: await pg.check(f'[data-review] [name={c}]')
-        await pg.click('[data-review] button'); await confirm_dialog(pg, checks=False)
-        mr = sql(f"select count(*)::int n from question_reviews where question_id='{qid}' and review_type='medical' and decision='approved' and reviewer_id='{rev_uid}'")[0]['n']
-        ok('W10', 'Evidence workflow', 'Medical review → Approve (medical reviewer)', '1', mr, mr == 1)
-        await goto(pg, '#/questions/' + qid, 2200); await pg.click('[data-act=publish]'); await confirm_dialog(pg)
+        await pg.click('[data-review] button'); await pg.wait_for_timeout(400); err = await pg.inner_text('[data-review] [data-err]')
+        ok('A04', '005e UI', 'MR: medical qaror sababsiz → UI rad etadi', 'sabab majburiy', err[:50], 'sabab' in err.lower())
+        await pg.fill('[data-review] [name=notes]', 'TEST: klinik jihatdan to\'g\'ri')
+        await pg.click('[data-review] button'); await pg.wait_for_selector('[data-dialog]'); dtxt = await pg.inner_text('[data-dialog]')
+        ok('A05', '005e UI', 'MR: tasdiqlash oynasida eligibility ogohlantirishi', 'affects eligibility for future clinical exams', 'bor' if 'affects eligibility for future clinical exams' in dtxt else "yo'q", 'affects eligibility for future clinical exams' in dtxt)
+        await pg.click('[data-dialog] [data-ok]'); await pg.wait_for_timeout(1200)
+        mr = sql(f"select count(*)::int n, max(reviewer_role_at_creation) r from question_reviews where question_id='{qid}' and review_type='medical' and decision='approved' and reviewer_id='{rev_uid}'")[0]
+        ok('W10', 'Evidence workflow', 'Medical review → Approve (medical reviewer), reviewer_role_at_creation=medical_reviewer', '1 / medical_reviewer', f"{mr['n']} / {mr['r']}", mr['n'] == 1 and mr['r'] == 'medical_reviewer')
+        await goto(pg, '#/questions/' + qid, 2200); mrpub = await pg.query_selector('[data-act=publish]')
+        ok('A06', '005e UI', 'MR: Publish tugmasi ko\'rinmaydi', "yo'q", 'bor' if mrpub else "yo'q", not mrpub)
+        s_, d_, _ = http('PATCH', f'/rest/v1/questions?id=eq.{qid}', tr, {'workflow_status': 'published'}, {'prefer': 'return=representation'})
+        wq = sql(f"select workflow_status w from questions where id='{qid}'")[0]['w']
+        ok('A07', '005e API', 'MR: REST orqali publish → server rad etadi', 'published emas', f'{s_} / {wq}', wq != 'published')
+        await login(pg, 'edu'); await goto(pg, '#/questions/' + qid, 2500)
+        gates = await pg.eval_on_selector_all('[data-gate]', 'els=>els.map(e=>e.dataset.gate)')
+        elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible')
+        ok('A08', '005e UI', 'EM: nashr shartlari hammasi ✅ (oxirgi medical = approved), status panel mavjud', 'all ok', ','.join(gates) + ' / eligible=' + str(elg), gates and all(g == 'ok' for g in gates))
+        await pg.click('[data-act=publish]'); await confirm_dialog(pg)
         w = sql(f"select workflow_status w, evidence_status e from questions where id='{qid}'")[0]
         elig1 = len(http('POST', '/rest/v1/rpc/question_meta', ted, {})[1])
-        ok('W11', 'Evidence workflow', 'Publish → published; server eligibility +1', f'published / {elig0}→{elig0 + 1}', f"{w['w']} / {elig0}→{elig1}", w['w'] == 'published' and elig1 == elig0 + 1)
+        ok('W11', 'Evidence workflow', 'EM Publish → published; server eligibility +1', f'published / {elig0}→{elig0 + 1}', f"{w['w']} / {elig0}→{elig1}", w['w'] == 'published' and elig1 == elig0 + 1)
         # Eligibility statuslari (server _q_exam_eligible) — bitta savolda ketma-ket
         def elig(q): return sql(f"select public._q_exam_eligible(q) e from questions q where id='{q}'")[0]['e']
         ok('E01', 'Eligibility', 'Current + published → eligible', 'true', elig(qid), elig(qid) is True)
@@ -210,8 +231,34 @@ async def main():
             ok(f'E0{i}', 'Eligibility', f'{label} → not eligible', 'false', elig(qid), elig(qid) is False)
         sql(f"begin; select set_config('medacademy.system_write','on',true); update questions set evidence_status='current' where id='{qid}'; select set_config('medacademy.system_write','off',true); commit;")
         ok('E07', 'Eligibility', 'Current\'ga qaytdi → yana eligible', 'true', elig(qid), elig(qid) is True)
-        await goto(pg, '#/evidence/review/' + qid, 2200)
-        await pg.select_option('[data-review] [name=type]', 'medical'); await pg.select_option('[data-review] [name=decision]', 'mark_outdated'); await pg.fill('[data-review] [name=notes]', 'TEST: yangi guideline versiyasi')
+        await goto(pg, '#/questions/' + qid, 2500); elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible')
+        ok('A09', '005e UI', 'Status panel: published + approved → ELIGIBLE (server question_meta)', 'true', elg, elg == 'true')
+        # Latest-decision: MR changes_requested → INELIGIBLE (sabab ko'rsatiladi), keyin approved → yana ELIGIBLE
+        await login(pg, 'rev'); await goto(pg, '#/evidence/review/' + qid, 2200)
+        await pg.select_option('[data-review] [name=type]', 'medical'); await pg.select_option('[data-review] [name=decision]', 'changes_requested')
+        await pg.fill('[data-review] [name=notes]', 'TEST: dozani aniqlashtiring'); await pg.click('[data-review] button'); await confirm_dialog(pg, checks=False)
+        await goto(pg, '#/evidence/review/' + qid, 2500)
+        elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible'); rs = await pg.inner_text('[data-status-panel]')
+        ok('A10', '005e UI', 'Latest medical = changes_requested → INELIGIBLE + sabab', 'false / sabab', f"{elg} / {'Medical' in rs and 'so' in rs}", elg == 'false' and elig(qid) is False and 'Medical: o' in rs)
+        await pg.select_option('[data-review] [name=type]', 'medical'); await pg.select_option('[data-review] [name=decision]', 'approved')
+        for c in ['c1', 'c2', 'c3']: await pg.check(f'[data-review] [name={c}]')
+        await pg.fill('[data-review] [name=notes]', 'TEST: tuzatildi'); await pg.click('[data-review] button'); await confirm_dialog(pg, checks=False)
+        await goto(pg, '#/evidence/review/' + qid, 2500); elg_mr = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible')
+        wrr = sql(f"select workflow_status w from questions where id='{qid}'")[0]['w']
+        await login(pg, 'edu'); await goto(pg, '#/questions/' + qid, 2500); await pg.click('[data-act=publish]'); await confirm_dialog(pg)
+        await goto(pg, '#/evidence/review/' + qid, 2500); elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible')
+        ok('A11', '005e UI', 'Medical approved qayta → hali review_required (MR nashr qilolmaydi); EM qayta Publish → ELIGIBLE', 'review_required,false → true', f'{wrr},{elg_mr} → {elg}', wrr == 'review_required' and elg_mr == 'false' and elg == 'true' and elig(qid) is True)
+        # EM: medical review varianti yo'q, evidence varianti bor; evidence changes_requested → INELIGIBLE
+        opts = await pg.eval_on_selector_all('[data-review] [name=type] option', 'els=>els.map(e=>e.value)')
+        ok('A12', '005e UI', 'EM: medical review varianti yo\'q (medical authority yo\'q)', "'evidence' bor, 'medical' yo'q", opts, 'evidence' in opts and 'medical' not in opts)
+        s_, d_, _ = http('POST', '/rest/v1/question_reviews', ted, {'org_id': oa, 'question_id': qid, 'version_no': 1, 'review_type': 'medical', 'reviewer_id': edu_uid, 'decision': 'approved'}, {'prefer': 'return=representation'})
+        ok('A13', '005e API', 'EM: REST orqali medical review yozish → server rad etadi', '4xx', s_, s_ >= 400)
+        await pg.select_option('[data-review] [name=type]', 'evidence'); await pg.select_option('[data-review] [name=decision]', 'changes_requested')
+        await pg.fill('[data-review] [name=notes]', 'TEST: claim aniqlashtirilsin'); await pg.click('[data-review] button'); await confirm_dialog(pg, checks=False)
+        await goto(pg, '#/evidence/review/' + qid, 2500)
+        elg = await pg.get_attribute('[data-status-panel] [data-eligible]', 'data-eligible'); rs = await pg.inner_text('[data-status-panel]')
+        ok('A14', '005e UI', 'Latest evidence = changes_requested → INELIGIBLE + sabab', 'false / Evidence: o\'zgartirish so\'ralgan', f'{elg} / {"Evidence: o" in rs}', elg == 'false' and elig(qid) is False and 'Evidence: o' in rs)
+        await pg.select_option('[data-review] [name=type]', 'evidence'); await pg.select_option('[data-review] [name=decision]', 'mark_outdated'); await pg.fill('[data-review] [name=notes]', 'TEST: yangi guideline versiyasi')
         await pg.click('[data-review] button'); await confirm_dialog(pg, checks=False)
         w = sql(f"select workflow_status w, evidence_status e from questions where id='{qid}'")[0]
         ok('E08', 'Eligibility', 'UI: Mark outdated → Review Required, not eligible', 'review_required/outdated/false', f"{w['w']}/{w['e']}/{elig(qid)}", w['w'] == 'review_required' and w['e'] == 'outdated' and elig(qid) is False)
@@ -219,12 +266,47 @@ async def main():
         q2 = sql("select id from questions where course_id='CARDIO_BASIC' and published_version is not null order by id offset 1 limit 1")[0]['id']
         sql(f"""begin; select set_config('medacademy.system_write','on',true);
           insert into question_evidence (org_id, question_id, evidence_source_id, relationship_type, supporting_claim) values ('{oa}','{q2}','{sid}','primary_support','TEST');
-          update questions set evidence_status='current', workflow_status='published' where id='{q2}'; select set_config('medacademy.system_write','off',true); commit;""")
+          update questions set evidence_status='current', workflow_status='published' where id='{q2}';
+          insert into question_reviews (org_id, question_id, version_no, review_type, reviewer_id, reviewer_role_at_creation, decision, internal_notes)
+            select '{oa}', id, published_version, 'medical', '{rev_uid}', 'medical_reviewer', 'approved', 'TEST fixture' from questions where id='{q2}';
+          select set_config('medacademy.system_write','off',true); commit;""")
         e_before = elig(q2)
         await goto(pg, '#/evidence/library/' + sid, 1800)
         await login(pg, 'edu'); await goto(pg, '#/evidence/library/' + sid, 1800); await pg.click('[data-act=retracted]'); await confirm_dialog(pg)
         w2 = sql(f"select workflow_status w from questions where id='{q2}'")[0]['w']
         ok('E09', 'Eligibility', 'UI: manba Retracted → bog\'langan savol not eligible + review_required', f'{e_before}→false / review_required', f'{e_before}→{elig(q2)} / {w2}', e_before is True and elig(q2) is False and w2 == 'review_required')
+
+        # Instructor: medical / evidence qaror, assign, retract — yo'q; REST orqali ham rad etiladi
+        await login(pg, 'ins'); await goto(pg, '#/evidence/review/' + qid, 2200)
+        rf = await pg.query_selector('[data-review]'); asf = await pg.query_selector('[data-assign]')
+        ok('A15', '005e UI', 'Instructor: review qaror formasi (evidence/medical, mark_*) va assign formasi yo\'q', "yo'q / yo'q", f"{'bor' if rf else 'yoq'} / {'bor' if asf else 'yoq'}", not rf and not asf)
+        await goto(pg, '#/evidence/library/' + sid, 1800); rb = await pg.query_selector('[data-act=retracted], [data-act=superseded]')
+        ok('A16', '005e UI', 'Instructor: Retract / Superseded tugmalari yo\'q', "yo'q", 'bor' if rb else "yo'q", not rb)
+        await goto(pg, '#/questions/' + qid, 1800); ipub = await pg.query_selector('[data-act=publish]')
+        ok('A17', '005e UI', 'Instructor: Publish tugmasi yo\'q', "yo'q", 'bor' if ipub else "yo'q", not ipub)
+        s1, _, _ = http('POST', '/rest/v1/question_reviews', ti, {'org_id': oa, 'question_id': qid, 'version_no': 1, 'review_type': 'medical', 'reviewer_id': sql("select id from profiles where email='t-instructor@test.local'")[0]['id'], 'decision': 'approved'}, {'prefer': 'return=representation'})
+        s2, _, _ = http('POST', '/rest/v1/question_reviews', ti, {'org_id': oa, 'question_id': qid, 'version_no': 1, 'review_type': 'evidence', 'reviewer_id': sql("select id from profiles where email='t-instructor@test.local'")[0]['id'], 'decision': 'mark_outdated'}, {'prefer': 'return=representation'})
+        ok('A18', '005e API', 'Instructor: REST orqali medical approve va evidence mark_outdated → rad etiladi', '4xx / 4xx', f'{s1} / {s2}', s1 >= 400 and s2 >= 400)
+        # Non-clinical (RECEPTION_START): medical review talab qilinmaydi
+        rq = sql("select id from questions where course_id='RECEPTION_START' order by id limit 1")
+        if rq:
+            await login(pg, 'sa'); await goto(pg, '#/evidence/review/' + rq[0]['id'], 2500)
+            nr = await pg.query_selector('[data-status-panel] [data-med=not_required]'); opts = await pg.eval_on_selector_all('[data-review] [name=type] option', 'els=>els.map(e=>e.value)')
+            ok('A19', '005e UI', 'RECEPTION_START (communication): Medical Review = Not required, medical varianti yo\'q', 'not_required / medical yo\'q', f"{'ok' if nr else 'yoq'} / {opts}", bool(nr) and 'medical' not in opts)
+        else:
+            ok('A19', '005e UI', 'RECEPTION_START savoli mock\'da', 'mavjud', 'yo\'q', False)
+        cq = sql("select id from questions where course_id='CARDIO_BASIC' order by id offset 2 limit 1")[0]['id']
+        await goto(pg, '#/evidence/review/' + cq, 2500); mr_ = await pg.query_selector('[data-status-panel] [data-med=not_required]')
+        opts = await pg.eval_on_selector_all('[data-review] [name=type] option', 'els=>els.map(e=>e.value)')
+        ok('A20', '005e UI', 'Klinik kurs (CARDIO_BASIC): SA uchun medical varianti bor, Not required emas', 'medical bor', opts, not mr_ and 'medical' in opts)
+        # Nav: MR uchun Review Queue ko'rinadi; Employee admin emas
+        await login(pg, 'rev'); nl = await nav_links(pg)
+        ok('A21', '005e UI', 'MR: Review Queue navigatsiyada', '#/evidence/queue bor', '#/evidence/queue' in nl, '#/evidence/queue' in nl)
+        tem_meta = http('POST', '/rest/v1/rpc/question_meta', te, {})[1]
+        leak = any(k in json.dumps(tem_meta) for k in ['"answer"', '"explanation"', 'internal_notes'])
+        ok('A22', '005e Security', 'Employee question_meta javobida javob kaliti / izoh / internal_notes yo\'q', "yo'q", 'bor' if leak else "yo'q", not leak)
+        s3, d3, _ = http('GET', '/rest/v1/question_reviews?select=id', te)
+        ok('A23', '005e Security', 'Employee: question_reviews o\'qib bo\'lmaydi', '0 qator', len(d3) if isinstance(d3, list) else s3, (isinstance(d3, list) and len(d3) == 0) or s3 >= 400)
 
         # ================= Historical & certificate integrity =================
         old = sql("select to_jsonb(a)::text j from exam_attempts a order by started_at limit 1")[0]['j']
