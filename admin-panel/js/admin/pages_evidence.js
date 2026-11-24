@@ -68,26 +68,28 @@
   const DEFAULT_CLINICAL = ['medical', 'public_health', 'safety'];
   const MED_ROLES = ['medical_reviewer', 'super_admin'];
   async function reviewStatus(q) {
-    const [course, pol, rv, meta] = await Promise.all([
+    const [course, pol, rv, elig] = await Promise.all([
       API.get('courses', 'id', q.course_id, 'id,domain').catch(() => null),
       API.list('content_policies', { select: 'clinical_domains,clinical_requires_medical_review', size: 1, count: false }).catch(() => ({ rows: [] })),
       API.list('question_reviews', { select: 'id,review_type,version_no,decision,reviewer_id,reviewer_role_at_creation,review_seq,created_at,internal_notes', eq: { question_id: q.id }, order: ['review_seq', false], all: true, count: false }).catch(() => ({ rows: [] })),
-      API.rpc('question_meta').catch(() => null)]);
+      // 006a: bitta savol uchun server RPC (question_eligibility); mavjud bo'lmasa (006a'gacha) — question_meta
+      API.rpc('question_eligibility', { p_question: q.id }).catch(() => null)]);
+    const meta = elig ? null : await API.rpc('question_meta').catch(() => null);
     const p = pol.rows[0] || {};
     const domains = Array.isArray(p.clinical_domains) && p.clinical_domains.length ? p.clinical_domains : DEFAULT_CLINICAL;
     const clinical = !!(course && domains.includes(course.domain));
-    const medRequired = clinical && p.clinical_requires_medical_review !== false;
+    const medRequired = elig ? !!elig.medical_review_required : clinical && p.clinical_requires_medical_review !== false;
     const rows = rv.rows;   // review_seq bo'yicha kamayish tartibida (oxirgisi birinchi)
     const latestEvidence = rows.find(r => r.review_type === 'evidence') || null;
     const validMed = v => rows.find(r => r.review_type === 'medical' && r.version_no === v && MED_ROLES.includes(r.reviewer_role_at_creation)) || null;
     const latestMedical = validMed(q.current_version);
     const latestMedicalPublished = q.published_version ? validMed(q.published_version) : null;
-    const eligible = Array.isArray(meta) ? meta.some(m => m.id === q.id) : null;   // serverning _q_exam_eligible natijasi (question_meta)
+    const eligible = elig ? !!elig.eligible : Array.isArray(meta) ? meta.some(m => m.id === q.id) : null;   // serverning _q_exam_eligible natijasi
     const evBlocked = latestEvidence && ['rejected', 'changes_requested'].includes(latestEvidence.decision);
     let reason = q.review_reason || null;
     if (!reason && evBlocked) reason = 'evidence_' + latestEvidence.decision;
     if (!reason && medRequired && latestMedical && latestMedical.decision !== 'approved') reason = 'medical_' + latestMedical.decision;
-    return { course, clinical, medRequired, rows, latestEvidence, latestMedical, latestMedicalPublished, eligible, evBlocked, reason };
+    return { course, clinical: elig ? !!elig.clinical : clinical, medRequired, source: elig ? 'question_eligibility' : 'question_meta', rows, latestEvidence, latestMedical, latestMedicalPublished, eligible, evBlocked, reason };
   }
   const decisionBadge = r => r ? badge('decision', r.decision) : '<span class="badge">—</span>';
   async function statusPanel(q, st) {
@@ -100,7 +102,7 @@
     return `<div class="card" data-status-panel><h3>Question status</h3><dl class="kv">
       <dt>Evidence</dt><dd>${badge('evidence', q.evidence_status)} ${st.latestEvidence ? '· oxirgi qaror: ' + decisionBadge(st.latestEvidence) : ''}</dd>
       <dt>Medical Review</dt><dd data-med-cell>${medCell}</dd>
-      <dt>Exam eligibility (yangi imtihonlar)</dt><dd>${elig} <span class="tiny">server: _q_exam_eligible</span></dd>
+      <dt>Exam eligibility (yangi imtihonlar)</dt><dd>${elig} <span class="tiny" data-elig-src="${esc(st.source)}">server: ${esc(st.source)}</span></dd>
       <dt>Sabab</dt><dd>${st.reason ? badge('reason', st.reason) : '—'}</dd>
       <dt>Oxirgi qaror</dt><dd>${last ? esc(last.review_type) + ' · ' + decisionBadge(last) + ' · v' + last.version_no : '—'}</dd>
       <dt>Reviewer</dt><dd>${who}</dd>
