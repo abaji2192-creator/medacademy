@@ -1,6 +1,6 @@
 # Migration 007a — Learning Progress RPC Foundation
 
-**Holat:** faqat LOKAL tekshirilgan. Staging va production'ga QO'LLANMAGAN.
+**Holat:** lokal PASS; STAGING'ga qo'llangan va tekshirilgan (2026-11-25). Production'ga QO'LLANMAGAN.
 **Oldingi shart:** `schema_migrations` da `006b` bo'lishi kerak (aks holda migratsiya to'xtaydi).
 
 ## Fayllar
@@ -25,7 +25,7 @@
    - Instructor: faqat o'z kursi.
    - Boshqalar va anon: rad etiladi.
 4. Kurs tugallanishi: oxirgi majburiy dars tugallanganda tayinlash `completed` ga o'tadi va bitta `course.completed` audit yoziladi. Sertifikat berilmaydi.
-5. Ikkita qisman indeks: `lesson_progress_completed_007a_idx`, `course_assignments_course_007a_idx`.
+5. Ikkita indeks: `lesson_progress_completed_007a_idx` (qisman, `status='completed'`) va `course_assignments_course_007a_idx` (oddiy, `org_id, course_id, status`).
 
 Yangi jadval yo'q. RLS policy'lari, mavjud funksiyalar va ma'lumotlar o'zgarmaydi.
 
@@ -54,3 +54,12 @@ Tarixiy ma'lumotlar saqlanadi:
 - `lesson_progress`.
 
 **Diqqat:** agar production'da ba'zi darslar `is_required = false` qilib belgilangan bo'lsa, rollback bu belgini yo'qotadi.
+
+## Staging skriptlari (`staging/`)
+
+| Fayl | Vazifa |
+|---|---|
+| `007a_00_backup.sql` | `backup.*_pre007a` snapshot (jadvallar, ustunlar, indekslar, policy, funksiya, trigger) |
+| `007a_01_fingerprint.sql` | Faqat SELECT; sxema / huquq / ma'lumot barmoq izi (v2) |
+| `007a_03_perf.sql` | 1000 xodim × 50 kurs yuklama testi, oxirida ROLLBACK |
+| `007a_04_compare_pre.sql` | Joriy katalogni `backup.*_pre007a` bilan solishtirish (rollback tekshiruvi) |
