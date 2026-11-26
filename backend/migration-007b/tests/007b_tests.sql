@@ -102,7 +102,8 @@ do $$ declare oa uuid := pg_temp.c('OA')::uuid; ob uuid := pg_temp.c('OB')::uuid
     insert into public.specialties (org_id, name, code, status) values (%1$L, 'T7B mutaxassislik', 'T7B_SPEC', 'active'), (%2$L, 'T7B B mutaxassislik', 'T7B_SPECB', 'active');
     update public.employees set position_id = (select id from public.positions where code = 'T7B_POS'), specialty_id = (select id from public.specialties where code = 'T7B_SPEC') where id = %3$L;
     insert into public.employees (org_id, employee_code, first_name, last_name, department_id, employment_status) values
-      (%1$L, 'T7B_INACT', 'Nofaol', 'Xodim', (select id from public.departments where org_id = %1$L and code = 'CARDIO'), 'inactive');
+      (%1$L, 'T7B_INACT', 'Nofaol', 'Xodim', (select id from public.departments where org_id = %1$L and code = 'CARDIO'), 'inactive'),
+      (%1$L, 'T7B_LEAVE', 'Ta''tildagi', 'Xodim', (select id from public.departments where org_id = %1$L and code = 'CARDIO'), 'on_leave');
     insert into public.course_assignments (org_id, course_id, employee_id, status, started_at, completed_at) values
       (%1$L, 'T7B_C1', %4$L, 'completed', now() - interval '2 days', now() - interval '1 day'),
       (%1$L, 'T7B_C2', %4$L, 'in_progress', now() - interval '1 day', null);
@@ -140,6 +141,8 @@ do $$ declare r text; n int; begin
     ((select due_date from public.course_assignments where employee_id = pg_temp.emp('HEAD') and course_id = 'T7B_C2') = current_date + 14)::text || '/' ||
     coalesce((select due_date::text from public.course_assignments where employee_id = pg_temp.emp('EMP') and course_id = 'T7B_C1'), 'NULL'));
   perform pg_temp.ok('B04', 'Inactive', 'Nofaol xodim (bo''lim a''zosi) tayinlanmadi', '0', (select count(*)::text from public.course_assignments ca join public.employees e on e.id = ca.employee_id where e.employee_code = 'T7B_INACT'));
+  perform pg_temp.ok('B05', 'On leave', 'Ta''tildagi (on_leave) bo''lim xodimi qamrab olindi (C1, C2)', 'assigned/assigned',
+    pg_temp.ca((select id from public.employees where employee_code = 'T7B_LEAVE'), 'T7B_C1') || '/' || pg_temp.ca((select id from public.employees where employee_code = 'T7B_LEAVE'), 'T7B_C2'));
   perform pg_temp.ok('C01', 'Position target', 'Lavozim: EMP mos, takror yo''q', 'created/1/0', pg_temp.jx(pg_temp.ap('EDU', 'T7B_P', 'position', (select id::text from public.positions where code = 'T7B_POS'))));
   perform pg_temp.ok('D01', 'Specialty target', 'Mutaxassislik: EMP mos, takror yo''q', 'created/1/0', pg_temp.jx(pg_temp.ap('EDU', 'T7B_P', 'specialty', (select id::text from public.specialties where code = 'T7B_SPEC'))));
   r := pg_temp.ap('EDU', 'T7B_P', 'role', 'employee');
