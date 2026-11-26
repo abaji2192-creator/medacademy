@@ -1,0 +1,64 @@
+== 007c suite
+SUMMARY 007c total 74 / PASS 74 / FAIL 0
+== 007c rollback/recovery
+007c rollback/recovery: 26 test, 0 FAIL
+== 007b suite (007c bilan)
+SUMMARY 007b total 78 / PASS 78 / FAIL 0
+== 007b rollback/recovery
+007b rollback/recovery: 25 test, 0 FAIL
+== 007a suite (007b bilan)
+SUMMARY 007a total 55 / PASS 55 / FAIL 0
+== 007a rollback/recovery
+007a rollback/recovery: 27 test, 0 FAIL
+== 006b suite
+SUMMARY 006b total 34 / PASS 34 / FAIL 0
+== 006b rollback/recovery
+006b rollback/recovery: 18 test, 0 FAIL
+== 006a suite (006b bilan)
+SUMMARY 006a total 83 / PASS 83 / FAIL 0
+== 006a rollback/recovery
+006a rollback/recovery: 21 test, 0 FAIL
+== 005e security (006a bilan)
+SUMMARY 005e total 146 / PASS 146 / FAIL 0
+== 005e rollback/recovery (006a'siz zanjir)
+005e rollback/recovery: 21 test, 0 FAIL
+== 005d suite (005e+006a bilan)
+005d: 101 test, 0 FAIL
+== 005 suite (005e+006a bilan)
+005: 114 test, 0 FAIL
+== 004 suite (005 setup, 005e+006a bilan)
+004 (005 setup bilan): 50 test, 0 FAIL
+== 004 suite (standalone)
+50 test, 0 FAIL
+== Phase 1 (005e+006a bilan)
+31
+Barcha SQL testlar o'tdi
+== Phase 1 (faqat 002/003)
+31
+== staging/005d_04_tests.sql (005e+006a bilan)
+SUMMARY total 54 / FAIL 0
+== staging/005d_06_role_matrix.sql (005e+006a bilan)
+SUMMARY total 62 / FAIL 0
+== production/44_security_tests_005d.sql (005e+006a bilan)
+SUMMARY total 54 / FAIL 0
+== P01-P20 probe (005e+006a)
+P01 | HR → medical review INSERT (approved) | OK:0
+P02 | Department Head → medical review INSERT (approved) | OK:0
+P03 | Employee → medical review INSERT (approved) | OK:0
+P04 | Instructor (biriktirilgan kurs) → medical review INSERT (approved) | DENIED: Medical Review faqat Medical Review
+P05 | Education Manager → medical review INSERT (approved) | DENIED: Medical Review faqat Medical Reviewer yoki Super 
+P06 | Medical Reviewer (tayinlovsiz) → medical review INSERT (approved) | OK:0
+P07 | Super Admin → medical review INSERT (approved) | OK:1
+P08 | EM yolg'iz: evidence+medical approve → publish (klinik) | DENIED: Klinik savol: shu versiya (v1) bo'yicha oxirgi
+P09 | Faqat instructor medical approve → EM publish | DENIED: Klinik savol: shu versiya (v1) bo'yicha oxirgi Medical R
+P10 | MR approve → keyin MR REJECT → EM publish (oxirgi qaror hisobga olinadimi?) | OK:1 / OK:1 / DENIED: Klinik sav
+P11 | MR medical approve → MR publish | DENIED: Savolni nashr qilish faqat Super Admin / Education Manager (question.p
+P12 | Instructor medical "mark_outdated" (published, eligible savol) | DENIED: Medical Review faqat Medical Reviewer yok
+P13 | Instructor review_type="instructor" decision "mark_conflicting" | DENIED: "mark_conflicting" qarori faqat evidence
+P14 | Instructor UPDATE questions.workflow_status=review_required | DENIED: Nashr qilingan savolni nashrdan chiqarish fa
+P15 | Instructor publish (question.publish yo'q) | DENIED: Savolni nashr qilish faqat Super Admin / Education Manager (q
+P16 | Instructor legacy status="approved" | DENIED: Savolni faqat Super Admin yoki Education Manager tasdiqlay oladi
+P17 | Klinik emas (ETHICS): evidence approve → EM publish, medical review'siz | OK:1 | {"w":"published","e":"current",
+P18 | question_reviews UPDATE / DELETE (hatto SQL) | DENIED: Savol versiyalari o'zgarmas (o'chirish/tahrirlash  / DENIED
+P19 | Instructor reviewer_id = MR id bilan INSERT (soxtalashtirish) | DENIED: Medical Review faqat Medical Reviewer yoki
+P20 | Instructor davridagi medical approve, keyin rol medical_reviewer'ga o'zgaradi → EM publish | DENIED: Medical Rev
