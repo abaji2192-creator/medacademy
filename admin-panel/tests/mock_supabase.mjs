@@ -21,7 +21,7 @@ export async function makeDb() {
   alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
   grant usage on schema public to anon, authenticated, service_role;`);
   for (const f of ['supabase.sql', 'staging/01_prod_like_data.sql', 'production/01_apply_002_003.sql', 'production/12_apply_004.sql', 'production/22_apply_005.sql',
-                   'migrations/005d_security_hardening.sql', 'migrations/005e_medical_review_authorization.sql', ...(process.env.WITH006A ? ['migrations/006a_audit_hardening.sql', ...(process.env.WITH006B ? ['migrations/006b_course_delete_hardening.sql'] : [])] : []), 'tests/004_test_setup.sql', 'tests/005_test_setup.sql']) await db.exec(fs.readFileSync(B + f, 'utf8'));
+                   'migrations/005d_security_hardening.sql', 'migrations/005e_medical_review_authorization.sql', ...(process.env.WITH006A || process.env.WITH007 ? ['migrations/006a_audit_hardening.sql', ...(process.env.WITH006B || process.env.WITH007 ? ['migrations/006b_course_delete_hardening.sql'] : [])] : []), ...(process.env.WITH007 ? ['007a_learning_progress', '007b_learning_path_assignments', '007c_skills_competency', '007d_in_app_notifications', '007e_compliance_matrix'].map(x => 'migrations/' + x + '.sql') : []), 'tests/004_test_setup.sql', 'tests/005_test_setup.sql']) await db.exec(fs.readFileSync(B + f, 'utf8'));
   // Org A super admin'ni test uchun email bilan aniqlash + xodim yozuvlari (Admin Panel employees jadvalidan foydalanadi)
   await db.exec(`update auth.users set email = 'sa@test.local' where id = '262a128c-6fb7-470e-9452-5468cd6797c0';
     update public.profiles set email = u.email, full_name = coalesce(public.profiles.full_name, u.raw_user_meta_data->>'full_name') from auth.users u where u.id = public.profiles.id;
@@ -130,6 +130,11 @@ export function startServer(db, { port = PORT, staticDir = STATIC } = {}) {
       if (m[1]) { // RPC
         const args = body ? JSON.parse(body) : Object.fromEntries(qs);
         const params = []; const parts = Object.entries(args).map(([k, v]) => { params.push(typeof v === 'object' && v !== null ? JSON.stringify(v) : v); return `${ident(k)} => $${params.length}`; });
+        const srf = (await db.query(`select bool_or(proretset) s from pg_proc where proname = $1 and pronamespace = 'public'::regnamespace`, [m[2]])).rows[0].s;
+        if (srf) { // PostgREST: set-returning RPC -> JSON massiv
+          const r = await asUser(cl, () => db.query(`select to_jsonb(x) as r from public.${ident(m[2])}(${parts.join(', ')}) x`, params));
+          return send(200, r.rows.map(x => x.r));
+        }
         const r = await asUser(cl, () => db.query(`select public.${ident(m[2])}(${parts.join(', ')}) as r`, params));
         return send(200, r.rows[0].r);
       }

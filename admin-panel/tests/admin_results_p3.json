@@ -1,0 +1,514 @@
+[
+ {
+  "id": "P3B01",
+  "grp": "Bundle",
+  "name": "Admin bundle'da Phase 3 modullari bor",
+  "exp": "3/3",
+  "act": "3",
+  "ok": true
+ },
+ {
+  "id": "P3B02",
+  "grp": "Bundle",
+  "name": "Xodim live build o'zgarmagan va Phase 3 admin kodi unga kirmagan",
+  "exp": "e8dc98a4 / yo'q",
+  "act": "e8dc98a4 / yo'q",
+  "ok": true
+ },
+ {
+  "id": "P3B03",
+  "grp": "Bundle",
+  "name": "Bundle: service-role / secret kalit qiymati yo'q",
+  "exp": "0",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "P3R01",
+  "grp": "Roles",
+  "name": "Education Manager: \"O'quv rivojlanish\" guruhi to'liq ko'rinadi",
+  "exp": "4/4",
+  "act": "4",
+  "ok": true
+ },
+ {
+  "id": "P3R02",
+  "grp": "Roles",
+  "name": "Education Manager: bildirishnoma qo'ng'irog'i bor",
+  "exp": "bor",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "P3R03",
+  "grp": "Roles",
+  "name": "Instructor: Compliance matritsasi menyuda yo'q",
+  "exp": "yo'q",
+  "act": "False",
+  "ok": true
+ },
+ {
+  "id": "P3R04",
+  "grp": "Roles",
+  "name": "Instructor: #/compliance → 403 sahifa",
+  "exp": "denied",
+  "act": "denied",
+  "ok": true
+ },
+ {
+  "id": "P3R05",
+  "grp": "Roles",
+  "name": "SERVER: Instructor department_compliance_matrix() → rad",
+  "exp": "4xx",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "P3R06",
+  "grp": "Roles",
+  "name": "Oddiy xodim admin panelga kira olmaydi",
+  "exp": "no-admin",
+  "act": "no-admin",
+  "ok": true
+ },
+ {
+  "id": "P3R07",
+  "grp": "Roles",
+  "name": "SERVER: xodim apply_learning_path → rad",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3L01",
+  "grp": "Learning",
+  "name": "Learning Paths ro'yxati (server bilan teng)",
+  "exp": "9",
+  "act": "9",
+  "ok": true
+ },
+ {
+  "id": "P3L02",
+  "grp": "Learning",
+  "name": "N+1 yo'q: ro'yxat ≤ 5 so'rov (path + count + courses + assignments)",
+  "exp": "<= 5",
+  "act": "3",
+  "ok": true
+ },
+ {
+  "id": "P3L03",
+  "grp": "Learning",
+  "name": "Path tafsiloti: kurslar ro'yxati",
+  "exp": "6 kurs",
+  "act": "Kurslar (6)",
+  "ok": true
+ },
+ {
+  "id": "P3L04",
+  "grp": "Learning",
+  "name": "UI orqali tayinlash (RPC apply_learning_path) → qoida + kurs tayinlashlari",
+  "exp": "1 qoida, +kurslar",
+  "act": "1 qoida, +6; ok: Tayinlandi: 6 ta yangi kurs tayinlash, 1 xodim",
+  "ok": true
+ },
+ {
+  "id": "P3L05",
+  "grp": "Learning",
+  "name": "Takroriy tayinlash idempotent (dublikat yo'q)",
+  "exp": "1 qoida, 0 yangi",
+  "act": "1 qoida, +0; ok: Tayinlandi: 0 ta yangi kurs tayinlash, 1 xodim",
+  "ok": true
+ },
+ {
+  "id": "P3L06",
+  "grp": "Learning",
+  "name": "Qayta qo'llash (reapply) dublikat yaratmaydi",
+  "exp": "+0",
+  "act": "+0; ok: Qayta qo'llandi: 0 ta yangi tayinlas",
+  "ok": true
+ },
+ {
+  "id": "P3L07",
+  "grp": "Learning",
+  "name": "Bekor qilish: qoida cancelled, mavjud kurs tayinlashlari saqlanadi",
+  "exp": "cancelled / saqlangan",
+  "act": "cancelled / 6",
+  "ok": true
+ },
+ {
+  "id": "P3L08",
+  "grp": "Learning",
+  "name": "SERVER: HR to'g'ridan-to'g'ri learning_path_assignments INSERT → rad",
+  "exp": "4xx",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "P3L09",
+  "grp": "Learning",
+  "name": "SERVER: Department Head apply_learning_path → rad",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3P01",
+  "grp": "Progress",
+  "name": "Course Progress KPI = server course_progress_summary",
+  "exp": "teng",
+  "act": "2/2",
+  "ok": true
+ },
+ {
+  "id": "P3P02",
+  "grp": "Progress",
+  "name": "O'rtacha progress serverdan (frontend hisoblamaydi)",
+  "exp": "0%",
+  "act": "0%",
+  "ok": true
+ },
+ {
+  "id": "P3P03",
+  "grp": "Progress",
+  "name": "Kurs tanlanmagan → bo'sh holat (empty state)",
+  "exp": "Kursni tanlang",
+  "act": "ha",
+  "ok": true
+ },
+ {
+  "id": "P3P04",
+  "grp": "Progress",
+  "name": "SERVER: Instructor — faqat o'z kurslari (boshqa kurs rad yoki instructor scope)",
+  "exp": "rad / instructor",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3S01",
+  "grp": "Skills",
+  "name": "Ko'nikma yaratish (upsert_skill RPC)",
+  "exp": "active / 5",
+  "act": "active / 5",
+  "ok": true
+ },
+ {
+  "id": "P3S02",
+  "grp": "Skills",
+  "name": "Ko'nikmani tahrirlash",
+  "exp": "EKG talqini (12 tarmoq)",
+  "act": "EKG talqini (12 tarmoq)",
+  "ok": true
+ },
+ {
+  "id": "P3S03",
+  "grp": "Skills",
+  "name": "Kompetensiya talabi (set_competency_requirement)",
+  "exp": "daraja 3",
+  "act": "3",
+  "ok": true
+ },
+ {
+  "id": "P3S04",
+  "grp": "Skills",
+  "name": "Baholashsiz → \"Baholanmagan\" (not_assessed), ball o'ylab topilmaydi",
+  "exp": "Baholanmagan",
+  "act": "Baholanmagan",
+  "ok": true
+ },
+ {
+  "id": "P3S05",
+  "grp": "Skills",
+  "name": "Daraja 2 < 3 → Bajarilmagan; daraja 4 → Bajarilgan",
+  "exp": "not_achieved → achieved",
+  "act": "True → True",
+  "ok": true
+ },
+ {
+  "id": "P3S06",
+  "grp": "Skills",
+  "name": "Baholash tarixi insert-only (2 yozuv saqlangan)",
+  "exp": "2: 2,4",
+  "act": "2: 2,4",
+  "ok": true
+ },
+ {
+  "id": "P3S07",
+  "grp": "Skills",
+  "name": "Baholashni tahrirlash: UI tugmasi yo'q + SERVER PATCH rad",
+  "exp": "0 tugma / o'zgarmagan",
+  "act": "0 / 403 / max=4",
+  "ok": true
+ },
+ {
+  "id": "P3S08",
+  "grp": "Skills",
+  "name": "SERVER: Department Head boshqa bo'lim xodimini baholay olmaydi",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3S09",
+  "grp": "Skills",
+  "name": "Instructor (skill.view): ro'yxat bor, yaratish/arxiv tugmasi yo'q",
+  "exp": "0 tugma",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "P3S10",
+  "grp": "Skills",
+  "name": "SERVER: Instructor upsert_skill → rad",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3S11",
+  "grp": "Skills",
+  "name": "Talabni arxivlash (archive_competency_requirement)",
+  "exp": "archived",
+  "act": "archived",
+  "ok": true
+ },
+ {
+  "id": "P3C01",
+  "grp": "Compliance",
+  "name": "Tashkilot matritsasi: compliance % va bo'limlar = server",
+  "exp": "0% / 3",
+  "act": "0% / 3",
+  "ok": true
+ },
+ {
+  "id": "P3C02",
+  "grp": "Compliance",
+  "name": "Bo'lim filtri: xodimlar qatorlari = server",
+  "exp": "4",
+  "act": "4",
+  "ok": true
+ },
+ {
+  "id": "P3C03",
+  "grp": "Compliance",
+  "name": "Xodim trening compliance: kurslar soni = server",
+  "exp": "6",
+  "act": "6",
+  "ok": true
+ },
+ {
+  "id": "P3C04",
+  "grp": "Compliance",
+  "name": "Kompetensiya statuslari faqat achieved/not_achieved/not_assessed",
+  "exp": "subset",
+  "act": "[]",
+  "ok": true
+ },
+ {
+  "id": "P3C05",
+  "grp": "Compliance",
+  "name": "Department Head: faqat o'z bo'limi (filtr qulflangan)",
+  "exp": "disabled + rows",
+  "act": "True / 1",
+  "ok": true
+ },
+ {
+  "id": "P3C06",
+  "grp": "Compliance",
+  "name": "SERVER: Head tashkilot / boshqa bo'lim matritsasi → rad",
+  "exp": "4xx / 4xx",
+  "act": "403 / 403",
+  "ok": true
+ },
+ {
+  "id": "P3C07",
+  "grp": "Compliance",
+  "name": "HR: tashkilot matritsasini ko'radi",
+  "exp": "ok",
+  "act": "ok",
+  "ok": true
+ },
+ {
+  "id": "P3N01",
+  "grp": "Notif",
+  "name": "Qo'ng'iroq badge = unread_notification_count (server)",
+  "exp": "7",
+  "act": "7",
+  "ok": true
+ },
+ {
+  "id": "P3N02",
+  "grp": "Notif",
+  "name": "Bildirishnomalar ro'yxati",
+  "exp": "7+",
+  "act": "7",
+  "ok": true
+ },
+ {
+  "id": "P3N03",
+  "grp": "Notif",
+  "name": "Bittasini o'qildi qilish (mark_notification_read) → hisob -1",
+  "exp": "6",
+  "act": "6",
+  "ok": true
+ },
+ {
+  "id": "P3N04",
+  "grp": "Notif",
+  "name": "Keyset paging: 20 → \"Yana yuklash\" → qolganlari, dublikatsiz",
+  "exp": "20 → 20+",
+  "act": "20 → 31 (uniq 31)",
+  "ok": true
+ },
+ {
+  "id": "P3N05",
+  "grp": "Notif",
+  "name": "Barchasini o'qilgan qilish → 0, badge yashirin",
+  "exp": "0 / 0",
+  "act": "0 / 0",
+  "ok": true
+ },
+ {
+  "id": "P3N06",
+  "grp": "Notif",
+  "name": "O'qilmaganlar bo'sh → empty state",
+  "exp": "yo'q",
+  "act": "∅\nO'qilmagan bildirishnoma yo'q",
+  "ok": true
+ },
+ {
+  "id": "P3N07",
+  "grp": "Notif",
+  "name": "SERVER: boshqa foydalanuvchining bildirishnomasini o'zgartirib bo'lmaydi",
+  "exp": "o'zgarmagan",
+  "act": "403 / read=True",
+  "ok": true
+ },
+ {
+  "id": "P3N08",
+  "grp": "Notif",
+  "name": "SERVER: bildirishnomani qo'lda INSERT qilib bo'lmaydi",
+  "exp": "4xx",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "P3N09",
+  "grp": "Notif",
+  "name": "SERVER: boshqa foydalanuvchi mark_notification_read → ta'sir yo'q",
+  "exp": "o'zgarmagan",
+  "act": "400 / read=True",
+  "ok": true
+ },
+ {
+  "id": "P3X01",
+  "grp": "Isolation",
+  "name": "SERVER: anonim department_compliance_matrix → rad",
+  "exp": "4xx",
+  "act": "401",
+  "ok": true
+ },
+ {
+  "id": "P3X02",
+  "grp": "Isolation",
+  "name": "SERVER: anonim employee_training_compliance → rad",
+  "exp": "4xx",
+  "act": "401",
+  "ok": true
+ },
+ {
+  "id": "P3X03",
+  "grp": "Isolation",
+  "name": "SERVER: anonim my_notifications → rad",
+  "exp": "4xx",
+  "act": "401",
+  "ok": true
+ },
+ {
+  "id": "P3X04",
+  "grp": "Isolation",
+  "name": "SERVER: anonim course_progress_summary → rad",
+  "exp": "4xx",
+  "act": "401",
+  "ok": true
+ },
+ {
+  "id": "P3X05",
+  "grp": "Isolation",
+  "name": "SERVER: Org B admin → Org A xodim compliance → rad",
+  "exp": "4xx",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "P3X06",
+  "grp": "Isolation",
+  "name": "SERVER: Org B admin → Org A kompetensiya matritsasi → rad",
+  "exp": "4xx",
+  "act": "403",
+  "ok": true
+ },
+ {
+  "id": "P3X07",
+  "grp": "Isolation",
+  "name": "SERVER: Org B Org A ko'nikmalarini ko'rmaydi",
+  "exp": "0",
+  "act": "0",
+  "ok": true
+ },
+ {
+  "id": "P3X08",
+  "grp": "Isolation",
+  "name": "SERVER: Org B Org A learning path'ini tayinlay olmaydi",
+  "exp": "4xx",
+  "act": "400",
+  "ok": true
+ },
+ {
+  "id": "P3U01",
+  "grp": "UI",
+  "name": "Server xatosi → tushunarli xabar + \"Qayta urinish\" → tiklanadi",
+  "exp": "error → ok",
+  "act": "1 → 1",
+  "ok": true
+ },
+ {
+  "id": "P3U02",
+  "grp": "UI",
+  "name": "N+1 yo'q: bo'lim matritsasi ≤ 3 so'rov (bitta RPC + lookup)",
+  "exp": "<= 3",
+  "act": "1",
+  "ok": true
+ },
+ {
+  "id": "P3U03",
+  "grp": "UI",
+  "name": "N+1 yo'q: xodim sahifasi = 2 RPC",
+  "exp": "2",
+  "act": "2",
+  "ok": true
+ },
+ {
+  "id": "P3U04",
+  "grp": "UI",
+  "name": "Mavjud bo'lmagan learning path → aniq xabar",
+  "exp": "topilmadi",
+  "act": "∅ Learning path topilmadi yoki ruxsat yo",
+  "ok": true
+ },
+ {
+  "id": "P3U05",
+  "grp": "UI",
+  "name": "Mobil (390px): gorizontal overflow yo'q",
+  "exp": "ha",
+  "act": "True",
+  "ok": true
+ },
+ {
+  "id": "P3U06",
+  "grp": "UI",
+  "name": "JS xatolari (pageerror) butun test davomida",
+  "exp": "0",
+  "act": "0",
+  "ok": true
+ }
+]
