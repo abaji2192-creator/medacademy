@@ -191,6 +191,20 @@ Muammo chiqsa, `119_rollback_007e.sql` ishga tushiriladi. U faqat funksiyalarni 
 - Kurs `due_soon` holatini hisoblash va kunlik eslatmalar uchun cron yo'q — bu keyingi bosqichga qoldirildi.
 - Tashkilot darajasidagi matritsa har chaqiruvda qayta hisoblanadi. 1 000 xodimda ~0.3 s ketadi. 5 000+ xodimda qayta baholash kerak bo'ladi: kesh yoki snapshot.
 
+## 13. PRODUCTION DEPLOY (2026-11-27)
+| Qadam | Natija |
+|---|---|
+| 111 backup | 49 / 49 jadval aynan, 1 162 qator, 103 policy, 127 funksiya, 104 trigger |
+| 112 precheck | **ok = true** (007d = 1, 007e = 0, to'qnashuv 0, 13 / 131 / 2, org 1, role_permissions 119, 6 katalog hashi mos) |
+| 113 apply (sha fd6ffc51…) | 18:39:39 → 18:39:47 UTC (bir marta); 6 funksiya; anon faqat `verify_certificate` |
+| 114 verify | **ok = true**: 49 / 133 / 104 / 103 / 122; RPC 3/3; 6/6 STABLE + DEFINER + search_path; internal→auth 0; kategoriyasiz 0; ruxsatlar o'zgarmagan; CASCADE 0; 14 jadval + notifications + audit_logs o'zgarmagan; diff faqat +6 funksiya |
+| 115 testlar (vaqtinchalik @test.local, ROLLBACK) | **007e 48/48** |
+| Regressiya | 007d 58/58 · 007c 74/74 · 007b 78/78 · 007a 55/55 · 006a 83/83 · 006b 34/34 · 005d 54/54 · role matrix 62/62 · 005 regression 26/26 — fail 0 |
+| Yakuniy verify | ok = true, ma'lumot o'zgarmagan, qoldiq 0 |
+| anon REST | `employee_training_compliance` (ID bilan ham) / `employee_competency_matrix` / `department_compliance_matrix` 401; `verify_certificate` 200 |
+
+Rollback bajarilmadi. Production: migratsiyalar 001 … 007d, 007e; 49 jadval / 133 funksiya / 104 trigger / 103 policy / 122 indeks; CASCADE 0; anon faqat `verify_certificate`.
+
 ## 12. Cheklovlar (o'zgarmagan)
 - Main'ga merge qilinmadi, Pages deploy qilinmadi.
 - Employee build, Phase 1 frontend va admin UI o'zgarmagan.
