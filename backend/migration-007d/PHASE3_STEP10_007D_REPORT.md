@@ -122,6 +122,21 @@ Precheck (102) production hashlariga bog'langan: fn `a35223b6…`, trg `f329c02c
 
 Muammo chiqsa, `109_rollback_007d.sql` alohida qaror bilan ishga tushiriladi.
 
+## 8. PRODUCTION DEPLOY (2026-11-27)
+| Qadam | Natija |
+|---|---|
+| 101 backup | 48 / 48 jadval aynan, 1 161 qator, 102 policy, 116 funksiya, 97 trigger, 337 constraint |
+| 102 precheck | **ok = true** (007c = 1, 007d = 0, to'qnashuv 0, 13 / 131 / 2, org 1, role_permissions 119, 6 katalog hashi mos) |
+| 103 apply (sha ad701284…) | 15:09:17 → 15:09:28 UTC; jadval yaratildi, bildirishnomalar 0, anon faqat `verify_certificate` |
+| 104 verify | **ok = true**: 49 / 127 / 104 / 103 / 122; yozuv / anon grant / yozuv policy 0; unique 1; ruxsatlar o'zgarmagan; internal→auth 0; kategoriyasiz 0; RPC 4/4; CASCADE 0; 13 jadval + audit_logs o'zgarmagan; diff trg 7 / idx 5 / col 12 / pol 1 |
+| Eslatma | Apply paytida brauzer kengaytmasi bilan aloqa uzildi; qayta ulangandan keyin natija sahifa holatidan o'qildi (apply bir marta, muvaffaqiyatli) va verify qayta ishga tushirilib tasdiqlandi — apply takrorlanmadi |
+| 105 testlar (vaqtinchalik @test.local, ROLLBACK) | **007d 58/58** |
+| Regressiya | 007c 74/74 · 007b 78/78 · 007a 55/55 · 006a 83/83 · 006b 34/34 · 005d 54/54 · role matrix 62/62 · 005 regression 26/26 — fail 0 |
+| Yakuniy verify | ok = true, bildirishnomalar 0, test yozuvlari qolmagan |
+| anon REST | `notifications` SELECT / INSERT / UPDATE / DELETE 401; `my_notifications` / `unread_notification_count` / `mark_notification_read` / `mark_all_notifications_read` 401; `verify_certificate` 200 |
+
+Rollback bajarilmadi. Production: migratsiyalar 001 … 007c, 007d; 49 jadval / 127 funksiya / 104 trigger / 103 policy / 122 indeks; CASCADE 0; ma'lumotlar o'zgarmagan.
+
 ## 7. Cheklovlar (o'zgarmagan)
 - Main'ga merge qilinmadi, Pages deploy qilinmadi.
 - Employee build o'zgarmagan.
