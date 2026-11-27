@@ -1,0 +1,13 @@
+import { mk, CHAIN } from './lib005e.mjs'; import fs from 'fs';
+delete process.env.T7D; delete process.env.T7E;
+const P = '/home/claude/medacademy/site/backend/';
+const base = ['staging/005e_00_backup.sql', 'migrations/005e_medical_review_authorization.sql', 'migrations/006a_audit_hardening.sql', 'migrations/006b_course_delete_hardening.sql', 'migrations/007a_learning_progress.sql', 'migrations/007b_learning_path_assignments.sql', 'migrations/007c_skills_competency.sql', 'migrations/007d_in_app_notifications.sql'];
+const last = (r, k) => r.find(x => x.rows?.[0]?.[k]).rows[0][k];
+const db = await mk([...base, 'staging/007e_00_backup.sql', 'production/113_apply_007e.sql']);
+const v = JSON.parse(last(await db.exec(fs.readFileSync(P + 'production/114_verify_007e.sql', 'utf8')), 'verify_007e')); console.log(JSON.stringify({ ok: v.ok, counts: v.counts, cat: v.catalog_vs_backup, hardened: v.hardened, rpc: v.rpc_ok, data: v.data_same }));
+await db.exec(fs.readFileSync(P + 'production/119_rollback_007e.sql', 'utf8'));
+console.log(last(await db.exec(fs.readFileSync(P + 'staging/007e_04_compare_pre.sql', 'utf8')), 'compare_pre007e'));
+const ro = await mk(base); console.log(last(await ro.exec(fs.readFileSync(P + 'production/110_readonly_review_007e.sql', 'utf8')), 'prod_readonly_007e').slice(0, 400));
+const pdb = await mk([...base, 'migrations/007e_compliance_matrix.sql'], CHAIN.filter(f => !f.startsWith('tests/')));
+console.log(last(await pdb.exec(fs.readFileSync(P + 'production/115_security_tests_007e.sql', 'utf8')), 'summary_007e').slice(0, 120));
+console.log((await pdb.query(`select (select count(*) from auth.users where email like '%@test.local') u, (select count(*) from public.courses where id like 'T7E%') c`)).rows[0]);
