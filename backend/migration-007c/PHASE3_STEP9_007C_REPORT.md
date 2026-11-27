@@ -1,7 +1,7 @@
 # MedAcademy — Phase 3 STEP 9: Migration 007c (Skills & Competency)
 
-**Holat:** PHASE 3 STEP 9 — 007c LOCAL + STAGING + PRODUCTION READ-ONLY REVIEW PASSED — READY FOR EXPLICIT PRODUCTION DEPLOYMENT APPROVAL
-**Sana:** 2026-11-26 · **Production'ga hech narsa yozilmadi** (faqat READ ONLY tranzaksiya + anon REST o'qish).
+**Holat:** 007c PRODUCTION DEPLOYMENT COMPLETE — 007c = 1, ALL GATES PASS (2026-11-27)
+**STEP 9 (2026-11-26):** LOCAL + STAGING + PRODUCTION READ-ONLY REVIEW PASSED. **STEP 9b (2026-11-27):** foydalanuvchi "DEPLOY TO PRODUCTION" tasdig'i bilan production deploy — 8-bo'limga qarang.
 
 ## 1. Qamrov
 
@@ -31,7 +31,8 @@ Dastlabki RLS siyosati har qatorda `_sk_can_view_employee_007c()` chaqirardi: 10
 | `production/91_backup_pre007c.sql` = `staging/007c_00_backup.sql` | `992fe9e11c7f7b06de2641128d085b26a42f626a5fcf61f8237c30012f05a96a` |
 | `production/92_precheck_007c.sql` | `beae81a66db11c3eb6e5e6fe6cbe8df4aa20b960d2e79158a67f32a55ae0da6b` |
 | `production/94_verify_007c.sql` | `881af28e636c0270fad62cf6634e9bb3773981150f370bfe7b7b9a9e6d76831c` |
-| `production/95_security_tests_007c.sql` = `staging/007c_02_tests.sql` | `7b75a3d319e78ca1a55afafe17e9a8219b8b0743b86ff22c95ea51520a35d7c2` |
+| `staging/007c_02_tests.sql` | `7b75a3d319e78ca1a55afafe17e9a8219b8b0743b86ff22c95ea51520a35d7c2` |
+| `production/95_security_tests_007c.sql` (vaqtinchalik @test.local muhit + staging to'plami, ROLLBACK) | `924ec8e6fc4b2210056d68293d354c7522827d6e193f6b24e7fcd29e3e9bd7e5` |
 | `staging/007c_03_perf.sql` | `ea7badd76e43b91ed4a252a591226d45191b069970cf4e35061443b4f867b7d9` |
 | `staging/007c_04_compare_pre.sql` | `86a5cc9a293736880022b7ec36bdf8b4153a38ff826891f596f4ee5bcaaf7717` |
 
@@ -85,6 +86,22 @@ Precheck (92) production hashlariga bog'langan: fn `974fbd4d…`, trg `3bbba44d�
 
 1. `91_backup_pre007c.sql` → 2. `92_precheck_007c.sql` (`ok = true` shart) → 3. `93_apply_007c.sql` (sha 56ce1ed9…) → 4. `94_verify_007c.sql` (`ok = true`; kutilgan 48 / 116 / 97 / 102 / 117, role_perms = 8) → 5. `95_security_tests_007c.sql` (ROLLBACK bilan, 74/74) → 6. 006a / 006b / 007a / 007b regressiya testlari → 7. anon REST tekshiruvi.
 Muammo bo'lsa: `99_rollback_007c.sql` (alohida qaror bilan).
+
+## 8. PRODUCTION DEPLOY (2026-11-27)
+
+| Qadam | Natija |
+|---|---|
+| Pre-flight (90, READ ONLY) | 007c = 0, 45 / 100 / 92 / 99 / 108, backup jadvallari yo'q — oldingi review'dan beri o'zgarmagan |
+| 91 backup | 45 / 45 jadval aynan, 1 140 qator, 99 policy, 100 funksiya, 92 trigger, 304 constraint |
+| 92 precheck | **ok = true** (007b = 1, 007c = 0, to'qnashuv 0, 13 / 131 / 2, org 1, role_permissions 111, 6 katalog hashi mos) |
+| 93 apply (sha 56ce1ed9…) | 13:49:15 → 13:49:25 UTC; `007c`, 3 jadval, 4 ruxsat, 8 role_permissions, anon faqat `verify_certificate` |
+| 94 verify | **ok = true**: 48 / 116 / 97 / 102 / 117; RLS 3/3; yozuv grant / anon grant / yozuv policy 0; internal→auth 0; kategoriyasiz 0; RPC 7/7; CASCADE 0; ma'lumot 9/9 o'zgarmagan; diff trg 5 / idx 9 / col 40 / pol 3 |
+| 95 testlar (vaqtinchalik @test.local, ROLLBACK) | **007c 74/74** |
+| Regressiya | 007b 78/78 · 007a 55/55 · 006a 83/83 · 006b 34/34 · 005d 54/54 · role matrix 62/62 · 005 regression 26/26 — hammasi fail 0 |
+| Yakuniy verify | ok = true, 007c qatorlari 0, test yozuvlari qolmagan |
+| anon REST | `skills` / `skill_assessments` / `competency_requirements` SELECT 401, `skills` INSERT 401, `employee_competency_summary` / `record_skill_assessment` 401, `verify_certificate` 200 |
+
+Rollback bajarilmadi. Production holati: migratsiyalar 001 … 007b, 007c; 48 jadval / 116 funksiya / 97 trigger / 102 policy / 117 indeks; CASCADE 0; ma'lumotlar 13 / 131 / 13 / 2 / 0 / 1 / 307 o'zgarmagan.
 
 ## 7. Cheklovlar (o'zgarmagan)
 Main'ga merge yo'q, Pages deploy yo'q, employee build o'zgarmagan, questions.js / javob banki public build'da emas, "Confirm email" sozlamasiga tegilmagan, test yozuvlari qoldirilmagan.
