@@ -71,3 +71,10 @@
   .kv{grid-template-columns:1fr}
   .filters input[type=search]{min-width:100%}
 }
+/* Phase 3 (007a–007e) */
+.badge.b-green{background:#dcfce7;color:#166534}.badge.b-red{background:#fee2e2;color:#991b1b}.badge.b-amber{background:#fef3c7;color:#92400e}.badge.b-blue{background:#dbeafe;color:#1e40af}
+.kpi.green .v{color:#15803d}.kpi.red .v{color:#b91c1c}.kpi.amber .v{color:#b45309}
+.bar{height:8px;border-radius:6px;background:#eef2f7;overflow:hidden}.bar i{display:block;height:100%;background:var(--blue,#2563eb);border-radius:6px}
+.notif.unread{background:#f0f7ff}.notif.unread b{color:var(--blue,#1d4ed8)}
+[data-bell]{position:relative;margin-right:6px}[data-bell] .badge{padding:0 6px;font-size:11px}
+@media (max-width:900px){.adm-top{gap:8px;padding:10px 12px}.adm-top [data-title]{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.adm-top .who{min-width:0;overflow:hidden}.adm-top .who b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:110px}}
