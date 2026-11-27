@@ -6,6 +6,8 @@
     ['', [['dashboard', '#/', 'Dashboard', '▦']]],
     ['Tashkilot', [['employees', '#/employees', 'Xodimlar', '👥'], ['organization', '#/org/departments', 'Bo\'limlar / Lavozimlar / Mutaxassisliklar', '🏥']]],
     ['Ta\'lim', [['education', '#/edu/courses', 'Kurslar', '📚'], ['education', '#/edu/assignments', 'Tayinlashlar', '🗓'], ['education', '#/edu/instructors', 'Instruktorlar', '🎓']]],
+    ['O\'quv rivojlanish', [['learning_paths', '#/learning/paths', 'Learning Paths', '🧭'], ['progress', '#/learning/progress', 'Course Progress', '📈'],
+      ['skills', '#/skills/skills', 'Skills va kompetensiya', '🩺'], ['compliance', '#/compliance/department', 'Compliance matritsasi', '✅']]],
     ['Savollar banki', [['questions', '#/questions', 'Barcha savollar', '❓']]],
     ['Evidence', [['evidence_queue', '#/evidence/queue', 'Review Queue', '🔎'], ['evidence_library', '#/evidence/library', 'Evidence Library', '📑']]],
     ['Imtihonlar', [['exams', '#/exams/configs', 'Imtihon sozlamalari', '📝'], ['exams', '#/exams/attempts', 'Urinishlar va natijalar', '📊']]],
@@ -21,8 +23,10 @@
       <div class="adm-grp" style="margin-top:22px">Ilova</div><nav class="adm-nav"><a href="./index.html">↩ Xodim ilovasi</a></nav></aside>
       <main class="adm-main"><div class="adm-top"><button class="btn sm adm-burger" data-burger>☰</button><b data-title></b>
       <div class="who"><div><b>${esc(p.full_name || p.email)}</b></div><div class="tiny" data-role="${esc(p.role)}">${esc(PERMS.ROLE_LABEL[p.role] || p.role)}</div></div>
+      ${PERMS.section('notifications') ? '<a class="btn sm" href="#/notifications" data-bell title="Bildirishnomalar">🔔 <span class="badge b-red" data-bell-count hidden>0</span></a>' : ''}
       <button class="btn sm" data-logout>Chiqish</button></div><div class="adm-body" id="view"></div></main></div>`;
     root.querySelector('[data-logout]').onclick = logout;
+    window.NOTIF && NOTIF.refreshBell();
     root.querySelector('[data-burger]').onclick = () => root.querySelector('[data-side]').classList.toggle('open');
   }
 

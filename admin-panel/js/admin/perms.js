@@ -36,6 +36,12 @@
     education: () => any('course.edit', 'assignment.view', 'instructor.assign') || role() === 'instructor',
     exams: () => can('exam.view'),
     audit: () => can('audit.view'),
+    // Phase 3 (007a–007e). UX uchun — haqiqiy himoya serverda (RLS + RPC).
+    learning_paths: () => any('learning_path.manage', 'assignment.view'),
+    progress: () => can('progress.view'),
+    skills: () => can('skill.view'),
+    compliance: () => (can('progress.view') && can('skill.view')) && ['super_admin', 'education_manager', 'hr', 'department_head'].includes(role()),
+    notifications: () => isAdminUser(),
   };
   const section = s => !!(SECTIONS[s] && SECTIONS[s]());
   window.PERMS = { load, can, any, role, section, isAdminUser, state, ROLE_LABEL, ADMIN_ROLES, canMedicalReview, canPublish, canAssignReview };
